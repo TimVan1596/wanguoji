@@ -1,3 +1,5 @@
+import {civilOfficeTitle} from './CivilOffice';
+import {MILITARY_OFFICE_NAMES} from './MilitaryOffice';
 import {createMilitaryEvidenceIndex} from './MilitaryEvidenceIndex';
 import {militaryMilestones,selectMilitaryMilestones} from "./MilitaryChroniclePresentation";
 import type {Ruler} from "./Dynasty";
@@ -41,4 +43,22 @@ export function preAccessionMilitary(ruler:Ruler,people:MilitaryPerson[],formati
  const entries=militaryMilestones(person,raw,events,context);
  const representative=selectMilitaryMilestones(entries,events,5);
  return {person,entries,representative};
+}
+
+/** One public service chronology over real civil and military appointments. No patronage inferred. */
+export function unifiedPersonServiceLinks(personId:string,terms:readonly import('./CivilAdministrationSchema').CivilGovernorTerm[],people:readonly MilitaryPerson[],dynasties:readonly import('./Dynasty').Dynasty[],events:readonly WorldEvent[],month:number){
+ const lifeByFaction=new Map<string,WorldEvent[]>();for(const e of events){const id=e.type==='faction-restored'?e.actorFactionId:['faction-exiled','faction-extinct'].includes(e.type)?e.targetFactionId:undefined;if(id){const list=lifeByFaction.get(id)??[];list.push(e);lifeByFaction.set(id,list);}}
+ const person=people.find(p=>p.personId===personId),byId=new Map(events.map(e=>[e.id,e]));
+ const appointments=[...(person?.appointments??[]).filter(a=>a.startMonth<=month).map(a=>({factionId:a.factionId,start:a.startMonth,end:Math.min(a.endMonth??month+1,month+1),officeNames:(a.officeHistory??[]).filter(g=>g.month<=month).map(g=>({month:g.month,name:MILITARY_OFFICE_NAMES[g.office]})),sourceIds:[`military-appointment-${a.commandId}`,...(a.officeHistory??[]).map(g=>g.eventId)],appointedBy:undefined as string|undefined})),...terms.filter(t=>t.personId===personId&&t.startMonth<=month).map(t=>({factionId:t.factionId,start:t.startMonth,end:Math.min(t.endMonth??month+1,month+1),officeNames:[{month:t.startMonth,name:civilOfficeTitle(t)}],sourceIds:[t.appointEventId],appointedBy:t.rulerId}))];
+ const rows=appointments.flatMap(a=>{const d=dynasties.find(d=>d.factionId===a.factionId);return (d?.rulers??[]).flatMap(r=>{
+  if(r.accessionYear===undefined||r.reignOrdinal===undefined||r.accessionYear>month)return [];
+  const start=Math.max(a.start,r.accessionYear),end=Math.min(a.end,r.endYear??month+1,month+1);if(start>=end)return [];
+  let exiled=false,cursor=start;const periods:Array<[number,number]>=[],seen=new Set<string>();
+  for(const e of lifeByFaction.get(a.factionId)??[]){const m=e.monthIndex??e.year,isExile=e.type==='faction-exiled'&&e.targetFactionId===a.factionId,isRestore=e.type==='faction-restored'&&e.actorFactionId===a.factionId,isEnd=e.type==='faction-extinct'&&e.targetFactionId===a.factionId;if(!isExile&&!isRestore&&!isEnd||m>end)continue;const key=`${e.type}/${e.historyGroupId??e.id}`;if(seen.has(key))continue;seen.add(key);
+   if(m<=start){exiled=isExile||isEnd;continue;}if((isExile||isEnd)&&!exiled){periods.push([cursor,m]);exiled=true;}else if(isRestore&&exiled){cursor=m;exiled=false;}
+  }
+  if(!exiled)periods.push([cursor,end]);
+  return periods.filter(([s,e])=>s<e).map(([s,e])=>({factionId:a.factionId,rulerId:r.id,startMonth:s,endMonth:e-1,offices:[...new Set([...a.officeNames.filter(o=>o.month<=s).slice(-1),...a.officeNames.filter(o=>o.month>s&&o.month<e)].map(o=>o.name))],sourceIds:a.sourceIds.filter(id=>{const event=byId.get(id);return event&&(event.monthIndex??event.year)<e;}),appointing:a.appointedBy===r.id}));
+ });}).sort((a,b)=>a.startMonth-b.startMonth||a.factionId.localeCompare(b.factionId)||a.rulerId.localeCompare(b.rulerId));
+ const merged:typeof rows=[];for(const row of rows){const old=merged.at(-1);if(old&&old.factionId===row.factionId&&old.rulerId===row.rulerId&&old.endMonth+1===row.startMonth){old.endMonth=row.endMonth;old.offices=[...new Set([...old.offices,...row.offices])];old.sourceIds=[...new Set([...old.sourceIds,...row.sourceIds])];old.appointing ||=row.appointing;}else merged.push({...row});}return merged;
 }

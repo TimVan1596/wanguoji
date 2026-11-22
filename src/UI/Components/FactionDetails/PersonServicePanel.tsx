@@ -1,3 +1,5 @@
+import Civil from '../../../Politics/CivilAdministration';
+import {unifiedPersonServiceLinks} from '../../../Politics/PersonServiceLinks';
 import RoyalNoblePanel from './RoyalNoblePanel';
 import {rulerFamilyOrigin} from '../../../Politics/RulerFamilyOrigin';
 import {courtServiceReadings} from '../../../Politics/CourtServicePresentation';
@@ -41,14 +43,12 @@ export function RulerServicePanel({ruler,factionId,month,reading}:{ruler:Ruler;f
   </ChronicleSection>}
  </>;
 }
-export function MilitaryServicePanel({personId,month,timelineOwnsPolitics=false}:{personId:string;month:number;timelineOwnsPolitics?:boolean}){
+export function MilitaryServicePanel({personId,month,timelineOwnsPolitics=false,includeRulers=true}:{personId:string;month:number;timelineOwnsPolitics?:boolean;includeRulers?:boolean}){
  const nav=usePersonArchiveNavigation(),person=Military.getPerson(personId);if(!person)return null;
- const rows=Dynasty.getAll().filter(d=>person.appointments.some(a=>a.factionId===d.factionId)).flatMap(d=>personServiceLinks(d.factionId,d.rulers,[person],Military.getFormations(),History.getEvents(),month));
+
  const command=Military.getFormations().find(f=>f.status==="ACTIVE"&&f.commanderPersonId===personId),target=command?.targetCityId&&Game.Core?.allCities.find(c=>c.id===command.targetCityId);
  const politicalLife=militaryPoliticalLife(person,Dynasty.getAll(),History.getEvents(),new Map((Game.Core?.teams??[]).map(t=>[t.name,t])),month);
- return <>{!timelineOwnsPolitics&&courtServiceReadings(person,History.getEvents(),month).map(row=><Typography key={row.eventId} fontSize=".8rem">{formatWorldDate(row.month)} · {row.text}</Typography>)}{politicalLife?.foundingEventId&&<Typography fontSize=".8rem">{formatWorldDate(politicalLife.entry.worldMonth)}叛离旧主 · 原军职已终止</Typography>}<MilitaryFamilyPanel personId={personId} month={month}/><MilitaryRoyalOrigin personId={personId} month={month}/>{command&&<Typography fontSize=".8rem">当前行动：{(command.retreatUntilMonth??-1)>month?`撤围回防，休整至${formatWorldDate(command.retreatUntilMonth!)}`:target?`${target.siegeBattle?.attackerId===command.factionId?"实际围攻":"向目标行军"}：${target.name}`:"暂无进军目标"}</Typography>}{!timelineOwnsPolitics&&politicalLife&&<ChronicleSection title="政治生涯转折"><Typography fontSize=".8rem">{formatWorldDate(politicalLife.entry.worldMonth)} · {politicalLife.entry.text}</Typography><button type="button" style={style} onClick={()=>nav.open({kind:"RULER",factionId:politicalLife.factionId,id:politicalLife.rulerId})}>查看对应王室本纪</button></ChronicleSection>}{rows.length>0?<ChronicleSection title="历任所事君主">
-  <ServiceRows rows={rows} ruler label={id=>{const r=Dynasty.getAll().flatMap(d=>d.rulers).find(r=>r.id===id)!;return r.houseName.replace(/氏$/,"")+r.givenName;}} onOpen={(id,factionId)=>nav.open({kind:"RULER",id,factionId})}/>
- </ChronicleSection>:null}</>;
+ return <>{!timelineOwnsPolitics&&courtServiceReadings(person,History.getEvents(),month).map(row=><Typography key={row.eventId} fontSize=".8rem">{formatWorldDate(row.month)} · {row.text}</Typography>)}{politicalLife?.foundingEventId&&<Typography fontSize=".8rem">{formatWorldDate(politicalLife.entry.worldMonth)}叛离旧主 · 原军职已终止</Typography>}<MilitaryFamilyPanel personId={personId} month={month}/><MilitaryRoyalOrigin personId={personId} month={month}/>{command&&<Typography fontSize=".8rem">当前行动：{(command.retreatUntilMonth??-1)>month?`撤围回防，休整至${formatWorldDate(command.retreatUntilMonth!)}`:target?`${target.siegeBattle?.attackerId===command.factionId?"实际围攻":"向目标行军"}：${target.name}`:"暂无进军目标"}</Typography>}{!timelineOwnsPolitics&&politicalLife&&<ChronicleSection title="政治生涯转折"><Typography fontSize=".8rem">{formatWorldDate(politicalLife.entry.worldMonth)} · {politicalLife.entry.text}</Typography><button type="button" style={style} onClick={()=>nav.open({kind:"RULER",factionId:politicalLife.factionId,id:politicalLife.rulerId})}>查看对应王室本纪</button></ChronicleSection>}{includeRulers&&<PersonRulersPanel personId={personId} month={month}/>}</>;
 }
 function ServiceRows({rows,label,onOpen,ruler=false}:{rows:ReturnType<typeof personServiceLinks>;label:(id:string)=>string;onOpen:(id:string,faction:string)=>void;ruler?:boolean}){
  const render=(xs:typeof rows)=>xs.map((r,i)=><Box key={`${r.personId}:${r.rulerId}:${r.startMonth}:${i}`} sx={{fontSize:"0.8rem",mt:.4,overflowWrap:"anywhere"}}>
@@ -56,4 +56,13 @@ function ServiceRows({rows,label,onOpen,ruler=false}:{rows:ReturnType<typeof per
  </Box>);
  return <>{render(rows.slice(0,5))}{rows.length>5&&<HistoricalEventArchive title="其余任职经历" totalCount={rows.length-5} entries={()=>rows.slice(5).map((r,i)=>({id:String(i),content:render([r])}))}/>}
  <HistoricalEventArchive title="任职史料依据" totalCount={rows.length} entries={()=>rows.map((r,i)=>({id:String(i),content:<Typography fontSize=".74rem">{r.personId} / {r.rulerId} · 任职交集 {formatWorldDate(r.startMonth)}—{formatWorldDate(r.endMonth)} · 取城来源 {r.victoryEventIds.join('、')||'未记录'} · 授职来源 {r.personalGrantEventIds.join('、')||'未记录'}；授职与在位交集不等于君主亲命。</Typography>}))}/></>;
+}
+
+export function PersonRulersPanel({personId,month,technical=false}:{personId:string;month:number;technical?:boolean}){
+ const nav=usePersonArchiveNavigation(),dynasties=Dynasty.getAll(),rows=unifiedPersonServiceLinks(personId,Civil.getByPerson(personId),Military.getPeople(),dynasties,History.getRecordedEvents(),month);
+ if(!rows.length)return null;
+ const name=(id:string)=>{const r=dynasties.flatMap(d=>d.rulers).find(r=>r.id===id);return r?`${r.houseName.replace(/氏$/,'')}${r.givenName}`:'君主姓名未载';};
+ if(technical)return <HistoricalEventArchive title="历事君主交集依据" totalCount={rows.length} entries={()=>rows.map((r,i)=>({id:String(i),content:<Typography fontSize=".74rem">{name(r.rulerId)}：{formatWorldDate(r.startMonth)}—{formatWorldDate(r.endMonth)}；任职来源：{r.sourceIds.join('、')}。交集不等于君主亲命，流亡月份已排除。</Typography>}))}/>;
+ const render=(xs:typeof rows)=>xs.map((r,i)=><Typography key={`${r.rulerId}/${r.startMonth}/${i}`} fontSize=".8rem"><button style={style} onClick={()=>nav.open({kind:'RULER',factionId:r.factionId,id:r.rulerId})}>{name(r.rulerId)}</button>：{formatWorldDate(r.startMonth)}—{formatWorldDate(r.endMonth)}，任{r.offices.join('、')}；{r.appointing?'有正式任命记录':'任职与君主在国执政期间相交'}。</Typography>);
+ return <ChronicleSection title="历事君主">{render(rows.slice(0,5))}{rows.length>5&&<HistoricalEventArchive title="其余历事君主" totalCount={rows.length-5} entries={()=>rows.slice(5).map((r,i)=>({id:String(i),content:render([r])}))}/>}</ChronicleSection>;
 }

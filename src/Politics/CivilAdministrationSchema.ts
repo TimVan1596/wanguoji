@@ -1,3 +1,4 @@
+import type {CivilCareerPolicy,CivilStewardshipWindow,CivilStewardshipAssessment,CivilRetirementEvidence} from './CivilCareerRules';
 import type {CivilOffice} from './CivilOffice';
 import type {NobleRank} from './MilitaryNobility';
 export type CivilGovernancePolicy='BASELINE'|'LOW'|'MEDIUM'|'HIGH';
@@ -8,10 +9,11 @@ export const MAX_ACTIVE_CIVIL_GOVERNORS_PER_FACTION=3;
 export const civilGovernanceThreshold=(policy:CivilGovernancePolicy)=>policy==='LOW'?72:policy==='HIGH'?48:60;
 export const isCivilGovernancePolicy=(value:unknown):value is CivilGovernancePolicy=>typeof value==='string'&&Object.hasOwn(CIVIL_APPOINTMENT_CHANCE,value);
 export type CivilGovernorSource='ORDINARY_RESIDENT'|'FAMILY'|'NOBLE'|'ROYAL'|'RETIRED_MILITARY';
-export type CivilGovernorEndReason='DEATH'|'CITY_LOST'|'FACTION_ENDED'|'REGIME_ENDED'|'POLITICAL_SANCTION'|'MILITARY_OFFICE'|'REPLACED'|'IDENTITY_ENDED'|'PROMOTED'|'TRANSFERRED';
+export type CivilGovernorEndReason='DEATH'|'CITY_LOST'|'FACTION_ENDED'|'REGIME_ENDED'|'POLITICAL_SANCTION'|'MILITARY_OFFICE'|'REPLACED'|'IDENTITY_ENDED'|'PROMOTED'|'TRANSFERRED'|'RETIREMENT';
 export interface CivilGovernanceReceipt {eventId:string;month:number;cityId:string;cityName:string;loyalty:number;devastation:number;}
-export interface CivilPromotionEvidence {fromAssignmentId:string;fromOffice:CivilOffice;serviceMonths:number;meritEventIds:string[];contribution:number;strategy:number;loyalty:number;}
+export interface CivilPromotionEvidence {stewardshipEventIds?:string[];fromAssignmentId:string;fromOffice:CivilOffice;serviceMonths:number;meritEventIds:string[];contribution:number;strategy:number;loyalty:number;}
 export interface CivilGovernorTerm {
+ stewardshipWindow?:CivilStewardshipWindow;stewardshipAssessments?:CivilStewardshipAssessment[];retirement?:CivilRetirementEvidence;
  transfer?:{fromAssignmentId:string;meritEventIds:string[];sourceLoyalty:number;sourceDevastation:number;targetLoyalty:number;targetDevastation:number};
  office?:CivilOffice;promotion?:CivilPromotionEvidence;receipts?:CivilGovernanceReceipt[];
  nameEvidence:{seed:string;culture:import('./NameCulture').NameCulture;originalName:string;source:'GENERATED'|'ESTABLISHED'};
@@ -23,7 +25,7 @@ export interface CivilGovernorTerm {
  lastEffectMonth?:number;loyaltyRecovered:number;devastationRecovered:number;meritMonth?:number;meritEventId?:string;
  meritLoyaltyRecovered?:number;meritDevastationRecovered?:number;
 }
-export interface CivilAdministrationState {version:1;sequence:number;lastEvaluationMonth:number;policy:CivilGovernancePolicy;terms:CivilGovernorTerm[];}
+export interface CivilAdministrationState {careerPolicy?:CivilCareerPolicy;version:1;sequence:number;lastEvaluationMonth:number;policy:CivilGovernancePolicy;terms:CivilGovernorTerm[];}
 export interface CivilGovernorCandidate {
  personId:string;sourceUserId:number;bornMonth:number;personalName:string;identitySource:CivilGovernorSource;
  familyId?:string;familyMemberId?:string;royalRulerId?:string;nobleRank?:NobleRank;strategy:number;weight:number;

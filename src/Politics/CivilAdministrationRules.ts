@@ -46,6 +46,7 @@ export function civilGovernorCandidates(month:number,team:Team,people:readonly M
  for(const user of team.users){
   const royalPerson=royalOwner(user);if(user.nativeRoyalRulerId||royalPerson&&(royalPerson.reignOrdinal!==undefined||royalPerson.status==='ruling'||royalPerson.accessionYear!==undefined&&royalPerson.accessionYear<=month))continue;
   if(terms.some(t=>t.sourceUserId===user.id&&t.bornMonth===user.bornMonth&&t.endMonth===undefined)||user.isDestroyed||user.role!=='NORMAL'||user.rulerId||user.player.rulerId||month-user.bornMonth<18*12||month-user.bornMonth>75*12||occupied.has(civilGovernorPersonId(user)))continue;
+  if(terms.some(t=>t.sourceUserId===user.id&&t.bornMonth===user.bornMonth&&t.endReason==='RETIREMENT'&&(month-t.endMonth!<60||month-user.bornMonth>=72*12)))continue;
   const person=user.militaryPersonId?people.find(candidate=>candidate.personId===user.militaryPersonId):undefined;
   if(user.historicalPersonId&&user.historicalPersonId!==person?.personId)continue;
   if(person&&(person.politicalRulerId||person.status==='DEAD'||person.deathMonth!==undefined||person.appointments.some(appointment=>appointment.factionId===team.name&&appointment.startMonth<=month&&(appointment.endMonth??Infinity)>month)||formations.some(formation=>formation.status==='ACTIVE'&&formation.commanderPersonId===person.personId)))continue;

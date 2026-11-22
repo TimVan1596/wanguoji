@@ -1,3 +1,5 @@
+import {civilCareerReading} from '../../../Politics/CivilHistoriography';
+import PersonCareerSources from './PersonCareerSources';
 import {familyArchive} from './FamilyArchiveSource';
 import {resolvePersonTheme,royalThemeIdentity} from './PersonRankTheme';
 import {personNoblePresentation} from './PersonNoblePresentation';
@@ -37,7 +39,7 @@ import {getFactionDisplayNameAtMonth} from "../../../Simulation/FactionIdentity"
 import PortraitSummary from "./PortraitSummary";
 import {familyMemberArchiveTarget,resolvePersonArchiveTarget} from "./PersonArchiveTarget";
 import {PersonArchiveNavigation,usePersonArchiveNavigation,type PersonArchiveTarget} from "./PersonArchiveNavigation";
-import {RulerServicePanel,MilitaryServicePanel} from "./PersonServicePanel";
+import {RulerServicePanel,MilitaryServicePanel,PersonRulersPanel} from "./PersonServicePanel";
 import {GovernorDetail,governorProfile,CivilServicePanel,PersonPoliticalCareer} from '../CivilAdministration/CivilGovernancePanel';
 import {royalPortraitContext,militaryPortraitContext} from "./PortraitPresentation";
 import DepositionSelectionDetails from "../DepositionSelectionDetails";
@@ -759,11 +761,12 @@ function MilitaryPersonDetail({person,factionId,worldMonth,careerIndex}:{person:
               <Typography fontSize="0.76rem" color="var(--gg-text-muted)">{personAge} · 本国任职：{person.appointments.filter(a=>a.factionId===factionId).map(a=>`${formatWorldDate(a.startMonth)}—${a.endMonth===undefined?"今":formatWorldDate(a.endMonth)}`).join("；")}</Typography>
             </>}
             preBiography={<><PersonCareerIdentity personId={person.personId} name={person.personalName} bornMonth={person.bornMonth} deathMonth={person.deathMonth}/><MilitaryDispositionPanel person={person} personId={person.personId} bornMonth={person.bornMonth} loyalty={activeUser&&activeUser.role!=='RULER'?activeUser.loyalty:undefined} loyaltyContext={{factionName:activeUser?.team.displayName??activeUser?.team.name??person.factionId,month:worldMonth}} unitCount={view?.members.length??0} prestige={politicalCandidate?.finalPoliticalWeight??politicalCandidate?.strength}/><MilitaryServicePanel personId={person.personId} month={worldMonth} timelineOwnsPolitics/><CivilServicePanel personId={person.personId} month={worldMonth} factionId={factionId}/></>}
-            biographyTitle="生平纪事" biography={bio.life} milestoneTitle="生平时间轴" milestoneTotal={lifeMilestones.length} personKey={person.personId}
+            biographyTitle="人物列传" biography={[...bio.life,...civilCareerReading(CivilAdministration.getByPerson(person.personId),person,worldMonth).life]} milestoneTitle="行迹年表" milestoneTotal={lifeMilestones.length} personKey={person.personId}
             allMilestones={()=>lifeMilestones} milestones={lifeMilestones.slice(-8)}
-            assessment={[bio.assessment]} voice={bio.voice}
+            assessment={[bio.assessment,...civilCareerReading(CivilAdministration.getByPerson(person.personId),person,worldMonth).assessment]} voice={bio.voice}
             governance={<><ChronicleSection title="军功与任职"><NobleHistory person={person} factionId={factionId} month={worldMonth}/><Typography fontSize="0.82rem">从军{formatWorldDuration(getMilitaryLocalServiceMonths(person,factionId,worldMonth))}，所部参与取城{bio.victories.length}次，历经{career.activities.filter(e=>e.factionId===factionId).length}处有记载的军旅活动。</Typography></ChronicleSection><PosthumousPeeragePanel person={person} month={worldMonth}/></>}
             evidence={<>
+              <PersonCareerSources personId={person.personId} month={worldMonth} milestones={lifeMilestones} index={careerIndex}/><PersonRulersPanel personId={person.personId} month={worldMonth} technical/>
               <PersonAbilityEvidence abilities={militaryAbilities(person)}/><PersonPoliticalCareer personId={person.personId} month={worldMonth}/>
               {portraitContext.historical&&<Typography fontSize=".74rem">肖像取本国历史任职时点；时点 {formatWorldDate(portraitContext.month)}，不采用后来外国身份。</Typography>}
               <Typography fontSize="0.75rem">人物：{person.personId} / User {person.sourceUserId} / 原人口标签：{person.name}</Typography>

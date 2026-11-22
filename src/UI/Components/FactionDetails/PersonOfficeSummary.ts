@@ -5,7 +5,7 @@ import type {CivilGovernorTerm} from '../../../Politics/CivilAdministration';
 import {MILITARY_OFFICE_NAMES} from '../../../Politics/MilitaryOffice';
 import {formatWorldDate,formatWorldDuration,getWorldYear} from '../../../Simulation/WorldTime';
 import {describeMilitaryAppointmentEnd} from './MilitaryPeoplePresentation';
-export const civilEndLabel=(reason:CivilGovernorTerm['endReason'])=>reason?({DEATH:'去世',CITY_LOST:'城池失守',FACTION_ENDED:'政权终结',REGIME_ENDED:'王统结束',POLITICAL_SANCTION:'政治禁仕',MILITARY_OFFICE:'转任武职',REPLACED:'职务更替',PROMOTED:'晋升',TRANSFERRED:'调任',IDENTITY_ENDED:'在籍关系结束'})[reason]:'离任原因未载';
+export const civilEndLabel=(reason:CivilGovernorTerm['endReason'])=>reason?({DEATH:'去世',CITY_LOST:'城池失守',FACTION_ENDED:'政权终结',REGIME_ENDED:'王统结束',POLITICAL_SANCTION:'政治禁仕',MILITARY_OFFICE:'转任武职',REPLACED:'职务更替',PROMOTED:'晋升',TRANSFERRED:'调任',RETIREMENT:'致仕',IDENTITY_ENDED:'在籍关系结束'})[reason]:'离任原因未载';
 /** Read only actual local appointments. An absent resident is never proof of death. */
 export function personOfficeSummary({person,terms,factionId,month,deathMonth,knownAlive=false}:{person?:MilitaryPerson;terms:readonly CivilGovernorTerm[];factionId:string;month:number;deathMonth?:number;knownAlive?:boolean}){
  const civil=terms.filter(t=>t.factionId===factionId&&t.startMonth<=month),military=person?.appointments.filter(a=>a.factionId===factionId&&a.startMonth<=month)??[],bornMonth=person?.bornMonth??civil[0]?.bornMonth;

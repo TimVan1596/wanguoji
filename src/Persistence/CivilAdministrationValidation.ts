@@ -1,3 +1,4 @@
+import {validateCivilCareerRecords} from './CivilCareerValidation';
 import {civilCrossCareerEvidence} from '../Politics/CrossCareerCompetition';
 import {CIVIL_OFFICES,isLocalCivilOffice,civilOfficeLevel} from '../Politics/CivilOffice';
 import {civilPromotionEvidence} from '../Politics/CivilPromotion';
@@ -11,11 +12,12 @@ import type {WorldSaveV1} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
 import {isCivilGovernancePolicy} from '../Politics/CivilAdministrationSchema';
 
-const endReasons=new Set(['DEATH','CITY_LOST','FACTION_ENDED','REGIME_ENDED','POLITICAL_SANCTION','MILITARY_OFFICE','REPLACED','IDENTITY_ENDED','PROMOTED','TRANSFERRED']);
+const endReasons=new Set(['DEATH','CITY_LOST','FACTION_ENDED','REGIME_ENDED','POLITICAL_SANCTION','MILITARY_OFFICE','REPLACED','IDENTITY_ENDED','PROMOTED','TRANSFERRED','RETIREMENT']);
 const sources=new Set(['ORDINARY_RESIDENT','FAMILY','NOBLE','ROYAL','RETIRED_MILITARY']);
 
 export function validateCivilAdministration(save:WorldSaveV1){
  const errors:string[]=[],state=save.registries.civilAdministration,events=save.worldHistory.events as WorldEvent[],byId=new Map(events.map((event,index)=>[event.id,{event,index}])),seenAssignments=new Set<string>(),seenEvents=new Set<string>();
+ if(state?.careerPolicy!==undefined&&!['BASELINE','LOW','MEDIUM'].includes(state.careerPolicy))return ['invalid civil career policy'];
  if(!state||state.version!==1||!isCivilGovernancePolicy(state.policy)||!Number.isSafeInteger(state.sequence)||state.sequence<0||!Number.isSafeInteger(state.lastEvaluationMonth)||!Array.isArray(state.terms))return ['invalid civil administration registry'];
  const activeCities=new Set<string>(),activePeople=new Set<string>();
  for(const term of state.terms)try{
@@ -60,10 +62,11 @@ export function validateCivilAdministration(save:WorldSaveV1){
    receiptIds.add(receipt.eventId);seenEvents.add(receipt.eventId);loyalty+=receipt.loyalty;devastation+=receipt.devastation;
   }
   if(loyalty!==term.loyaltyRecovered||devastation!==term.devastationRecovered||term.receipts!.length&&term.lastEffectMonth!==term.receipts!.at(-1)!.month)throw Error('civil recovery totals mismatch');
+  validateCivilCareerRecords(term,save,events,byId,seenEvents);
   if(term.promotion){
-   const old=state.terms.find(t=>t.assignmentId===term.promotion!.fromAssignmentId),e=old&&civilPromotionEvidence({...old,endMonth:undefined,receipts:old.receipts?.filter(r=>r.month<=term.startMonth)},term.startMonth,term.promotion.loyalty,12,[]);
+   const old=state.terms.find(t=>t.assignmentId===term.promotion!.fromAssignmentId),e=old&&civilPromotionEvidence({...old,endMonth:undefined,receipts:old.receipts?.filter(r=>r.month<=term.startMonth),stewardshipAssessments:old.stewardshipAssessments?.filter(a=>a.month<=term.startMonth)},term.startMonth,term.promotion.loyalty,12,[]);
    if(old&&start.event.metadata?.crossCareerEvidence!==JSON.stringify(civilCrossCareerEvidence(old,person,events.slice(0,start.index))))throw Error('invalid cross-career competition evidence');
-   if(term.promotion.meritEventIds.some(id=>(byId.get(id)?.index??Infinity)>=start.index)||!old||old.endReason!=='PROMOTED'||old.endMonth!==term.startMonth||old.personId!==term.personId||old.factionId!==term.factionId||civilOfficeLevel(term.office)!==civilOfficeLevel(old.office)+1||!e||JSON.stringify(e)!==JSON.stringify(term.promotion)||(byId.get(old.endEventId!)?.index??Infinity)>=start.index)throw Error('invalid civil promotion evidence');
+   if((term.promotion.stewardshipEventIds??[]).some(id=>(byId.get(id)?.index??Infinity)>=start.index)||term.promotion.meritEventIds.some(id=>(byId.get(id)?.index??Infinity)>=start.index)||!old||old.endReason!=='PROMOTED'||old.endMonth!==term.startMonth||old.personId!==term.personId||old.factionId!==term.factionId||civilOfficeLevel(term.office)!==civilOfficeLevel(old.office)+1||!e||JSON.stringify(e)!==JSON.stringify(term.promotion)||(byId.get(old.endEventId!)?.index??Infinity)>=start.index)throw Error('invalid civil promotion evidence');
    }else if(term.transfer){
    const proof=term.transfer,old=state.terms.find(t=>t.assignmentId===proof.fromAssignmentId);
    if(!old||!isLocalCivilOffice(old.office)||old.office!==term.office||old.cityId===term.cityId||old.personId!==term.personId||old.factionId!==term.factionId||old.epochFounderId!==term.epochFounderId||old.endReason!=='TRANSFERRED'||old.endMonth!==term.startMonth||term.startMonth-old.startMonth<60||!old.meritEventId||proof.sourceLoyalty<75||proof.sourceLoyalty>100||proof.sourceDevastation<0||proof.sourceDevastation>10||proof.targetLoyalty>=50&&proof.targetDevastation<40||proof.targetLoyalty<0||proof.targetLoyalty>100||proof.targetDevastation<0||proof.targetDevastation>100||JSON.stringify(proof.meritEventIds)!==JSON.stringify((old.receipts??[]).map(r=>r.eventId))||proof.meritEventIds.some(id=>(byId.get(id)?.index??Infinity)>=start.index)||(byId.get(old.endEventId!)?.index??Infinity)>=start.index)throw Error('invalid civil transfer evidence');
@@ -78,6 +81,7 @@ export function validateCivilAdministration(save:WorldSaveV1){
  }
  for(const person of save.registries.militaryCommandRegistry.people){if(person.civilOrigin&&!state.terms.some(t=>t.assignmentId===person.civilOrigin?.assignmentId&&t.sourceUserId===person.sourceUserId&&t.bornMonth===person.bornMonth&&t.personId===person.personId&&t.personalName===person.personalName))errors.push('orphan civil military identity');}
  for(const event of events){
+  if(event.type==='civil-stewardship-assessed'&&!seenEvents.has(event.id))errors.push('orphan civil stewardship assessment');
   if(event.type==='civil-governor-appointed'&&!seenEvents.has(event.id))errors.push('orphan civil governor appointment');
   if(event.type==='civil-governor-ended'&&!seenEvents.has(event.id))errors.push('orphan civil governor end');
   if(event.type==='civil-governor-effect'&&!seenEvents.has(event.id))errors.push('orphan civil recovery receipt');
