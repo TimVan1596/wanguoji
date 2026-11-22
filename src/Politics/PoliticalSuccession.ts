@@ -7,7 +7,7 @@ import {unresolvedCourtBans} from './MilitaryCourtStanding';
 import {splitEstablishedPersonalName} from './NameCulture';
 import {civilOfficeLevel} from './CivilOffice';
 export interface PoliticalSuccessorRow {personId:string;sourceUserId:number;bornMonth:number;loyalty:number;source:'CIVIL'|'MILITARY'|'NOBLE';eventIds:string[];serviceMonths:number;weight:number;}
-export interface LawfulPoliticalSuccession {version:1;kind:'EXTINCT_HOUSE_CONTINUATION';predecessorRulerId:string;epochFounderId:string;month:number;candidate:PoliticalSuccessorRow;}
+export interface LawfulPoliticalSuccession {version:1;kind:'EXTINCT_HOUSE_CONTINUATION';predecessorRulerId:string;epochFounderId:string;month:number;royalCandidateIds:string[];candidate:PoliticalSuccessorRow;}
 /** Existing political people compete only at a real vacant royal succession. No army, history or RNG is created here. */
 export function politicalSuccessionCandidates(people:readonly MilitaryPerson[],terms:readonly CivilGovernorTerm[],events:readonly WorldEvent[],factionId:string,epoch:string,month:number,oldHouse:string,residents:readonly {id:number;bornMonth:number;loyalty:number}[]):PoliticalSuccessorRow[]{
  const byId=new Map(events.map(e=>[e.id,e]));

@@ -595,7 +595,20 @@ export class MilitaryCommandRegistryStore {
     const hereditaryRank=link&&epoch&&familyNobleAuthorityAt(link.family,month).factionId===team.name&&familyNobleAuthorityAt(link.family,month).epochFounderId===epoch?familyNobleRankAt(link.family,link.member,month):undefined;
     return nextNobleGrant(person,this.getFormations(),this.eventReader(team.name),month,team,dy,this.nobleMeritPolicy,hereditaryRank);
   }
-  recordCivilNoble(person:MilitaryPerson,grant:NobleGrant){if(grant.basis!=='CIVIL'||this.people.get(person.personId)!==person||grant.personId!==person.personId||person.nobilityHistory?.some(g=>g.eventId===grant.eventId||g.month===grant.month))throw Error('Invalid or duplicate civil peerage source');this.recordNoble(person,grant);}
+  recordCivilNoble(person:MilitaryPerson,grant:NobleGrant,context:{teams:Team[];dynasties:Dynasty[]}){
+    if(grant.basis!=='CIVIL'||this.people.get(person.personId)!==person||grant.personId!==person.personId||person.nobilityHistory?.some(g=>g.eventId===grant.eventId||g.month===grant.month))throw Error('Invalid or duplicate civil peerage source');
+    if(!politicalMutationActive())throw Error('Civil title and family settlement require one transaction');
+    this.recordNoble(person,grant);
+    // Civil rewards run after the ordinary family phase. Settle this real source now,
+    // before a later same-month death can erase the living charter opportunity.
+    if(!person.royalIdentity){
+      this.updateFamilies(grant.month,context.teams,context.dynasties);
+      if(!this.getFamilyMember(person.sourceUserId,person.bornMonth))throw Error('Civil peerage family charter was not committed');
+      const failures=this.diagnostics.familyTitleFailures,rejected=this.diagnostics.familyTitleIdentityRejected;
+      this.updateFamilyTitles(grant.month,context.teams,context.dynasties);
+      if(this.diagnostics.familyTitleFailures!==failures||this.diagnostics.familyTitleIdentityRejected!==rejected)throw Error('Civil peerage hereditary settlement failed');
+    }
+  }
   private recordNoble(person:MilitaryPerson,grant:NobleGrant,courtServiceEventId?:string,courtCoupEventId?:string){
     if(!this.eventWriter)throw Error('Missing noble writer');
     (person.nobilityHistory??=[]).push(grant);
@@ -621,6 +634,7 @@ export class MilitaryCommandRegistryStore {
     }
   }
   private commitFamilyHistory(event:WorldEvent,apply:()=>void){
+    if(politicalMutationActive()){if(!this.eventWriter||this.eventWriter(event)!==event.id||!this.eventReader(event.actorFactionId!).some(e=>e.id===event.id))throw Error('Family history not recorded');apply();this.familyByResident=undefined;return true;}
     const history=WorldHistory.snapshotPoliticalTransaction(),families=structuredClone(this.families),rng=worldRandom.exportState(),scope=beginPoliticalMutation();
     try{
       if(!this.eventWriter||this.eventWriter(event)!==event.id||!this.eventReader(event.actorFactionId!).some(e=>e.id===event.id))throw Error('Family history not recorded');
@@ -670,15 +684,15 @@ export class MilitaryCommandRegistryStore {
       }
     }
   }
-  updateFamilyTitles(month:number,teams:Team[],dynasties:Dynasty[]){
+  updateFamilyTitles(month:number,teams:Team[],dynasties:Dynasty[],onlyFamilyId?:string){
     const familyById=this.familyLookupForUpdate();
     if(!this.eventWriter||!this.families.length)return;
-    for(const original of [...this.families]){
+    for(const original of this.families.filter(f=>!onlyFamilyId||f.familyId===onlyFamilyId)){
       const f=familyById(original.familyId);
       const last=f.nobleSuccession?.at(-1);if(last?.kind==='ENDED'&&this.familyNoblePolicy==='SINGLE')continue;
       const authority=familyNobleAuthorityAt(f,month);
       const holder=f.members.find(m=>m.memberId===(last?.holderMemberId??last?.previousMemberId??f.members[0].memberId))!,p=holder.militaryPersonId?this.people.get(holder.militaryPersonId):undefined,t=teams.find(t=>t.name===authority.factionId),dy=dynasties.find(d=>d.factionId===authority.factionId),epoch=dy?.houseEpochs?.find(e=>e.foundingRulerId===authority.epochFounderId);
-      const used=new Set(f.nobleSuccession?.map(a=>a.sourceGrantEventId)),canRenew=this.familyNoblePolicy==='RENEWAL'&&!!last&&f.members.some(m=>m.generation>0&&m.militaryPersonId&&m.deathMonth===undefined&&this.people.get(m.militaryPersonId)?.nobilityHistory?.some(g=>!used.has(g.eventId)));
+      const used=new Set(f.nobleSuccession?.map(a=>a.sourceGrantEventId)),canRenew=this.familyNoblePolicy==='RENEWAL'&&!!last&&f.members.some(m=>m.militaryPersonId&&m.deathMonth===undefined&&this.people.get(m.militaryPersonId)?.nobilityHistory?.some(g=>!used.has(g.eventId)&&g.month<=month&&g.factionId===familyResidenceAt(f,m,month)&&teams.some(t=>t.name===g.factionId&&t.status==='ACTIVE')&&dynasties.some(d=>d.factionId===g.factionId&&d.houseEpochs?.some(e=>e.foundingRulerId===g.epochFounderId&&e.startMonth<=month&&(e.endMonth??Infinity)>=month))));
       if(f.members.some(m=>m.birth&&m.deathMonth===undefined&&m.exitMonth===undefined&&m.birth.naturalDeathMonth<=month&&!dynasties.some(d=>d.rulers.some(r=>m.sourceUserId!==undefined&&r.residentIdentity?.sourceUserId===m.sourceUserId&&r.bornYear===m.bornMonth&&r.reignOrdinal!==undefined))))continue;
       if(last?.kind==='ENDED'&&!canRenew)continue;
       const needsReview=canRenew||(holder.deathMonth??Infinity)<=month||(holder.exitMonth??Infinity)<=month||familyResidenceAt(f,holder,month)!==authority.factionId||p?.politicalRulerId||p?.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&['FORFEITURE','EXECUTION'].includes(a.severity)&&a.month<=month)||(!last||last.kind==='STARTED')&&p?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month<=month)||t?.status!=='ACTIVE'||(epoch?.endMonth??Infinity)<=month;
@@ -691,7 +705,7 @@ export class MilitaryCommandRegistryStore {
         const unmappedBorn=heir.birth&&heir.sourceUserId===undefined&&heir.enteredMonth<=month&&heir.bornMonth<=month&&heir.birth.naturalDeathMonth>month&&!heir.militaryPersonId&&this.eventReader(f.factionId).some(e=>e.id===heir.birth!.eventId&&e.type==='family-child-born'&&e.metadata?.familyBirth===JSON.stringify(heir.birth));
         const u=bindings[0];if(!unmappedBorn&&(bindings.length!==1||!u||u.isDestroyed||u.team.name!==act.factionId||u.role!=='NORMAL'||u.rulerId||!u.player.logicalUnitId||u.player.role!=='NORMAL'||u.player.rulerId||u.player.team!==u.team||!u.player.active||u.player.user!==u||!u.team.users.has(u))){this.diagnostics.familyTitleIdentityRejected++;continue;}
       }
-      const before=this.snapshotTransaction(),history=WorldHistory.snapshotPoliticalTransaction(),rng=worldRandom.exportState(),scope=beginPoliticalMutation();
+      const nested=politicalMutationActive(),before=nested?undefined:this.snapshotTransaction(),history=nested?undefined:WorldHistory.snapshotPoliticalTransaction(),rng=worldRandom.exportState(),scope=nested?undefined:beginPoliticalMutation();
       try{
         const previous=f.members.find(m=>m.memberId===act.previousMemberId)!;
         for(const id of act.sourceEventIds)if(id===`${f.familyId}-${previous.memberId}-death`&&!this.eventReader(f.factionId).some(e=>e.id===id)){
@@ -702,8 +716,8 @@ export class MilitaryCommandRegistryStore {
         if(this.eventWriter({id:act.eventId,year:month,monthIndex:month,type:act.kind==='STARTED'?'family-title-started':act.kind==='SUCCEEDED'?'family-title-succeeded':'family-title-ended',category:'politics',importance:'major',actorFactionId:act.factionId,factionIds:[f.factionId,act.factionId].filter((id,i,a)=>a.indexOf(id)===i),title:familyNobleText(f,act),metadata:{familyId:f.familyId,memberId:act.holderMemberId??act.previousMemberId,personId:f.members.find(m=>m.memberId===act.holderMemberId)?.militaryPersonId,familyNobleAct:JSON.stringify(act),...(this.familyNoblePolicy==='RENEWAL'?{familyNoblePolicy:this.familyNoblePolicy}:{})}})!==act.eventId)throw Error('Family title history rejected');
         this.commitFamilyTitle(f.familyId,act);
         if(!this.eventReader(f.factionId).some(e=>e.id===act.eventId))throw Error('Family title event not committed');
-      }catch{scope.cancel();this.rollbackTransaction(before,true);const restore=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);worldRandom.restore(rng);restore.finishRollback();this.diagnostics.familyTitleFailures++;continue;}
-      scope.commit();
+      }catch(error){if(nested)throw error;scope!.cancel();this.rollbackTransaction(before!,true);const restore=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history!);worldRandom.restore(rng);restore.finishRollback();this.diagnostics.familyTitleFailures++;continue;}
+      scope?.commit();
       if(['DEATH','NO_HEIR'].includes(act.reason)){
         const children=f.members.filter(m=>m.parentMemberId===act.previousMemberId&&m.enteredMonth<=month),eligible=eligibleFamilyNobleHeirs(f,act.previousMemberId,context);
         this.diagnostics.familyTitleCandidateChecks+=children.length;this.diagnostics.familyTitleRejectedCandidates+=children.length-eligible.length;

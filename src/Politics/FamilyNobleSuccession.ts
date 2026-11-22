@@ -23,7 +23,7 @@ function planNewPeriod(f:MilitaryFamily,c:FamilyNobleContext,last:FamilyNobleAct
  if(!c.renewable)return;
  const used=new Set((f.nobleSuccession??[]).map(a=>a.sourceGrantEventId));
  const candidates=f.members.flatMap(m=>{
-  if(m.generation===0||!m.militaryPersonId||!familyMemberPresent(m,c.month)||(c.politicalAccessions.get(m.memberId)??Infinity)<=c.month)return [];
+  if(!m.militaryPersonId||!familyMemberPresent(m,c.month)||(c.politicalAccessions.get(m.memberId)??Infinity)<=c.month)return [];
   if(last.kind!=='ENDED'&&last.holderMemberId!==m.memberId)return [];
   const p=c.people.find(p=>p.personId===m.militaryPersonId),residence=familyResidenceAt(f,m,c.month);
   const grants=p?.nobilityHistory?.filter(g=>g.factionId===residence&&g.month<=c.month&&c.activeEpochs.has(`${g.factionId}/${g.epochFounderId}`)&&currentNobleGrant(p,g.factionId,c.month,g.epochFounderId)?.eventId===g.eventId)??[];

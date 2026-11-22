@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   formatWorldDate,
+  formatWorldYearLabel,
+  formatPersonYearSpan,
   formatWorldDuration,
   getWorldMonth,
   getWorldYear,
@@ -43,3 +45,7 @@ it.each([[-1,"纪元前1年12月"],[-12,"纪元前1年1月"],[-13,"纪元前2年
  expect(formatWorldDate(month as number)).toBe(text);expect(getWorldMonth(month as number)).toBeGreaterThanOrEqual(1);expect(getWorldMonth(month as number)).toBeLessThanOrEqual(12);
 });
 it("keeps cross-era age arithmetic unchanged",()=>{expect(monthsToYears(12-(-12))).toBe(2);});
+
+it('keeps compact genealogy years accurate across the era boundary without inventing a death date',()=>{
+ expect(formatWorldYearLabel(-1)).toBe('纪元前1年');expect(formatPersonYearSpan(-13,12)).toBe('纪元前2年～1年');expect(formatPersonYearSpan(101*12+10,178*12+7)).toBe('101年～178年');expect(formatPersonYearSpan(0)).toBe('0年生');
+});

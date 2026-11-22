@@ -44,9 +44,13 @@ export function checkCivilPromotion(core:any,input:WorldSaveV1,term:CivilGoverno
   if(merit){const dy=Dynasty.get(team.name)!,ruler=Dynasty.getCurrentRuler(team.name)!,g:any={...merit,basis:'CIVIL',eventId:`civil-noble-${p.personId}-${current.epochFounderId}-${merit.rank}`,personId:p.personId,sourceUserId:p.sourceUserId,bornMonth:p.bornMonth,personalName:p.personalName,factionId:team.name,countryName:team.displayName,epochFounderId:current.epochFounderId,rulerId:ruler.id,rulerTitle:Dynasty.getRulerHistoricalTitle(ruler.id,team.name,at),month:at,previousRank:'NONE',commandId:'',captureEventIds:[],cityIds:[],importantCityIds:[],importantEventIds:[]};
    const beforeAward=exportWorldSave(core),writeAward=History.addEvent;let failedAward=false;
    History.addEvent=function(e){const id=writeAward.call(this,e);if(e.type==='civil-ennobled'){random.next();throw Error('injected civil peerage');}return id;};
-   try{Military.civilTransaction(team,()=>Military.recordCivilNoble(p,g));}catch{failedAward=true;}finally{History.addEvent=writeAward;}
+   try{Military.civilTransaction(team,()=>Military.recordCivilNoble(p,g,{teams:core.teams,dynasties:Dynasty.getAll()}));}catch{failedAward=true;}finally{History.addEvent=writeAward;}
    check(failedAward&&diffCanonicalWorldSave(beforeAward,exportWorldSave(core)).matched,'failed civil peerage rolls back person, title, history, civil office and consumed RNG');
-   Military.civilTransaction(team,()=>Military.recordCivilNoble(Military.getPerson(term.personId)!,g));
+   let familyFailed=false;History.addEvent=function(e){const id=writeAward.call(this,e);if(e.type==='military-family-founded'){random.next();throw Error('injected post-award family charter');}return id;};
+   try{Military.civilTransaction(team,()=>Military.recordCivilNoble(Military.getPerson(term.personId)!,g,{teams:core.teams,dynasties:Dynasty.getAll()}));}catch{familyFailed=true;}finally{History.addEvent=writeAward;}
+   check(familyFailed&&diffCanonicalWorldSave(beforeAward,exportWorldSave(core)).matched,'failure after the civil title while founding its family rolls back both authorities and RNG together');
+   Military.civilTransaction(team,()=>Military.recordCivilNoble(Military.getPerson(term.personId)!,g,{teams:core.teams,dynasties:Dynasty.getAll()}));
+   check(!!Military.getFamilyMember(p.sourceUserId,p.bornMonth),'a real civil grant establishes the existing lawful family charter in the same transaction');
    check(Military.getPerson(term.personId)!.nobilityHistory?.filter(n=>n.eventId===g.eventId).length===1,'retry awards exactly one real civil title to the canonical person after rollback');
    check(History.getRecordedEvents().some(e=>e.id===g.eventId&&e.title===nobleChronicle(g))&&p.appointments.length===0,'civil merit produces a real distinct peerage source and no fictional command');
    const saved=exportWorldSave(core);hydrateWorldSave(core,structuredClone(saved));check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'civil peerage and four-tier career strictly read again');void dy;

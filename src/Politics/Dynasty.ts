@@ -754,6 +754,7 @@ class DynastyRegistryStore {
     const oldStateName = team.displayName;
     const oldColor = team.color;
     const previousRulerTitle = this.getRulerTitle(team, predecessor, year);
+    const royalCandidateIds=[...dynasty.heirIds];
     let successor = this.consumeHeir(dynasty, predecessor, year);
     const legitimateSuccessor = successor;
     const revolutionContext = this.revolutionContext(team, dynasty, predecessor, successor, year, reason);
@@ -761,7 +762,7 @@ class DynastyRegistryStore {
     const politicalSource={terms:evaluated.usurpation?CivilAdministration.getTerms():[],events:evaluated.usurpation?WorldHistory.getRecordedEvents():[],month:year,epoch:dynasty.houseEpochs?.at(-1)?.foundingRulerId??''};
     const civilSources=politicalSource.terms.flatMap(t=>{const u=team.getUserById(t.sourceUserId),city=team.cities.find(c=>c.id===t.cityId);return t.endMonth===undefined&&t.factionId===team.name&&u&&!u.isDestroyed&&u.bornMonth===t.bornMonth&&u.role==='NORMAL'&&!u.rulerId&&u.team===team&&city&&!city.destroyed&&city.ownerFactionId===team.name?[{assignmentId:t.assignmentId,sourceUserId:u.id,bornMonth:u.bornMonth,factionId:team.name,loyalty:u.loyalty}]:[];});
     const contestSource={...politicalSource,civilSources};
-    const lawfulCandidate=!legitimateSuccessor&&team.status==='ACTIVE'&&team.cities.length?politicalSuccessionCandidates(MilitaryCommandRegistry.getPeople(),CivilAdministration.getTerms(),WorldHistory.getRecordedEvents(),team.name,politicalSource.epoch,year,oldHouseName,[...team.users].filter(u=>!u.isDestroyed&&u.role==='NORMAL'&&!u.rulerId&&!u.player.rulerId&&!u.nativeRoyalRulerId).map(u=>({id:u.id,bornMonth:u.bornMonth,loyalty:u.loyalty})))[0]:undefined;
+    const lawfulCandidate=!legitimateSuccessor&&team.status==='ACTIVE'&&team.identityStage==='STATE'&&team.cities.length?politicalSuccessionCandidates(MilitaryCommandRegistry.getPeople(),CivilAdministration.getTerms(),WorldHistory.getRecordedEvents(),team.name,politicalSource.epoch,year,oldHouseName,[...team.users].filter(u=>!u.isDestroyed&&u.role==='NORMAL'&&!u.rulerId&&!u.player.rulerId&&!u.nativeRoyalRulerId).map(u=>({id:u.id,bornMonth:u.bornMonth,loyalty:u.loyalty})))[0]:undefined;
     const candidate=evaluated.usurpation&&legitimateSuccessor?selectMilitaryUsurper(revolutionContext.military?.candidates??[],MilitaryCommandRegistry.getPeople(),oldHouseName,contestSource):undefined;
     // A successful opportunity without a real qualified actor leaves lawful succession intact.
     const revolution={...evaluated,usurpation:evaluated.usurpation&&!!candidate};
@@ -805,7 +806,7 @@ class DynastyRegistryStore {
       if(lawfulCandidate&&person&&user){
         const capital=team.capitalCity??team.cities[0];
         successor.relationType=getUnrelatedSuccessorRelation(team.identityStage);
-        successor.residentIdentity={personId:person.personId,sourceUserId:user.id,sourceUserLabel:user.name,bornMonth:person.bornMonth,personalName:person.personalName,nameSource:'POLITICAL_ENTRY',sourceFactionId:team.name,sourceFactionName:oldStateName,foundedMonth:year,cityId:capital.id,cityName:capital.name,succession:{version:1,kind:'EXTINCT_HOUSE_CONTINUATION',predecessorRulerId:predecessor.id,epochFounderId:politicalSource.epoch,month:year,candidate:structuredClone(lawfulCandidate)}};
+        successor.residentIdentity={personId:person.personId,sourceUserId:user.id,sourceUserLabel:user.name,bornMonth:person.bornMonth,personalName:person.personalName,nameSource:'POLITICAL_ENTRY',sourceFactionId:team.name,sourceFactionName:oldStateName,foundedMonth:year,cityId:capital.id,cityName:capital.name,succession:{version:1,kind:'EXTINCT_HOUSE_CONTINUATION',predecessorRulerId:predecessor.id,epochFounderId:politicalSource.epoch,month:year,royalCandidateIds,candidate:structuredClone(lawfulCandidate)}};
         MilitaryCommandRegistry.endPersonCommands(person.personId,year,'DISMISSED');person.politicalRulerId=successor.id;user.historicalPersonId=person.personId;
         CivilAdministration.endForAccession(year,person.personId);
       }
@@ -956,6 +957,7 @@ class DynastyRegistryStore {
     );
     this.ensureActiveHeir(team, dynasty, year);
     this.ensureRulerUnit(team);
+    if(nextRuler.residentIdentity?.succession){const link=MilitaryCommandRegistry.getFamilyMember(nextRuler.residentIdentity.sourceUserId,nextRuler.bornYear);if(link)MilitaryCommandRegistry.updateFamilyTitles(year,Game.Core?.teams??[team],this.getAll(),link.family.familyId);}
     if(nextRuler.militaryUsurperIdentity){
       const errors=validateMilitaryUsurpers({world:{worldMonth:year},dynasties:this.exportState().dynasties.map(d=>({...d,rulers:d.rulers.map(exportRulerSave)})),registries:{militaryCommandRegistry:MilitaryCommandRegistry.exportState(),civilAdministration:CivilAdministration.exportState()},worldHistory:WorldHistory.exportState(),users:(Game.Core?.teams??[team]).flatMap(t=>[...t.users].map(u=>({userId:u.id,name:u.name,bornMonth:u.bornMonth,factionId:t.name,role:u.role,rulerId:u.rulerId,militaryPersonId:u.militaryPersonId,historicalPersonId:u.historicalPersonId})))} as any);
       if(errors.length)throw Error(errors.join('; '));
