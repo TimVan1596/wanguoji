@@ -1,4 +1,20 @@
 {
+  "sourceFilesSha256": "3ac63bf6e5c7cb8947073b4b3ef5e8df63b9a69bc3bcd2981f9fd19863ad6e4e",
+  "verification": {
+    "testFiles": 369,
+    "unitTests": 2733,
+    "typescript": true,
+    "webBuild": true,
+    "desktopBuild": true,
+    "debugBuild": true,
+    "civilCoreChecks": 106,
+    "militaryCoreChecks": 1482,
+    "strictNativeSnapshots": 17,
+    "royalIdentityLookupChecks": 3294,
+    "royalPlannerOracleCases": 333,
+    "sameNativeWorldAuthorityAndRngAcrossOptimization": true,
+    "humanVisualAcceptance": false
+  },
   "version": "0.100.0-beta.68",
   "worldSave": 64,
   "baseline": "e99314db5c581f44d2dc19fd0737a49957c00064",
@@ -19,6 +35,7 @@
         },
         "population": 131,
         "events": 2998,
+        "duplicateHistoryIds": 0,
         "rulers": 152,
         "civil": {
           "people": 29,
@@ -84,6 +101,7 @@
         },
         "population": 131,
         "events": 3019,
+        "duplicateHistoryIds": 0,
         "rulers": 152,
         "civil": {
           "people": 29,
@@ -158,6 +176,7 @@
         },
         "population": 128,
         "events": 7332,
+        "duplicateHistoryIds": 0,
         "rulers": 339,
         "civil": {
           "people": 55,
@@ -224,6 +243,7 @@
         },
         "population": 139,
         "events": 5698,
+        "duplicateHistoryIds": 0,
         "rulers": 279,
         "civil": {
           "people": 50,
@@ -300,6 +320,7 @@
         },
         "population": 117,
         "events": 2200,
+        "duplicateHistoryIds": 0,
         "rulers": 116,
         "civil": {
           "people": 19,
@@ -365,6 +386,7 @@
         },
         "population": 117,
         "events": 2200,
+        "duplicateHistoryIds": 0,
         "rulers": 116,
         "civil": {
           "people": 19,
@@ -439,6 +461,7 @@
         },
         "population": 124,
         "events": 4678,
+        "duplicateHistoryIds": 0,
         "rulers": 267,
         "civil": {
           "people": 38,
@@ -506,6 +529,7 @@
         },
         "population": 124,
         "events": 4678,
+        "duplicateHistoryIds": 0,
         "rulers": 267,
         "civil": {
           "people": 38,
@@ -582,6 +606,7 @@
         },
         "population": 132,
         "events": 2372,
+        "duplicateHistoryIds": 0,
         "rulers": 109,
         "civil": {
           "people": 20,
@@ -647,6 +672,7 @@
         },
         "population": 139,
         "events": 2380,
+        "duplicateHistoryIds": 0,
         "rulers": 105,
         "civil": {
           "people": 20,
@@ -721,6 +747,7 @@
         },
         "population": 139,
         "events": 5466,
+        "duplicateHistoryIds": 0,
         "rulers": 292,
         "civil": {
           "people": 46,
@@ -787,6 +814,7 @@
         },
         "population": 145,
         "events": 5251,
+        "duplicateHistoryIds": 0,
         "rulers": 258,
         "civil": {
           "people": 39,
@@ -861,6 +889,7 @@
         },
         "population": 136,
         "events": 2512,
+        "duplicateHistoryIds": 0,
         "rulers": 128,
         "civil": {
           "people": 18,
@@ -925,6 +954,7 @@
         },
         "population": 136,
         "events": 2512,
+        "duplicateHistoryIds": 0,
         "rulers": 128,
         "civil": {
           "people": 18,
@@ -998,6 +1028,7 @@
         },
         "population": 141,
         "events": 5147,
+        "duplicateHistoryIds": 0,
         "rulers": 252,
         "civil": {
           "people": 40,
@@ -1063,6 +1094,7 @@
         },
         "population": 141,
         "events": 5147,
+        "duplicateHistoryIds": 0,
         "rulers": 252,
         "civil": {
           "people": 40,
@@ -1137,6 +1169,7 @@
         },
         "population": 134,
         "events": 2894,
+        "duplicateHistoryIds": 0,
         "rulers": 114,
         "civil": {
           "people": 23,
@@ -1202,6 +1235,7 @@
         },
         "population": 134,
         "events": 2894,
+        "duplicateHistoryIds": 0,
         "rulers": 114,
         "civil": {
           "people": 23,
@@ -1276,6 +1310,7 @@
         },
         "population": 140,
         "events": 2587,
+        "duplicateHistoryIds": 0,
         "rulers": 117,
         "civil": {
           "people": 20,
@@ -1343,6 +1378,7 @@
         },
         "population": 140,
         "events": 2598,
+        "duplicateHistoryIds": 0,
         "rulers": 117,
         "civil": {
           "people": 20,
@@ -1419,6 +1455,7 @@
         },
         "population": 131,
         "events": 2942,
+        "duplicateHistoryIds": 0,
         "rulers": 151,
         "civil": {
           "people": 24,
@@ -1484,6 +1521,7 @@
         },
         "population": 131,
         "events": 2942,
+        "duplicateHistoryIds": 0,
         "rulers": 151,
         "civil": {
           "people": 24,
@@ -1558,6 +1596,7 @@
         },
         "population": 132,
         "events": 2517,
+        "duplicateHistoryIds": 0,
         "rulers": 120,
         "civil": {
           "people": 22,
@@ -1622,6 +1661,7 @@
         },
         "population": 132,
         "events": 2523,
+        "duplicateHistoryIds": 0,
         "rulers": 120,
         "civil": {
           "people": 22,
@@ -1695,6 +1735,7 @@
         },
         "population": 134,
         "events": 10559,
+        "duplicateHistoryIds": 0,
         "rulers": 504,
         "civil": {
           "people": 71,
@@ -1762,6 +1803,7 @@
         },
         "population": 136,
         "events": 7342,
+        "duplicateHistoryIds": 0,
         "rulers": 405,
         "civil": {
           "people": 68,
@@ -1838,6 +1880,7 @@
         },
         "population": 133,
         "events": 15019,
+        "duplicateHistoryIds": 0,
         "rulers": 742,
         "civil": {
           "people": 114,
@@ -1905,6 +1948,7 @@
         },
         "population": 129,
         "events": 11920,
+        "duplicateHistoryIds": 0,
         "rulers": 664,
         "civil": {
           "people": 105,
@@ -1983,6 +2027,7 @@
         },
         "population": 129,
         "events": 11920,
+        "duplicateHistoryIds": 0,
         "rulers": 664,
         "civil": {
           "people": 105,
@@ -2054,6 +2099,7 @@
         },
         "population": 124,
         "events": 4678,
+        "duplicateHistoryIds": 0,
         "rulers": 267,
         "civil": {
           "people": 38,
@@ -2125,6 +2171,7 @@
         },
         "population": 145,
         "events": 5251,
+        "duplicateHistoryIds": 0,
         "rulers": 258,
         "civil": {
           "people": 39,
@@ -2194,6 +2241,7 @@
         },
         "population": 141,
         "events": 5147,
+        "duplicateHistoryIds": 0,
         "rulers": 252,
         "civil": {
           "people": 40,
@@ -2263,6 +2311,7 @@
         },
         "population": 134,
         "events": 2894,
+        "duplicateHistoryIds": 0,
         "rulers": 114,
         "civil": {
           "people": 23,
@@ -2332,6 +2381,7 @@
         },
         "population": 140,
         "events": 2598,
+        "duplicateHistoryIds": 0,
         "rulers": 117,
         "civil": {
           "people": 20,
@@ -2403,6 +2453,7 @@
         },
         "population": 131,
         "events": 2942,
+        "duplicateHistoryIds": 0,
         "rulers": 151,
         "civil": {
           "people": 24,
@@ -2472,6 +2523,7 @@
         },
         "population": 132,
         "events": 2523,
+        "duplicateHistoryIds": 0,
         "rulers": 120,
         "civil": {
           "people": 22,
@@ -2861,15 +2913,9 @@
         "count": 1482,
         "proofs": [
           "real civilian supports bounded controlled capacity fixture",
-          "real civilian supports bounded controlled capacity fixture",
           "real military ZI source descends to one already-registered civilian NAN",
           "real civilian NAN death ends an exhausted chain without creating another title",
           "low military grants, civilian descent and exhausted chain strictly reread",
-          "existing civilian permits a controlled population-capacity fixture",
-          "existing civilian permits a controlled population-capacity fixture",
-          "existing civilian permits a controlled population-capacity fixture",
-          "existing civilian permits a controlled population-capacity fixture",
-          "existing civilian permits a controlled population-capacity fixture",
           "existing civilian permits a controlled population-capacity fixture",
           "founder formally granted BO descends to one real civilian child as ZI with the original political event source",
           "legitimate political heir remains a civilian without a military appointment",
@@ -2894,53 +2940,14 @@
           "the actual family civilian is the first legally eligible local political founder",
           "actual family civilian can found a polity through the normal city transaction",
           "isolated founding check restores the actual original civilian",
-          "founder formally granted BO descends to one real civilian child as ZI with the original political event source",
-          "legitimate political heir remains a civilian without a military appointment",
-          "a real titled civilian has readable current entry qualification without a fake reserve officer or canonical mutation",
-          "one existing shared national opportunity appoints the real inherited civilian as XIAOWEI, with no ancestral combat or title copied",
-          "one bounded national vacancy window selects one real titled civilian, then creates only its legitimate XIAOWEI command",
-          "formal grant source and unique civilian title read without another award",
-          "cache invalidation fixture uses the actual civilian heir and another real faction",
-          "eventless real civilian transfer invalidates the family archive cache without inventing a historical event",
-          "hydration discards the transferred family reading and restores the same original civilian identity",
-          "real natural-entry civilian already has its one family name before political promotion",
-          "the actual family civilian is the first legally eligible local political founder",
-          "actual family civilian can found a polity through the normal city transaction",
-          "isolated founding check restores the actual original civilian",
           "failed punishment court-coup-result write failure rolls back User, army, dynasty, history, IDs and RNG",
           "success court-coup-result write failure rolls back User, army, dynasty, history, IDs and RNG",
           "success court-service-granted write failure rolls back User, army, dynasty, history, IDs and RNG",
           "success military-ennobled write failure rolls back User, army, dynasty, history, IDs and RNG",
           "success court-reward-granted write failure rolls back User, army, dynasty, history, IDs and RNG",
-          "failed punishment court-coup-result write failure rolls back User, army, dynasty, history, IDs and RNG",
-          "success court-coup-result write failure rolls back User, army, dynasty, history, IDs and RNG",
-          "success court-service-granted write failure rolls back User, army, dynasty, history, IDs and RNG",
-          "success military-ennobled write failure rolls back User, army, dynasty, history, IDs and RNG",
-          "success court-reward-granted write failure rolls back User, army, dynasty, history, IDs and RNG",
-          "execution write failure rolls back the actual body, surname, kin, title, command, history and RNG",
           "execution write failure rolls back the actual body, surname, kin, title, command, history and RNG",
           "court-peerage-granted rolls back king, peerage, commands, history and RNG together",
           "court-reward-granted rolls back king, peerage, commands, history and RNG together",
-          "existing civilian permits a controlled population-capacity fixture",
-          "existing civilian permits a controlled population-capacity fixture",
-          "founder formally granted BO descends to one real civilian child as ZI with the original political event source",
-          "legitimate political heir remains a civilian without a military appointment",
-          "a real titled civilian has readable current entry qualification without a fake reserve officer or canonical mutation",
-          "one existing shared national opportunity appoints the real inherited civilian as XIAOWEI, with no ancestral combat or title copied",
-          "one bounded national vacancy window selects one real titled civilian, then creates only its legitimate XIAOWEI command",
-          "formal grant source and unique civilian title read without another award",
-          "cache invalidation fixture uses the actual civilian heir and another real faction",
-          "eventless real civilian transfer invalidates the family archive cache without inventing a historical event",
-          "hydration discards the transferred family reading and restores the same original civilian identity",
-          "real natural-entry civilian already has its one family name before political promotion",
-          "the actual family civilian is the first legally eligible local political founder",
-          "actual family civilian can found a polity through the normal city transaction",
-          "isolated founding check restores the actual original civilian",
-          "actual civilian exists for controlled population room",
-          "actual civilian exists for controlled population room",
-          "actual civilian exists for controlled population room",
-          "actual civilian exists for controlled population room",
-          "actual civilian exists for controlled population room",
           "actual civilian exists for controlled population room",
           "living founder neither retires his title nor gives an adult civilian child an early inheritance",
           "complete genealogy shows the real civilian without repeated negative title labels",
@@ -2957,7 +2964,6 @@
           "complete succession rollback including RNG at ruler-captured: []",
           "rollback keeps original User, ruler and Arcade objects and their iteration order",
           "complete succession rollback including RNG at ruler-succession: []",
-          "rollback keeps original User, ruler and Arcade objects and their iteration order",
           "no qualified power holder keeps the lawful house; real dynasty-usurped rollback is checked with the actual commander in MilitaryUsurperCoreChecks",
           "rollback leaves no orphan command state",
           "actual non-capital city is available for a controlled civil political resource fixture",
