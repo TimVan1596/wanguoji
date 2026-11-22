@@ -25,7 +25,7 @@ type LifecycleEvent = { month: number; order: number; type: "EXILE" | "RESTORE" 
 export function deriveRulerTenureEvidence(
   ruler: Pick<Ruler, "accessionYear" | "endYear" | "endReason" | "status" | "deathMonth" | "deathReason">,
   factionId: string,
-  events: WorldEvent[],
+  events: readonly WorldEvent[],
   worldMonth: number
 ): RulerTenureEvidence {
   const start = ruler.accessionYear ?? worldMonth;

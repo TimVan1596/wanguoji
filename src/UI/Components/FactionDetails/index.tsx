@@ -460,7 +460,7 @@ function FactionProfile({
           ["overview", "概况"],
           ["power", "国势"],
           ["house", "王室"],
-          ["people", "人物"],
+          ["people", team.identityStage==='STATE'?"人物":"首领与军务"],
         ].map(([value, label]) => (
           <Button
             key={value}

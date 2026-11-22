@@ -1,3 +1,5 @@
+import {deriveRulerTenureEvidence} from '../../../Politics/RulerTenureEvidence';
+import {formatWorldDuration} from '../../../Simulation/WorldTime';
 import {getFactionDisplayNameAtMonth} from '../../../Simulation/FactionIdentity';
 import {royalNobleReading,createRoyalNobleReadingIndex} from '../../../Politics/RoyalNobleReading';
 import {genealogyRulerHeading} from '../../../Politics/GenealogyRulerHeading';
@@ -14,6 +16,7 @@ import { getRulerTerminalRole } from "../../../History/PoliticalTerminalChronicl
 export type GenealogyRole = "当前君主" | "储君" | "势力创始" | "正式开国" | "称帝" | "篡朝开统" | "宗室废立继位" | "被宗室废黜" | "复国" | "末代承统" | "合邦退位" | "纳土退位";
 export type GenealogyTheme = "deposed" | "exiled" | "neutral" | "monarch" | "current" | "heir" | "foundation" | "usurpation" | "restoration" | "terminal" | "disqualified" | "military" | "personalNoble" | "inheritedNoble";
 export interface GenealogyNodePresentation {
+  reignSummary?:string;
   officeKind?:'文官'|'武官';officeLevel?:number;
   nobleTheme?:{kind:'PERSONAL'|'INHERITED'|'HISTORICAL'|'REVOKED';rank:import('../../../Politics/FamilyNobleSuccession').FamilyNobleRank};
   heading?:string;
@@ -90,6 +93,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
     if (last && actual[1]?.reignOrdinal !== last.reignOrdinal && last.endYear !== undefined && last.endYear <= end &&
       (last.status === "politically-ended" || hasRecordedRulerDeath(last))) add(last, "末代承统", `termination:${end}`);
   }
+  const lifecycle=events.filter(e=>['faction-exiled','faction-restored','faction-extinct'].includes(e.type));
   return new Map(dynasty.rulers.map(r => {
     const disqualified=unresolvedSuccessionAct(r,worldMonth);
     const restored=r.successionHistory?.some(a=>a.kind==='RESTORED'&&a.month<=worldMonth);
@@ -115,7 +119,9 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
     if(noble?.current&&r.reignOrdinal===undefined&&!disqualified)theme=noble.inherited?'inheritedNoble':'personalNoble';
     if(noble?.best.revoked&&r.reignOrdinal===undefined)theme='disqualified';
     if(noble)details.push(noble.label);
-    return [r.id, {nobleTheme:noble&&r.reignOrdinal===undefined?{kind:noble.best.revoked?'REVOKED':noble.current?noble.inherited?'INHERITED':'PERSONAL':'HISTORICAL',rank:noble.current?.rank??noble.best.rank}:undefined,heading,politicalLabel,posthumousLabels,honor, roles, labels: [...lifeLabels,...(politicalLabel?[politicalLabel,...roles,noble?.label??'']:noble?[...roles,noble.label+(r.militaryIdentity?'':' · 未任军职')]:roles).filter(Boolean)].filter((v,i,all)=>all.indexOf(v)===i).slice(0,2), theme, details, evidence: proof,
+    const tenure=r.accessionYear===undefined||r.accessionYear>worldMonth?undefined:deriveRulerTenureEvidence({...r,endYear:r.endYear===undefined?undefined:Math.min(r.endYear,worldMonth)},dynasty.factionId,lifecycle,worldMonth);
+    const reignSummary=tenure?`${roles.includes('势力创始')||roles.includes('正式开国')?'开国君主 · ':''}在国执政${formatWorldDuration(tenure.activeRuleMonths)}${r.endYear===undefined?' · 今':''}${tenure.exileMonths?` · 流亡${formatWorldDuration(tenure.exileMonths)}`:''}`:undefined;
+    return [r.id, {reignSummary,nobleTheme:noble&&r.reignOrdinal===undefined?{kind:noble.best.revoked?'REVOKED':noble.current?noble.inherited?'INHERITED':'PERSONAL':'HISTORICAL',rank:noble.current?.rank??noble.best.rank}:undefined,heading,politicalLabel,posthumousLabels,honor, roles, labels: [...lifeLabels,...(politicalLabel?[politicalLabel,...roles,noble?.label??'']:noble?[...roles,noble.label+(r.militaryIdentity?'':' · 未任军职')]:roles).filter(Boolean)].filter((v,i,all)=>all.indexOf(v)===i).slice(0,2), theme, details, evidence: proof,
       hasPosthumousTitle: posthumousLabels.length>0 }];
   }));
 }

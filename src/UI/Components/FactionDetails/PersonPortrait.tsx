@@ -10,7 +10,7 @@ export function portraitTraits(personId:string,age?:number){
   face:13+seed%6,jaw:(seed>>>4)%4,hair:(seed>>>7)%3,eyes:8+(seed>>>10)%5,brow:(seed>>>13)%3,nose:2+(seed>>>16)%3,mouth:(seed>>>19)%3,mole:(seed>>>22)%4===0};
 }
 /** Decorative SVG lives inside the existing accessible archive control, never a second dialog. */
-function PersonPortrait({personId,age,role="UNKNOWN",color,deceased=false,size=48,nobleRank,royalKin=false}:{personId:string;age?:number;role?:PortraitRole;color?:number;deceased?:boolean;size?:number;nobleRank?:"NAN"|"ZI"|"BO"|"HOU"|"GONG";royalKin?:boolean}){
+function PersonPortrait({personId,age,role="UNKNOWN",color,deceased=false,size=48,nobleRank,royalKin=false,politicalStatus}:{personId:string;age?:number;role?:PortraitRole;color?:number;deceased?:boolean;size?:number;nobleRank?:"NAN"|"ZI"|"BO"|"HOU"|"GONG";royalKin?:boolean;politicalStatus?:string}){
  const t=portraitTraits(personId,age),elder=t.stage==="elder",mature=t.stage==="mature",young=t.stage==="young";
  const civil=CIVIL_OFFICES.includes(role as any),civilLevel=civilOfficeLevel(role as any);
  const military=["XIAOWEI","PIJIANG","JIANGJUN","SHANGJIANGJUN"].includes(role),imperial=role==="EMPEROR",royal=imperial||role==="KING";
@@ -46,6 +46,7 @@ function PersonPortrait({personId,age,role="UNKNOWN",color,deceased=false,size=4
   {t.mole&&<circle cx="41" cy="43" r=".8" fill="#805e49"/>}
   {(mature||elder)&&<path d="M19 36l4 2M41 38l4-2M23 44l-1 4M42 44l1 4" stroke="#ab826b" fill="none"/>}
   {deceased&&<path d="M0 1H64M0 79H64" stroke="#706e68" strokeWidth="3"/>}
+ {politicalStatus&&<g data-political-portrait-status={politicalStatus}><rect x="26" y="64" width="38" height="16" rx="3" fill={politicalStatus==='已赦'?'#e9efe7':'#f1e6e3'}/><text x="45" y="75" textAnchor="middle" fontSize="10" fill={politicalStatus==='已赦'?'#496149':'#7c4b46'}>{politicalStatus}</text></g>}
  </svg>;
 }
 
