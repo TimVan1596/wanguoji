@@ -1,4 +1,4 @@
-import {royalPopulationIdentity} from './RoyalPopulationIdentity';
+import {createRoyalPopulationLookup} from './RoyalPopulationIdentity';
 import type {Dynasty} from './Dynasty';
 import {familyExpansionOpen} from './MilitaryFamily';
 import type City from '../Components/City';
@@ -42,8 +42,9 @@ export function eligibleCivilCities(month:number,team:Team,terms:readonly CivilG
 }
 export function civilGovernorCandidates(month:number,team:Team,people:readonly MilitaryPerson[],terms:readonly CivilGovernorTerm[],epochFounderId:string,lookup:(id:number,bornMonth:number)=>FamilyLink|undefined,formations:readonly import('./MilitaryCommandRegistry').MilitaryFormation[]=[],dynasties:readonly Dynasty[]=[]){
  const occupied=new Set(terms.filter(term=>term.startMonth<=month&&term.endMonth===undefined).map(term=>term.personId)),rows:CivilGovernorCandidate[]=[];
+ const royalOwner=createRoyalPopulationLookup(dynasties);
  for(const user of team.users){
-  const royalPerson=royalPopulationIdentity(user,dynasties);if(user.nativeRoyalRulerId||royalPerson&&(royalPerson.reignOrdinal!==undefined||royalPerson.status==='ruling'||royalPerson.accessionYear!==undefined&&royalPerson.accessionYear<=month))continue;
+  const royalPerson=royalOwner(user);if(user.nativeRoyalRulerId||royalPerson&&(royalPerson.reignOrdinal!==undefined||royalPerson.status==='ruling'||royalPerson.accessionYear!==undefined&&royalPerson.accessionYear<=month))continue;
   if(terms.some(t=>t.sourceUserId===user.id&&t.bornMonth===user.bornMonth&&t.endMonth===undefined)||user.isDestroyed||user.role!=='NORMAL'||user.rulerId||user.player.rulerId||month-user.bornMonth<18*12||month-user.bornMonth>75*12||occupied.has(civilGovernorPersonId(user)))continue;
   const person=user.militaryPersonId?people.find(candidate=>candidate.personId===user.militaryPersonId):undefined;
   if(user.historicalPersonId&&!person?.royalIdentity)continue;
