@@ -1,3 +1,4 @@
+import {checkCivilMobility} from './CivilMobilityCoreChecks';
 import {checkCivilPromotion} from './CivilPromotionCoreChecks';
 import {personAbilities,personAmbition} from '../../Politics/PersonAbilities';
 import {formatWorldDate} from '../WorldTime';
@@ -65,6 +66,7 @@ export async function runCivilAdministrationCore(seed='civil-administration-z62'
   flushSync(()=>store.dispatch(setPersonArchiveRequest({kind:'MILITARY',factionId:term.factionId,id:otherOfficer!.personId})));for(let wait=0;wait<100&&!host.querySelector(`[data-unified-person="${otherOfficer.personId}"] [data-person-career-identity="${otherOfficer.personId}"]`);wait++)await new Promise(r=>setTimeout(r,10));await new Promise(r=>setTimeout(r,30));check((host.querySelector('select[aria-label="人物职类"]') as HTMLSelectElement)?.value==='全部','external military deep link clears a concealing civil filter');check(host.querySelector(`[data-unified-person="${otherOfficer.personId}"] [data-person-career-identity="${otherOfficer.personId}"]`)&&!host.querySelector(`[data-civil-governor-detail="${term.assignmentId}"]`),'military external request remains selected after consumption instead of reopening the previous civilian target');
 }finally{flushSync(()=>root.unmount());host.remove();store.dispatch(setSelectedCityId(undefined));}}
   checkCivilPromotion(core,saved,term,check);
+  checkCivilMobility(core,saved,term,check);
   checkCivilCareer(core,saved,term,check);
   for(const mutate of [(save:any)=>save.registries.civilAdministration.terms[0].personId='fake',(save:any)=>save.registries.civilAdministration.terms[0].startMonth+=1,(save:any)=>save.registries.civilAdministration.terms[0].loyaltyRecovered=-1]){const bad=structuredClone(saved);mutate(bad);check(!validateWorldSave(bad).valid,'strict save rejects forged civil-governor identity, date or governance result');}
   hydrateWorldSave(core,structuredClone(saved));const enemy=core.teams.find(other=>other.name!==team!.name&&other.status==='ACTIVE')!,lostCity=core.allCities.find(item=>item.id===term.cityId)!;lostCity.capture(enemy,month+37);CivilAdministration.update(month+37,core.teams,Dynasty.getAll());const lostTerm=CivilAdministration.getTerms(team!.name)[0];if(lostTerm.endMonth!==month+37||lostTerm.endReason!=='CITY_LOST')throw Error(JSON.stringify({lostTerm,owner:lostCity.ownerFactionId,teamStatus:team!.status,enemy:enemy.name}));checks.push('city capture ends the old governor without claiming death');

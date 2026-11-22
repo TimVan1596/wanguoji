@@ -49,5 +49,5 @@ export function auditMilitaryUsurpers(candidates:readonly MilitaryPoliticalParti
 /** A reused surname is never evidence that two royal houses share real kin. */
 export function usurperHouseUsesRecordedKin(dynasty:Pick<Dynasty,'houseEpochs'|'rulers'>){
  const founder=dynasty.houseEpochs?.at(-1)?.foundingRulerId;
- return dynasty.rulers.some(r=>r.militaryUsurperIdentity&&r.id===founder);
+ return dynasty.rulers.some(r=>(r.militaryUsurperIdentity||r.residentIdentity?.succession)&&r.id===founder);
 }

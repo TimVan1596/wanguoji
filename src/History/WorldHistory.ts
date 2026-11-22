@@ -1422,7 +1422,7 @@ export class WorldHistoryStore {
         : exiled
         ? `${relationDescription}${nextRulerName}继承流亡中的${factionId}国王室。`
         : relationType === "NEW_HOUSE"
-        ? `记录中的合法宗室候选已无可继者，${nextRulerName}新家族承统，延续原国号与旗色。`
+        ? `记录中的合法宗室候选已无可继者，${nextRulerName}新家族承统，延续原国号与旗色。${typeof metadata.lawfulPoliticalSuccession==='string'?(()=>{const source=JSON.parse(metadata.lawfulPoliticalSuccession);return `新君原为本国${{CIVIL:'有真实治绩的文官',MILITARY:'有正式资历的高级将领',NOBLE:'具有实际政治履历的贵族'}[source.candidate.source as 'CIVIL'|'MILITARY'|'NOBLE']}，依既有政治资历续统，并非废黜合法继承人。`;})():''}`
         : `${previousRulerName}在位${
             metadata.reignMonths !== undefined
               ? formatWorldDuration(Number(metadata.reignMonths))

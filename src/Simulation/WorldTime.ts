@@ -30,3 +30,7 @@ export function formatWorldDuration(months: number) {
   }
   return restMonths > 0 ? `${years}年${restMonths}个月` : `${years}年`;
 }
+
+/** Compact archive dates; precise months remain in the full source record. */
+export function formatWorldYearLabel(month:number){const year=getWorldYear(month);return `${year<0?`纪元前${-year}`:year}年`;}
+export function formatPersonYearSpan(bornMonth:number,deathMonth?:number){return deathMonth===undefined?`${formatWorldYearLabel(bornMonth)}生`: `${formatWorldYearLabel(bornMonth)}～${formatWorldYearLabel(deathMonth)}`;}

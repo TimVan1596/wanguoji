@@ -79,7 +79,7 @@ describe("verified genealogy identity and restrained hierarchy", () => {
     for (let i = 0; i < 150; i++) expect(result.get(`ordinary${i}`)!.theme).toBe("neutral");
     expect(genealogyThemeStyles.neutral.borderColor).toBe("var(--gg-border)");
     const reload = { ...d, rulers: d.rulers.map(r => importRulerSave(exportRulerSave(r))) };
-    expect([...derive(reload, faction, events, 500)]).toEqual([...result]); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(63);
+    expect([...derive(reload, faction, events, 500)]).toEqual([...result]); expect(CURRENT_SAVE_SCHEMA_VERSION).toBe(64);
     expect(JSON.stringify([d, events])).toBe(before); expect(random.exportState()).toEqual(rng);
     expect(JSON.stringify(buildPoliticalGenealogy(d.rulers, d.currentRulerId, d.designatedHeirId, d.heirIds))).toBe(graph);
     for (const scale of [.5, 1, 1.5]) expect(getGenealogyCanvasLayout(1200, 800, 600, 400, scale).width).toBe(Math.max(600, 1200 * scale));
@@ -88,8 +88,8 @@ describe("verified genealogy identity and restrained hierarchy", () => {
 
 it('shows deposition and death together without misclassifying normal death, abdication or exile',()=>{
  const d=fixture(),former=d.rulers[0];Object.assign(former,{endReason:'被废',status:'dead',deathMonth:30,deathReason:'自然去世'});
- const deposed=derive(d,faction,[],40).get(former.id)!;expect(deposed.theme).toBe('deposed');expect(deposed.labels).toEqual(['被废','已故']);
- former.endReason='自然去世';const natural=derive(d,faction,[],40).get(former.id)!;expect(natural.theme).not.toBe('deposed');expect(natural.labels).toContain('已故');expect(natural.labels).not.toContain('被废');
+ const deposed=derive(d,faction,[],40).get(former.id)!;expect(deposed.theme).toBe('deposed');expect(deposed.labels).toContain('被废');expect(deposed.labels).not.toContain('已故');expect(deposed.details.some(x=>x.includes('享年'))).toBe(true);
+ former.endReason='自然去世';const natural=derive(d,faction,[],40).get(former.id)!;expect(natural.theme).not.toBe('deposed');expect(natural.labels).not.toContain('已故');expect(natural.details.some(x=>x.includes('享年'))).toBe(true);expect(natural.labels).not.toContain('被废');
  Object.assign(former,{status:'abdicated',endReason:'纳土退位',deathMonth:undefined,deathReason:undefined});expect(derive(d,faction,[],40).get(former.id)!.labels).not.toContain('被废');
  former.status='exiled';const exile=derive(d,faction,[],40).get(former.id)!;expect(exile.theme).toBe('exiled');expect(exile.labels).toContain('流亡');expect(exile.labels).not.toContain('被废');
 });

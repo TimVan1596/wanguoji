@@ -1,3 +1,4 @@
+import {politicalSuccessionCandidates,type LawfulPoliticalSuccession} from './PoliticalSuccession';
 import {getRulerUserId,nativeRoyal} from './RoyalPopulationIdentity';
 import {politicalContest} from './PoliticalUsurpation';
 import CivilAdministration from './CivilAdministration';
@@ -121,6 +122,7 @@ export type RulerRelationType =
   | "LEADER_SUCCESSOR";
 
 export interface ResidentFounderIdentity {
+  succession?:LawfulPoliticalSuccession;
   personalName?:string;nameSource?:ResidentNameSource;
   military?:MilitarySecessionEvidence;
   personId: string; sourceUserId: number; sourceUserLabel: string; bornMonth: number;
@@ -343,12 +345,12 @@ class DynastyRegistryStore {
       if(team&&d){if(team.rulerUser?.historicalPersonId===personId)team.rulerUser=undefined;this.succeedRuler(team,d,r,month,"combat");return;}
     }
     r.status="dead";r.deathMonth=month;r.deathReason="战死";
-    if(r.residentIdentity&&(r.residentIdentity.military||MilitaryCommandRegistry.getPerson(r.residentIdentity.personId)?.civilOrigin))MilitaryCommandRegistry.mirrorPoliticalDeath(r.residentIdentity.personId,r.id,month,"BATTLE_DEATH");
+    if(r.residentIdentity&&(r.residentIdentity.military||r.residentIdentity.succession||MilitaryCommandRegistry.getPerson(r.residentIdentity.personId)?.civilOrigin))MilitaryCommandRegistry.mirrorPoliticalDeath(r.residentIdentity.personId,r.id,month,"BATTLE_DEATH");
     const team=Game.Core?.teams.find(t=>this.get(t.name)?.rulers.includes(r));
     if(team)WorldHistory.addRulerDied(month,team.name,this.getRulerTitle(team,r,month),{rulerId:r.id,deathReason:r.deathReason,age:Math.floor((month-r.bornYear)/12)});
   }
 
-  recordNativeRoyalEntityDeath(id:string,month:number){const r=this.getAll().flatMap(d=>d.rulers).find(r=>r.id===id&&nativeRoyal(r));if(r&&!hasRecordedRulerDeath(r)&&r.status!=='ruling'&&r.status!=='exiled'){r.status='dead';r.deathMonth=month;r.deathReason='战死';const d=this.getAll().find(d=>d.rulers.includes(r));if(d)WorldHistory.addRulerDied(month,d.factionId,this.getRulerPersonalName(r),{rulerId:r.id,deathReason:r.deathReason,age:Math.floor((month-r.bornYear)/12)});}}
+  recordNativeRoyalEntityDeath(id:string,month:number){const r=this.getAll().flatMap(d=>d.rulers).find(r=>r.id===id&&nativeRoyal(r));if(r&&!hasRecordedRulerDeath(r)&&r.status!=='ruling'&&r.status!=='exiled'){r.status='dead';r.deathMonth=month;r.deathReason='战死';if(r.endYear===undefined){r.endYear=month;r.politicalEndYear=month;r.endReason='战死';}const d=this.getAll().find(d=>d.rulers.includes(r));if(d){d.heirIds=d.heirIds.filter(id=>id!==r.id);if(d.designatedHeirId===r.id){delete d.designatedHeirId;delete d.designatedSinceMonth;}}if(d)WorldHistory.addRulerDied(month,d.factionId,this.getRulerPersonalName(r),{rulerId:r.id,deathReason:r.deathReason,age:Math.floor((month-r.bornYear)/12)});}}
 
   getRoyalMilitaryCandidates(team: Team, month: number) {
     const dynasty = this.get(team.name), current = this.getCurrentRuler(team.name);
@@ -400,7 +402,7 @@ class DynastyRegistryStore {
   }
 
   findRoyalMilitaryPerson(personId: string) {
-    return this.getAll().flatMap(d => d.rulers).find(r => r.militaryIdentity?.personId === personId||r.militaryUsurperIdentity?.personId===personId);
+    return this.getAll().flatMap(d => d.rulers).find(r => r.militaryIdentity?.personId === personId||r.militaryUsurperIdentity?.personId===personId||r.residentIdentity?.succession&&r.residentIdentity.personId===personId);
   }
 
   recordRoyalMilitaryBattleDeath(personId: string, month: number, cause: "BATTLE_DEATH" | "SIEGE_LOSS" = "BATTLE_DEATH") {
@@ -738,7 +740,7 @@ class DynastyRegistryStore {
     predecessor.endReason =
       reason === "combat" ? "战死" : reason === "captured" ? "被俘处死" : "去世";
     predecessor.deathReason = predecessor.endReason as RulerDeathReason;
-    if(predecessor.residentIdentity&&(predecessor.residentIdentity.military||MilitaryCommandRegistry.getPerson(predecessor.residentIdentity.personId)?.civilOrigin))MilitaryCommandRegistry.mirrorPoliticalDeath(predecessor.residentIdentity.personId,predecessor.id,year,reason==="natural"?"NATURAL_DEATH":reason==="captured"?"CAPTURED":"BATTLE_DEATH");
+    if(predecessor.residentIdentity&&(predecessor.residentIdentity.military||predecessor.residentIdentity.succession||MilitaryCommandRegistry.getPerson(predecessor.residentIdentity.personId)?.civilOrigin))MilitaryCommandRegistry.mirrorPoliticalDeath(predecessor.residentIdentity.personId,predecessor.id,year,reason==="natural"?"NATURAL_DEATH":reason==="captured"?"CAPTURED":"BATTLE_DEATH");
     if (predecessor.chronicle) {
       finishRulerChronicle(
         predecessor.chronicle,
@@ -759,6 +761,7 @@ class DynastyRegistryStore {
     const politicalSource={terms:evaluated.usurpation?CivilAdministration.getTerms():[],events:evaluated.usurpation?WorldHistory.getRecordedEvents():[],month:year,epoch:dynasty.houseEpochs?.at(-1)?.foundingRulerId??''};
     const civilSources=politicalSource.terms.flatMap(t=>{const u=team.getUserById(t.sourceUserId),city=team.cities.find(c=>c.id===t.cityId);return t.endMonth===undefined&&t.factionId===team.name&&u&&!u.isDestroyed&&u.bornMonth===t.bornMonth&&u.role==='NORMAL'&&!u.rulerId&&u.team===team&&city&&!city.destroyed&&city.ownerFactionId===team.name?[{assignmentId:t.assignmentId,sourceUserId:u.id,bornMonth:u.bornMonth,factionId:team.name,loyalty:u.loyalty}]:[];});
     const contestSource={...politicalSource,civilSources};
+    const lawfulCandidate=!legitimateSuccessor&&team.status==='ACTIVE'&&team.cities.length?politicalSuccessionCandidates(MilitaryCommandRegistry.getPeople(),CivilAdministration.getTerms(),WorldHistory.getRecordedEvents(),team.name,politicalSource.epoch,year,oldHouseName,[...team.users].filter(u=>!u.isDestroyed&&u.role==='NORMAL'&&!u.rulerId&&!u.player.rulerId&&!u.nativeRoyalRulerId).map(u=>({id:u.id,bornMonth:u.bornMonth,loyalty:u.loyalty})))[0]:undefined;
     const candidate=evaluated.usurpation&&legitimateSuccessor?selectMilitaryUsurper(revolutionContext.military?.candidates??[],MilitaryCommandRegistry.getPeople(),oldHouseName,contestSource):undefined;
     // A successful opportunity without a real qualified actor leaves lawful succession intact.
     const revolution={...evaluated,usurpation:evaluated.usurpation&&!!candidate};
@@ -779,14 +782,15 @@ class DynastyRegistryStore {
     }
     if (!successor && team.status === "ACTIVE" && team.cities.length > 0) {
       const knownDynasties = this.getAll();
-      const person=candidate?MilitaryCommandRegistry.getPerson(candidate.personId):undefined,user=person?team.getUserById(person.sourceUserId):undefined,personal=person&&splitEstablishedPersonalName(person.personalName);
-      if(candidate&&(!person||!user||!user.matchesMilitaryLife(person)||!personal))throw Error('Usurper live identity changed before accession');
+      const selected=candidate??lawfulCandidate;
+      const person=selected?MilitaryCommandRegistry.getPerson(selected.personId):undefined,user=person?team.getUserById(person.sourceUserId):undefined,personal=person&&splitEstablishedPersonalName(person.personalName);
+      if(selected&&(!person||!user||!user.matchesMilitaryLife(person)||!personal))throw Error('Usurper live identity changed before accession');
       const newHouse = personal?.houseName??createSuccessorDynastyHouseName({
         factionType: team.factionType,
         existingHouseNames: knownDynasties.flatMap((item) => item.rulers.map((ruler) => ruler.houseName)),
         recentHouseNames: dynasty.rulers.slice(-8).map((item) => item.houseName),
       });
-      successor = person&&candidate&&personal?this.createFormalRuler(team,newHouse,year,undefined,predecessor.id,person.bornMonth,{givenName:personal.givenName,naturalDeathMonth:deriveMilitaryLifeSchedule(person).naturalDeathMonth}):this.createHeir(
+      successor = person&&selected&&personal?this.createFormalRuler(team,newHouse,year,undefined,predecessor.id,person.bornMonth,{givenName:personal.givenName,naturalDeathMonth:deriveMilitaryLifeSchedule(person).naturalDeathMonth}):this.createHeir(
         team,
         newHouse,
         year,
@@ -797,6 +801,13 @@ class DynastyRegistryStore {
       if(person&&candidate&&user&&legitimateSuccessor){
         successor.relationType='USURPER';successor.militaryUsurperIdentity=militaryUsurperIdentity(candidate,person,year,predecessor.id,legitimateSuccessor.id,{roll:revolution.rollResult!,chance:revolution.chance,baselineChance:revolution.baselineChance},politicalContest((revolutionContext.military?.candidates??[]).filter(c=>!!selectMilitaryUsurper([c],MilitaryCommandRegistry.getPeople(),oldHouseName,contestSource)),MilitaryCommandRegistry.getPeople(),politicalSource.terms,politicalSource.events,year,politicalSource.epoch,civilSources),civilSources);
         MilitaryCommandRegistry.endPersonCommands(person.personId,year,'DISMISSED');person.politicalRulerId=successor.id;user.historicalPersonId=person.personId;
+      }
+      if(lawfulCandidate&&person&&user){
+        const capital=team.capitalCity??team.cities[0];
+        successor.relationType=getUnrelatedSuccessorRelation(team.identityStage);
+        successor.residentIdentity={personId:person.personId,sourceUserId:user.id,sourceUserLabel:user.name,bornMonth:person.bornMonth,personalName:person.personalName,nameSource:'POLITICAL_ENTRY',sourceFactionId:team.name,sourceFactionName:oldStateName,foundedMonth:year,cityId:capital.id,cityName:capital.name,succession:{version:1,kind:'EXTINCT_HOUSE_CONTINUATION',predecessorRulerId:predecessor.id,epochFounderId:politicalSource.epoch,month:year,candidate:structuredClone(lawfulCandidate)}};
+        MilitaryCommandRegistry.endPersonCommands(person.personId,year,'DISMISSED');person.politicalRulerId=successor.id;user.historicalPersonId=person.personId;
+        CivilAdministration.endForAccession(year,person.personId);
       }
       dynasty.houseName = newHouse;
       registerRoyalPerson(successor,team.name,year,e=>WorldHistory.addEvent(e));
@@ -922,6 +933,7 @@ class DynastyRegistryStore {
         ),
         previousRulerId: predecessor.id,
         nextRulerId: nextRuler.id,
+        ...(nextRuler.residentIdentity?.succession?{lawfulPoliticalSuccession:JSON.stringify(nextRuler.residentIdentity.succession),personId:nextRuler.residentIdentity.personId,originalPersonalName:nextRuler.residentIdentity.personalName}:{}),
         relationType: nextRuler.relationType,
         reignMonths: reignYears,
         reignYears: Math.round(monthsToYears(reignYears)),

@@ -3,7 +3,7 @@ import type {MilitaryFamily,MilitaryFamilyMember} from '../../../Politics/Milita
 export const FAMILY_CARD_WIDTH=GENEALOGY_CARD_WIDTH,FAMILY_CARD_HEIGHT=130;
 export function associatedMilitaryFamilies(families:readonly MilitaryFamily[],factionId:string,people:readonly {personId:string;appointments:readonly {factionId:string}[]}[]){
  const served=new Set(people.filter(p=>p.appointments.some(a=>a.factionId===factionId)).map(p=>p.personId));
- return families.filter(f=>f.factionId===factionId||f.members.some(m=>m.militaryPersonId&&served.has(m.militaryPersonId)));
+ return families.filter(f=>f.factionId===factionId||f.nobleSuccession?.some(a=>a.factionId===factionId)||f.members.some(m=>m.militaryPersonId&&served.has(m.militaryPersonId)));
 }
 /** Read-only non-royal genealogy. Stable IDs, never names, define edges. */
 function layoutFamilyNodes<T extends {memberId:string;parentMemberId?:string;bornMonth:number}>(members:readonly T[],collapsed:ReadonlySet<string>=new Set(),heights?:ReadonlyMap<string,number>){

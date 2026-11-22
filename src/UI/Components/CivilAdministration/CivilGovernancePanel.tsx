@@ -23,8 +23,8 @@ import {NobleHistory} from '../FactionDetails/NobleHistory';
 import PersonCareerIdentity from '../FactionDetails/PersonCareerIdentity';
 import {usePersonArchiveNavigation} from '../FactionDetails/PersonArchiveNavigation';
 
-const endReasonLabel=(reason:NonNullable<CivilGovernorTerm['endReason']>)=>({DEATH:'去世',CITY_LOST:'城池失守',FACTION_ENDED:'政权终结',REGIME_ENDED:'王统结束',POLITICAL_SANCTION:'政治禁仕',MILITARY_OFFICE:'转任武职',REPLACED:'职务更替',PROMOTED:'晋升',IDENTITY_ENDED:'身份或在籍关系结束'})[reason];
-const sourceLabel=(term:CivilGovernorTerm)=>term.identitySource==='ORDINARY_RESIDENT'?'在籍居民':term.identitySource==='FAMILY'?'功臣世家':term.identitySource==='NOBLE'?'有爵人物':term.identitySource==='ROYAL'?'宗室':'退役军人';
+const endReasonLabel=(reason:NonNullable<CivilGovernorTerm['endReason']>)=>({DEATH:'去世',CITY_LOST:'城池失守',FACTION_ENDED:'政权终结',REGIME_ENDED:'王统结束',POLITICAL_SANCTION:'政治禁仕',MILITARY_OFFICE:'转任武职',REPLACED:'职务更替',PROMOTED:'晋升',TRANSFERRED:'调任',IDENTITY_ENDED:'身份或在籍关系结束'})[reason];
+const sourceLabel=(term:CivilGovernorTerm)=>term.identitySource==='ORDINARY_RESIDENT'?'居民出身':term.identitySource==='FAMILY'?'功臣世家':term.identitySource==='NOBLE'?'有爵人物':term.identitySource==='ROYAL'?'宗室':'退役军人';
 
 function useHistoryRevision(){const [revision,setRevision]=useState(WorldHistory.getRevision());useEffect(()=>WorldHistory.subscribeRevision(setRevision),[]);return revision;}
 function cityFor(term:CivilGovernorTerm){return Game.Core?.allCities.find(city=>city.id===term.cityId);}
@@ -66,7 +66,7 @@ export function GovernorDetail({term,month,careerIndex}:{term:CivilGovernorTerm;
   {family&&<Button size="small" onClick={()=>navigation.open({kind:'FAMILY',factionId:family.factionId,id:family.familyId,memberId})}>查看功臣世家与宗谱</Button>}
   {term.royalRulerId&&<Button size="small" onClick={()=>navigation.open({kind:'GENEALOGY',factionId:term.factionId,id:term.royalRulerId!})}>查看王室身份</Button>}
   </>}
-  biographyTitle="生平纪事" biography={[`${formatWorldDate(term.startMonth)}，${term.rulerTitle}任命其为${civilOfficeTitle(term)}。`,...(term.endReason?[`${formatWorldDate(term.endMonth!)}离任：${endReasonLabel(term.endReason)}。`]:[])]}
+  biographyTitle="生平纪事" biography={CivilAdministration.getByPerson(term.personId).filter(t=>t.startMonth<=month).flatMap(t=>[`${formatWorldDate(t.startMonth)}，${t.rulerTitle}${t.transfer?"调任":t.promotion?"擢任":"任命"}其为${civilOfficeTitle(t)}。`,...(t.endMonth!==undefined&&t.endMonth<=month?[`${formatWorldDate(t.endMonth)}离任：${endReasonLabel(t.endReason!)}。`]:[])])}
   milestoneTitle="生平时间轴" milestones={milestones.slice(-8)} milestoneTotal={milestones.length} allMilestones={()=>milestones}
   governance={<Box><Typography fontSize='.8rem'>{civilOfficeDuties[term.office??'JUNSHOU']}</Typography><Typography fontSize=".8rem">任期：{formatWorldDate(term.startMonth)}—{term.endMonth===undefined?'今':formatWorldDate(term.endMonth)} · {formatWorldDuration((term.endMonth??month)-term.startMonth)}</Typography><Typography fontSize=".8rem">治理：{term.endMonth===undefined&&(term.office==='YUSHI_DAFU'||term.office==='CHENGXIANG')?'中央在任':civilGovernorStatus(term,cityFor(term),month)} · 忠诚恢复{term.loyaltyRecovered} · 破坏恢复{term.devastationRecovered}</Typography>{term.meritEventId&&<Typography fontSize=".76rem">地方治绩：{formatWorldDate(term.meritMonth!)} · 因实际治理恢复获正式记录。</Typography>}</Box>}
   assessment={[]} evidence={()=><><PersonAbilityEvidence abilities={abilities}/><PersonPoliticalCareer personId={term.personId} month={month}/><Typography fontSize=".74rem">人物：{term.personId} / User {term.sourceUserId}。肖像取实际任职时点 {formatWorldDate(portraitMonth)}；身份、城市及任命君主使用原始记录。</Typography></>}/>

@@ -1,3 +1,4 @@
+import {civilOfficeTitle} from '../../../Politics/CivilOffice';
 import Military from '../../../Politics/MilitaryCommandRegistry';
 import {militaryCourtLabels} from '../../../Politics/MilitaryCourtStanding';
 import {useState} from 'react';
@@ -24,7 +25,7 @@ export default function FamilyPersonSources({family,memberId,month}:{family:Mili
  {firstEvent?.metadata?.appointmentSelection&&<Typography fontSize=".78rem">该次任官参与国家共享选拔{(()=>{try{return JSON.parse(String(firstEvent.metadata!.appointmentSelection)).rows.some((r:any)=>r.sourceUserId===row.member.sourceUserId&&r.titleEventId)?'，当时具有有效袭爵候选优势':'';}catch{return '';}})()}；实际初任校尉，不据此认定爵位保证录用。</Typography>}
  {sources.parentCharterNote&&<Typography fontSize=".76rem">{sources.parentCharterNote}</Typography>}
  {sources.inheritanceReview&&<Typography fontSize=".76rem">父辈承袭结算：{formatWorldDate(sources.inheritanceReview.act.month)}。{sources.inheritanceReview.text}{sources.inheritanceReview.lateEntry&&`${parent?.name}结算后，${formatWorldDate(sources.inheritanceReview.lateEntry.enteredMonth)}才首次入籍并登记本人的父系，不能补写过去的爵位。`}</Typography>}
- {row.civilTerms?.map(term=><Typography key={term.assignmentId} fontSize=".76rem">{formatWorldDate(term.startMonth)} · {term.countryName} · {term.cityName}郡守 · {term.endMonth===undefined?'现任':`${formatWorldDate(term.endMonth)}离任`}<Button size="small" onClick={()=>nav.open({kind:'CIVIL',factionId:term.factionId,id:term.personId})}>查看人物档案</Button></Typography>)}
+ {row.civilTerms?.map(term=><Typography key={term.assignmentId} fontSize=".76rem">{formatWorldDate(term.startMonth)} · {term.countryName} · {civilOfficeTitle(term)} · {term.endMonth===undefined?'现任':`${formatWorldDate(term.endMonth)}离任`}<Button size="small" onClick={()=>nav.open({kind:'CIVIL',factionId:term.factionId,id:term.personId})}>查看人物档案</Button></Typography>)}
  {first&&<Typography fontSize=".76rem">{formatWorldDate(first.startMonth)}初任校尉{office?` · 最后记录军职：${MILITARY_OFFICE_NAMES[office.office]}`:''}。</Typography>}
  {sources.inherited.map(({act,predecessor,effective,endedBy})=><Box key={act.eventId} sx={{mt:.4}}><Typography fontSize=".78rem">家族承袭：{formatWorldDate(act.month)}，承自{predecessor?.member.name??'原始史料未载'}的{FAMILY_NOBLE_NAMES[act.previousRank]}，本人袭{FAMILY_NOBLE_NAMES[act.rank!]} · {effective?'当前有效':endedBy?`${formatWorldDate(endedBy.month)}${endedBy.kind==='SUCCEEDED'?'本人身后已传下一任':'承袭终止'}`:sources.life==='DEAD'?'本人死亡后失效':'当前已失效'}。</Typography></Box>)}
  {sources.personal.map(({grant,effective,source:kind})=><Box key={grant.eventId} sx={{mt:.4}}><Typography fontSize=".78rem">{kind}：{formatWorldDate(grant.month)} · {grant.countryName} · {NOBLE_NAMES[grant.rank]} · {effective?'当前有效':'历史受封，非当前有效爵位'}。{nobleChronicle(grant)}</Typography></Box>)}

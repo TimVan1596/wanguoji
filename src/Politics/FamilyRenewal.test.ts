@@ -11,6 +11,21 @@ const fixture=()=>{
 };
 describe('new personal merit establishes one subsequent hereditary period',()=>{
  it('replaces a lower inherited title through a new source, retains the old immutable period, then descends from the new rank',()=>{const {f,context,commit}=fixture();commit(100);const old=JSON.stringify(f.nobleSuccession),a=commit(110);expect(a).toMatchObject({kind:'STARTED',period:2,rank:'BO',sourceGrantEventId:'own',holderMemberId:'son'});expect(JSON.stringify(f.nobleSuccession.slice(0,1))).toBe(old);expect(planFamilyNobleTransition(f,context(110))).toBeUndefined();expect(familyNoblePeriods(f,110).map(p=>p.endReason)).toEqual(['SUPERSEDED',undefined]);f.members[1].deathMonth=120;f.members.push({...f.members[1],memberId:'grand',militaryPersonId:undefined,sourceUserId:3,name:'沈恭',parentMemberId:'son',generation:2,enteredMonth:111,bornMonth:-70,deathMonth:undefined});const c=context(120);c.events=[...c.events,{id:'grand-entered',year:111} as any];expect(planFamilyNobleTransition(f,c)).toMatchObject({kind:'SUCCEEDED',period:2,rank:'ZI',holderMemberId:'grand'});});
+ it('opens a foreign independent grant after the old authority ends, upgrades it, and descends in the new authority',()=>{
+  const {f,people,events,dynasties,context,commit}=fixture();
+  f.members[1].enteredMonth=105;commit(100);
+  dynasties[0].houseEpochs[0].endMonth=101;
+  dynasties.push({factionId:'zhao',rulers:[],houseEpochs:[{foundingRulerId:'zhao-king',startMonth:0}]});
+  f.members[1].factionHistory=[{month:106,factionId:'zhao',eventIndex:events.length}];
+  people[1].nobilityHistory=[{eventId:'own',rank:'NAN',month:110,factionId:'zhao',epochFounderId:'zhao-king',basis:'CIVIL'}];
+  const a=commit(110);expect(a).toMatchObject({kind:'STARTED',factionId:'zhao',epochFounderId:'zhao-king',rank:'NAN'});
+  people[1].nobilityHistory.push({eventId:'duke',rank:'GONG',month:115,factionId:'zhao',epochFounderId:'zhao-king',basis:'MILITARY'});events.push({id:'duke',year:115});
+  expect(commit(115)).toMatchObject({kind:'STARTED',rank:'GONG',sourceGrantEventId:'duke'});
+  f.members[1].deathMonth=120;
+  f.members.push({memberId:'grand',name:'沈安',bornMonth:-70,enteredMonth:111,generation:2,parentMemberId:'son',source:'NATURAL_GROWTH',factionHistory:[{month:111,factionId:'zhao',eventIndex:events.length}]});events.push({id:'grand-entered',year:111});
+  expect(planFamilyNobleTransition(f,context(120))).toMatchObject({kind:'SUCCEEDED',rank:'HOU',holderMemberId:'grand',factionId:'zhao',epochFounderId:'zhao-king'});
+  expect(f.factionId).toBe('home');expect(f.members).toHaveLength(3);
+ });
  it.each(['ZI','NAN'])('does not lower a title for a lesser independent %s source',rank=>{const {f,people,context,commit}=fixture();people[0].nobilityHistory[0].rank='GONG';people[1].nobilityHistory[0].rank=rank;commit(100);expect(planFamilyNobleTransition(f,context(110))).toBeUndefined();});
  it('allows an ended period to reopen only with a live registered descendant and a distinct still-valid grant',()=>{const {f,people,context,commit}=fixture();f.members[1].enteredMonth=105;commit(100);expect(f.nobleSuccession[0].reason).toBe('NO_HEIR');expect(planFamilyNobleTransition(f,context(110))?.kind).toBe('STARTED');for(const mode of ['death','foreign','revoked','regime','accession']){const c=context(110),member=f.members[1];if(mode==='death')member.deathMonth=110;if(mode==='foreign')member.factionHistory=[{month:109,factionId:'away'}];if(mode==='revoked')c.people[1].honorHistory=[{kind:'REVOKED',month:110,eventId:'revoke',factionId:'home',epochFounderId:'king'} as any];if(mode==='regime')c.activeEpochs=new Set();if(mode==='accession')c.politicalAccessions=new Map([['son',110]]);expect(planFamilyNobleTransition(f,c)).toBeUndefined();delete member.deathMonth;delete member.factionHistory;}people[1].nobilityHistory=[];expect(planFamilyNobleTransition(f,context(110))).toBeUndefined();});
  it('does not create a second family, parallel branch, army or RNG draw',()=>{const {f,commit,context}=fixture();commit(100);commit(110);expect(familyNobleTitle(f,f.members[0],110)).toBeUndefined();expect(familyNobleTitle(f,f.members[1],110)).toBe('伯爵');expect(planFamilyNobleTransition(f,{...context(110),renewable:false})).toBeUndefined();expect(f.members).toHaveLength(2);});

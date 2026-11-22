@@ -102,7 +102,7 @@ export function deriveGenealogyNodePresentations(dynasty: Dynasty, faction: Hous
       roles.includes("复国") ? "restoration" : roles.some(x => ["末代承统", "合邦退位", "纳土退位"].includes(x)) ? "terminal" : r.reignOrdinal!==undefined&&r.accessionYear!==undefined ? "monarch" : r.militaryIdentity ? "military" : "neutral";
     const deposed=r.status==='deposed'||r.endReason==='被废'&&r.endYear!==undefined&&r.endYear<=worldMonth||roles.includes('被宗室废黜');
     if(deposed)theme='deposed';else if(r.status==='exiled')theme='exiled';
-    const lifeLabels=[...(deposed?['被废']:[]),...(r.status==='exiled'?['流亡']:[]),...(hasRecordedRulerDeath(r)&&r.deathMonth!<=worldMonth?['已故']:[])];
+    const lifeLabels=[...(deposed?['被废']:[]),...(r.status==='exiled'?['流亡']:[])];
     const details = [...lifeLabels,...roles,politicalLabel??'',...posthumousLabels, royalHonorLabel(r,dynasty,worldMonth,faction.status), r.reignOrdinal !== undefined ? `第${r.reignOrdinal}任君主` : "宗室成员",
       !disqualified && dynasty.heirIds.includes(r.id) && !roles.includes("储君") ? "宗室候选" : "",
       r.displacedByUsurpationMonth !== undefined ? "旧朝宗亲" : "", r.endReason ?? "",

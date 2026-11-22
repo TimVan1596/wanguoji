@@ -52,3 +52,13 @@ it('allows the same former governor to compete again after city loss, without cr
  const rows=civilGovernorCandidates(240,team([u]),[],[previous],'king',()=>undefined);
  expect(rows).toHaveLength(1);expect(rows[0].personId).toBe(previous.personId);expect(rows[0].sourceUserId).toBe(u.id);
 });
+
+it('allows a genuine common civil identity back into recruitment but rejects unverified historical bindings',()=>{
+ const u:any={...resident(17),militaryPersonId:'civil',historicalPersonId:'civil'};
+ const p:any={personId:'civil',sourceUserId:17,bornMonth:u.bornMonth,personalName:'田安',status:'RETIRED',appointments:[],civilOrigin:{assignmentId:'old'}};
+ const t:any={personId:'civil',sourceUserId:17,bornMonth:u.bornMonth,factionId:'qin',epochFounderId:'king',startMonth:100,endMonth:200,endReason:'CITY_LOST',meritEventId:'merit',loyaltyRecovered:5,devastationRecovered:5};
+ const rows=civilGovernorCandidates(240,team([u]),[p],[t],'king',()=>undefined);expect(rows).toHaveLength(1);expect(rows[0].personId).toBe('civil');
+ const ordinary=civilGovernorCandidates(240,team([u]),[p],[],'king',()=>undefined);expect(rows[0].weight).toBeGreaterThan(ordinary[0].weight);
+ expect(civilGovernorCandidates(240,team([{...u,historicalPersonId:'other'}]),[p],[t],'king',()=>undefined)).toEqual([]);
+ expect(civilGovernorCandidates(240,team([u]),[{...p,status:'DEAD',deathMonth:230}],[t],'king',()=>undefined)).toEqual([]);
+});

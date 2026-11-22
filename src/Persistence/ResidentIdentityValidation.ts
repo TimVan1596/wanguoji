@@ -1,3 +1,5 @@
+import {politicalSuccessionCandidates} from '../Politics/PoliticalSuccession';
+import {deriveMilitaryLifeSchedule} from '../Politics/MilitaryLifeRules';
 import {establishedResidentFounderName} from '../Politics/ResidentFounderName';
 import {evaluatePopularPoliticalCrisis} from '../Simulation/PopularPoliticalCrisis';
 import type {WorldSaveV1} from "./WorldSaveSchema";
@@ -32,6 +34,16 @@ export function validateResidentIdentities(save:WorldSaveV1):string[]{
   for(const d of save.dynasties)for(const r of (Array.isArray(d?.rulers)?d.rulers:[]) as any[]){
     if(!r||typeof r!=="object")continue;
     const i=r.residentIdentity;if(i===undefined)continue;
+    if(i?.succession){
+     try{
+      const evidence=i.succession,p=save.registries.militaryCommandRegistry.people.find(p=>p.personId===i.personId),priorRuler=(d.rulers as any[]).find(old=>old.rulerId===evidence.predecessorRulerId),accession=events.find(e=>e.type==='ruler-succession'&&e.metadata?.nextRulerId===r.rulerId),at=r.accessionMonth,pos=accession&&events.indexOf(accession),bindings=users.filter(u=>u.historicalPersonId===i.personId||u.rulerId===r.rulerId||u.userId===i.sourceUserId&&u.bornMonth===i.bornMonth);
+      if(!p||people.has(i.personId)||sourceIds.has(`${i.sourceUserId}:${i.bornMonth}:${i.sourceUserLabel}`)||evidence.version!==1||evidence.kind!=='EXTINCT_HOUSE_CONTINUATION'||evidence.month!==at||i.foundedMonth!==at||i.sourceFactionId!==d.factionId||i.sourceUserId!==p.sourceUserId||i.sourceUserLabel!==p.name||i.bornMonth!==p.bornMonth||r.bornMonth!==p.bornMonth||r.naturalDeathMonth!==deriveMilitaryLifeSchedule(p).naturalDeathMonth||i.personalName!==p.personalName||i.personalName!==String(r.houseName).replace(/氏$/,'')+r.givenName||r.relationType!=='NEW_HOUSE'||!priorRuler||priorRuler.deathMonth!==at||p.politicalRulerId!==r.rulerId||!accession||accession.actorFactionId!==d.factionId||accession.metadata?.lawfulPoliticalSuccession!==JSON.stringify(evidence)||accession.metadata?.personId!==p.personId||bindings.length>1)throw Error('identity or canonical accession source');
+      const before=events.slice(0,pos),historical={...p,politicalRulerId:undefined},candidate=politicalSuccessionCandidates([historical],save.registries.civilAdministration.terms,before as any[],String(d.factionId),evidence.epochFounderId,at,priorRuler.houseName,[{id:p.sourceUserId,bornMonth:p.bornMonth,loyalty:evidence.candidate.loyalty}])[0];
+      if(!candidate||JSON.stringify(candidate)!==JSON.stringify(evidence.candidate)||p.appointments.some(a=>(a.endMonth??Infinity)>at)||save.registries.civilAdministration.terms.some(t=>t.personId===p.personId&&(t.endMonth??Infinity)>at)||bindings.some(u=>u.militaryPersonId!==p.personId||u.bornMonth!==p.bornMonth||u.name!==p.name||u.historicalPersonId!==p.personId||r.deathMonth!==undefined&&r.deathMonth<=save.world.worldMonth))throw Error('political service or unique live body');
+      people.set(i.personId,{r,d,i});sourceIds.add(`${i.sourceUserId}:${i.bornMonth}:${i.sourceUserLabel}`);
+     }catch(error){errors.push(`lawful political succession mismatch: ${String(error)}`);}
+     continue;
+    }
     if(!i||typeof i!=="object"||typeof i.personId!=="string"||!i.personId||people.has(i.personId)||!Number.isSafeInteger(i.sourceUserId)||sourceIds.has(`${i.sourceUserId}:${i.bornMonth}:${i.sourceUserLabel}`)||
       typeof i.sourceUserLabel!=="string"||!i.sourceUserLabel||typeof i.sourceFactionName!=="string"||!factions.has(i.sourceFactionId)||!cities.has(i.cityId)||typeof i.cityName!=="string"||
       !Number.isSafeInteger(i.bornMonth)||i.bornMonth!==r.bornMonth||!Number.isSafeInteger(i.foundedMonth)||i.foundedMonth!==r.accessionMonth||i.foundedMonth>Number(save.world?.worldMonth)||

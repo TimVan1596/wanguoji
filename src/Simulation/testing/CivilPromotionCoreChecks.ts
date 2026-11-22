@@ -1,3 +1,4 @@
+import {checkPoliticalContinuation} from './PoliticalContinuationCoreChecks';
 import random from '../WorldRandom';
 import Civil from '../../Politics/CivilAdministration';
 import Military from '../../Politics/MilitaryCommandRegistry';
@@ -49,6 +50,7 @@ export function checkCivilPromotion(core:any,input:WorldSaveV1,term:CivilGoverno
    check(Military.getPerson(term.personId)!.nobilityHistory?.filter(n=>n.eventId===g.eventId).length===1,'retry awards exactly one real civil title to the canonical person after rollback');
    check(History.getRecordedEvents().some(e=>e.id===g.eventId&&e.title===nobleChronicle(g))&&p.appointments.length===0,'civil merit produces a real distinct peerage source and no fictional command');
    const saved=exportWorldSave(core);hydrateWorldSave(core,structuredClone(saved));check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'civil peerage and four-tier career strictly read again');void dy;
+   checkPoliticalContinuation(core,saved,term.personId,check);
    const bad=structuredClone(saved);bad.registries.civilAdministration.terms.find(t=>t.promotion)!.promotion!.meritEventIds=['forged'];let rejected=false;try{hydrateWorldSave(core,bad);}catch{rejected=true;}check(rejected,'forged promotion evidence is rejected');
   }
  }finally{hydrateWorldSave(core,structuredClone(input));}
