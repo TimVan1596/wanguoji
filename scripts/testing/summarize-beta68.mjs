@@ -6,6 +6,7 @@ const root=process.argv[2]??'/tmp';
 const read=name=>JSON.parse(fs.readFileSync(path.join(root,name),'utf8'));
 const sha=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const optional=name=>fs.existsSync(path.join(root,name))?read(name):undefined;
+function phase(name){return optional(name)?.map(r=>({...r,rows:r.rows.map(row=>({...row,phases:Object.fromEntries(Object.entries(row.phases).filter(([key])=>['total fixed/month step','MilitaryCommandRegistry.update','DynastyRegistry.update','Civil administration','Family household births and life','Family noble succession','Royal noble succession'].some(p=>key===p||key===p+'/January'||key===p+'/ordinary')))}))}));}
 function stats(s,c){
  const terms=s.registries.civilAdministration.terms,people=s.registries.militaryCommandRegistry.people,families=s.registries.militaryCommandRegistry.families??[],events=s.worldHistory.events,rulers=s.dynasties.flatMap(d=>d.rulers),acts=families.flatMap(f=>(f.nobleSuccession??[]).map(a=>({...a,originFactionId:f.factionId}))),lost=terms.filter(t=>t.endReason==='CITY_LOST');
  const unique=rows=>new Set(rows.map(x=>x.personId)).size;
@@ -37,8 +38,9 @@ for(const w of maximal){const file=`${w.seed}-${w.years}.json`,s=read(`beta68-pu
  }
 }
 const report={version:'0.100.0-beta.68',worldSave:64,baseline:'e99314db5c581f44d2dc19fd0737a49957c00064',matrix:'regional-1..8 at100; first four at200; regional-1 at300/500. Eight independent seeds; checkpoints are overlapping prefixes, not independent events.',rules:'New political title authorities, lawful political continuation and civil mobility intentionally change later state/RNG. UI/reading projections do not change raw history or authoritative decisions.',worlds,maximalIndependentPrefixes:maximal.map(w=>({seed:w.seed,years:w.years,after:w.after})),naturalExamples:examples,
+ strictSnapshotAudit:optional('beta68-strict-final.json'),
  core:{civil:optional('beta68-publish-civil-core.json')?.map(r=>({seed:r.seed,checks:r.checks})),military:optional('beta68-nobility-core.json')?.map(r=>({seed:r.seed,count:r.checks.length,proofs:r.checks.filter(s=>/foreign|cross-country|GONG to HOU|civil|rollback|rolls back/i.test(s)).map(s=>s.split(': {')[0])}))},
- performance:{before:optional('beta68-phase-before.json'),after:optional('beta68-phase-after.json'),save300:optional('beta68-save300.json'),save500:optional('beta68-save500.json')},
+ performance:{before:phase('beta68-phase-before.json'),afterBeforeIndex:phase('beta68-phase-after.json'),after:phase('beta68-phase-indexed.json'),royalPlannerOracle:optional('beta68-royal-oracle.json'),save300:optional('beta68-save300.json'),save500:optional('beta68-save500.json')},
  limitations:['Original Ma Zhixuan/Lin Zongyi user saves were not supplied: directed Core is same-class production evidence, not exact natural-life replay.','Natural and directed evidence are separate. No probability was lowered to obtain rare events.','One active main family title period is retained; existing graph is not physically deleted or duplicated.','Baseline data are beta.67 native fixed-seed DTOs; strict baseline timing uses isolated e99314d with identical read-only P50 instrumentation. Different-version native worlds are not asserted equal.','Performance tests are real fixed-step Core, separate from rendering and manual 4x Electron acceptance.','Human visual acceptance remains pending.'],manualGate:'PENDING'};
 fs.writeFileSync('scripts/testing/results/political-titles-beta68.json',JSON.stringify(report,(_k,v)=>typeof v==='number'&&!Number.isInteger(v)?Math.round(v*1000)/1000:v,2)+'\n');
 console.log(JSON.stringify({worlds:worlds.length,independentSeeds:maximal.length,examples:examples.length}));

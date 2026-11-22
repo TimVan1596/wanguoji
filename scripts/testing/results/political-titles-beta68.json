@@ -1,0 +1,4892 @@
+{
+  "version": "0.100.0-beta.68",
+  "worldSave": 64,
+  "baseline": "e99314db5c581f44d2dc19fd0737a49957c00064",
+  "matrix": "regional-1..8 at100; first four at200; regional-1 at300/500. Eight independent seeds; checkpoints are overlapping prefixes, not independent events.",
+  "rules": "New political title authorities, lawful political continuation and civil mobility intentionally change later state/RNG. UI/reading projections do not change raw history or authoritative decisions.",
+  "worlds": [
+    {
+      "seed": "regional-1",
+      "years": 100,
+      "before": {
+        "month": 1200,
+        "sha256": "5429dfb91c38271ea85860da845b586d0316591e9c03166e14b7a60e35accc41",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-1",
+          "state": 2472834574,
+          "position": 7316
+        },
+        "population": 131,
+        "events": 2998,
+        "rulers": 152,
+        "civil": {
+          "people": 29,
+          "appointments": 39,
+          "promotions": 10,
+          "transfers": 0,
+          "lostTerms": 8,
+          "lostPeople": 8,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 2,
+          "peeragesByRank": {
+            "NAN": 2,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 35,
+          "devastationRecovered": 62
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 4,
+          "closureReasons": {
+            "REGIME_ENDED": 1,
+            "RANK_EXHAUSTED": 2
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 22,
+          "lawfulHouse": 22,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 6,
+        "familyMembers": 16,
+        "militaryPeople": 27,
+        "activeCommands": 4,
+        "captures": 33,
+        "saveBytes": 2475308,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "after": {
+        "month": 1200,
+        "sha256": "71fbc2d42b5c4f09aacfe5aaa7423f873a4473b35add62ce088c7268191259b1",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-1",
+          "state": 2472834574,
+          "position": 7316
+        },
+        "population": 131,
+        "events": 3019,
+        "rulers": 152,
+        "civil": {
+          "people": 29,
+          "appointments": 42,
+          "promotions": 11,
+          "transfers": 2,
+          "lostTerms": 8,
+          "lostPeople": 8,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 2,
+          "peeragesByRank": {
+            "NAN": 2,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 42,
+          "devastationRecovered": 74
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 4,
+          "closureReasons": {
+            "REGIME_ENDED": 1,
+            "RANK_EXHAUSTED": 2
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 22,
+          "lawfulHouse": 22,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 6,
+        "familyMembers": 16,
+        "militaryPeople": 27,
+        "activeCommands": 4,
+        "captures": 33,
+        "saveBytes": 2499284,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-1",
+      "years": 200,
+      "before": {
+        "month": 2400,
+        "sha256": "fa5a92faeaac1c58b6f6b041c83fb6f5692ff58fcd2cdc4ef68f4ec12f13699f",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-1",
+          "state": 4223149151,
+          "position": 14849
+        },
+        "population": 128,
+        "events": 7332,
+        "rulers": 339,
+        "civil": {
+          "people": 55,
+          "appointments": 84,
+          "promotions": 28,
+          "transfers": 0,
+          "lostTerms": 13,
+          "lostPeople": 13,
+          "reappointedAfterLoss": 1,
+          "civilToMilitary": 0,
+          "militaryToCivil": 1,
+          "peerages": 8,
+          "peeragesByRank": {
+            "NAN": 7,
+            "ZI": 1,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 135,
+          "devastationRecovered": 240
+        },
+        "titles": {
+          "newPeriods": 4,
+          "crossCountryPeriods": 0,
+          "successions": 7,
+          "closureReasons": {
+            "REGIME_ENDED": 1,
+            "RANK_EXHAUSTED": 6,
+            "FOREIGN": 2
+          },
+          "civilSourcedSuccessions": 1
+        },
+        "succession": {
+          "total": 43,
+          "lawfulHouse": 42,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 13,
+        "familyMembers": 46,
+        "militaryPeople": 53,
+        "activeCommands": 2,
+        "captures": 97,
+        "saveBytes": 5720971,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "after": {
+        "month": 2400,
+        "sha256": "e7bcab7e43f38786434a54dc760ddf88f5a26af23c5ae703f72f0bd65e7a0b93",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-1",
+          "state": 98191252,
+          "position": 13890
+        },
+        "population": 139,
+        "events": 5698,
+        "rulers": 279,
+        "civil": {
+          "people": 50,
+          "appointments": 80,
+          "promotions": 26,
+          "transfers": 2,
+          "lostTerms": 13,
+          "lostPeople": 12,
+          "reappointedAfterLoss": 2,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 9,
+          "peeragesByRank": {
+            "NAN": 6,
+            "ZI": 3,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 204,
+          "devastationRecovered": 252
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 8,
+          "closureReasons": {
+            "REGIME_ENDED": 2,
+            "RANK_EXHAUSTED": 7,
+            "NO_HEIR": 1,
+            "FORFEITED": 1
+          },
+          "civilSourcedSuccessions": 2
+        },
+        "succession": {
+          "total": 39,
+          "lawfulHouse": 39,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 12,
+        "familyMembers": 48,
+        "militaryPeople": 42,
+        "activeCommands": 0,
+        "captures": 61,
+        "saveBytes": 4632916,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-2",
+      "years": 100,
+      "before": {
+        "month": 1200,
+        "sha256": "e4c890184fc3f8b0e7272ddb44cab5f5e477e1e90429344e67113b6641c3072d",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-2",
+          "state": 3366386313,
+          "position": 7082
+        },
+        "population": 117,
+        "events": 2200,
+        "rulers": 116,
+        "civil": {
+          "people": 19,
+          "appointments": 25,
+          "promotions": 6,
+          "transfers": 0,
+          "lostTerms": 3,
+          "lostPeople": 3,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 1,
+          "peeragesByRank": {
+            "NAN": 1,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 16,
+          "devastationRecovered": 47
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 0,
+          "closureReasons": {
+            "FORFEITED": 1,
+            "NO_HEIR": 2
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 16,
+          "lawfulHouse": 15,
+          "unrelatedContinuations": 1,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 5,
+        "familyMembers": 8,
+        "militaryPeople": 22,
+        "activeCommands": 3,
+        "captures": 15,
+        "saveBytes": 1909939,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "after": {
+        "month": 1200,
+        "sha256": "fdc921bd8cecb3576e9423add738c5a9e3987bd273953a05a27aa168d02e3c08",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-2",
+          "state": 3366386313,
+          "position": 7082
+        },
+        "population": 117,
+        "events": 2200,
+        "rulers": 116,
+        "civil": {
+          "people": 19,
+          "appointments": 25,
+          "promotions": 6,
+          "transfers": 0,
+          "lostTerms": 3,
+          "lostPeople": 3,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 1,
+          "peeragesByRank": {
+            "NAN": 1,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 16,
+          "devastationRecovered": 47
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 0,
+          "closureReasons": {
+            "FORFEITED": 1,
+            "NO_HEIR": 2
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 16,
+          "lawfulHouse": 15,
+          "unrelatedContinuations": 1,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 5,
+        "familyMembers": 8,
+        "militaryPeople": 22,
+        "activeCommands": 3,
+        "captures": 15,
+        "saveBytes": 1909939,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-2",
+      "years": 200,
+      "before": {
+        "month": 2400,
+        "sha256": "601ea486321006f7a9ee41b1048180013f926f716c93a2ba45a9427d2c930c23",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-2",
+          "state": 3880003953,
+          "position": 13810
+        },
+        "population": 124,
+        "events": 4678,
+        "rulers": 267,
+        "civil": {
+          "people": 38,
+          "appointments": 53,
+          "promotions": 15,
+          "transfers": 0,
+          "lostTerms": 8,
+          "lostPeople": 8,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 3,
+          "peeragesByRank": {
+            "NAN": 3,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 88,
+          "devastationRecovered": 119
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 3,
+          "closureReasons": {
+            "FORFEITED": 1,
+            "NO_HEIR": 4,
+            "RANK_EXHAUSTED": 3,
+            "REGIME_ENDED": 1
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 35,
+          "lawfulHouse": 34,
+          "unrelatedContinuations": 1,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 12,
+        "familyMembers": 36,
+        "militaryPeople": 39,
+        "activeCommands": 0,
+        "captures": 35,
+        "saveBytes": 3849728,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "after": {
+        "month": 2400,
+        "sha256": "32298b0de7d3d5432d840688038b058f19d297e31d1e6d903850d72857258ee0",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-2",
+          "state": 3880003953,
+          "position": 13810
+        },
+        "population": 124,
+        "events": 4678,
+        "rulers": 267,
+        "civil": {
+          "people": 38,
+          "appointments": 53,
+          "promotions": 15,
+          "transfers": 0,
+          "lostTerms": 8,
+          "lostPeople": 8,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 3,
+          "peeragesByRank": {
+            "NAN": 3,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 88,
+          "devastationRecovered": 119
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 3,
+          "closureReasons": {
+            "FORFEITED": 1,
+            "NO_HEIR": 4,
+            "RANK_EXHAUSTED": 3,
+            "REGIME_ENDED": 1
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 35,
+          "lawfulHouse": 34,
+          "unrelatedContinuations": 1,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 12,
+        "familyMembers": 36,
+        "militaryPeople": 39,
+        "activeCommands": 0,
+        "captures": 35,
+        "saveBytes": 3849728,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 100,
+      "before": {
+        "month": 1200,
+        "sha256": "6ace7208573dfe434b19c6fefbc1441061318bb6ee9df367e64b10c681890972",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-3",
+          "state": 4293574049,
+          "position": 7113
+        },
+        "population": 132,
+        "events": 2372,
+        "rulers": 109,
+        "civil": {
+          "people": 20,
+          "appointments": 29,
+          "promotions": 9,
+          "transfers": 0,
+          "lostTerms": 2,
+          "lostPeople": 2,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 1,
+          "peeragesByRank": {
+            "NAN": 1,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 12,
+          "devastationRecovered": 63
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 1,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 4,
+            "NO_HEIR": 2
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 16,
+          "lawfulHouse": 16,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 7,
+        "familyMembers": 11,
+        "militaryPeople": 32,
+        "activeCommands": 1,
+        "captures": 14,
+        "saveBytes": 2131343,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "after": {
+        "month": 1200,
+        "sha256": "8f00ded54075664925cdabfcc59cfe12701b27b57c22376ef18b81427568f05a",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-3",
+          "state": 3413549891,
+          "position": 7075
+        },
+        "population": 139,
+        "events": 2380,
+        "rulers": 105,
+        "civil": {
+          "people": 20,
+          "appointments": 31,
+          "promotions": 10,
+          "transfers": 1,
+          "lostTerms": 1,
+          "lostPeople": 1,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 1,
+          "peeragesByRank": {
+            "NAN": 1,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 22,
+          "devastationRecovered": 64
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 3,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 5,
+            "NO_HEIR": 1
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 15,
+          "lawfulHouse": 15,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 7,
+        "familyMembers": 15,
+        "militaryPeople": 29,
+        "activeCommands": 1,
+        "captures": 12,
+        "saveBytes": 2101044,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 200,
+      "before": {
+        "month": 2400,
+        "sha256": "438d1a37a0f0800b161c1099861aff828841fea433cf3da33444ede7d9e4d9dd",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-3",
+          "state": 3693216937,
+          "position": 14769
+        },
+        "population": 139,
+        "events": 5466,
+        "rulers": 292,
+        "civil": {
+          "people": 46,
+          "appointments": 66,
+          "promotions": 20,
+          "transfers": 0,
+          "lostTerms": 6,
+          "lostPeople": 6,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 2,
+          "peeragesByRank": {
+            "NAN": 2,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 39,
+          "devastationRecovered": 132
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 6,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 7,
+            "NO_HEIR": 3,
+            "FOREIGN": 1
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 42,
+          "lawfulHouse": 42,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 13,
+        "familyMembers": 29,
+        "militaryPeople": 53,
+        "activeCommands": 1,
+        "captures": 63,
+        "saveBytes": 4564400,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "after": {
+        "month": 2400,
+        "sha256": "ac51b52a19ab5919920a7503403d68287db067c80f726b80b8cc3003a4f4579d",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-3",
+          "state": 1188603157,
+          "position": 14573
+        },
+        "population": 145,
+        "events": 5251,
+        "rulers": 258,
+        "civil": {
+          "people": 39,
+          "appointments": 60,
+          "promotions": 20,
+          "transfers": 1,
+          "lostTerms": 4,
+          "lostPeople": 4,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 3,
+          "peeragesByRank": {
+            "NAN": 2,
+            "ZI": 1,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 85,
+          "devastationRecovered": 144
+        },
+        "titles": {
+          "newPeriods": 3,
+          "crossCountryPeriods": 0,
+          "successions": 5,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 8,
+            "NO_HEIR": 4
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 39,
+          "lawfulHouse": 38,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 11,
+        "familyMembers": 32,
+        "militaryPeople": 51,
+        "activeCommands": 3,
+        "captures": 59,
+        "saveBytes": 4451976,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 100,
+      "before": {
+        "month": 1200,
+        "sha256": "aea8fb2b8d9b4df97e803abdc717c01fba21c8c84eed2654ac7cf583d2e33e2d",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-4",
+          "state": 2979489093,
+          "position": 6852
+        },
+        "population": 136,
+        "events": 2512,
+        "rulers": 128,
+        "civil": {
+          "people": 18,
+          "appointments": 29,
+          "promotions": 10,
+          "transfers": 0,
+          "lostTerms": 4,
+          "lostPeople": 4,
+          "reappointedAfterLoss": 1,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 3,
+          "peeragesByRank": {
+            "NAN": 2,
+            "ZI": 1,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 59,
+          "devastationRecovered": 79
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 1,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 2
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 18,
+          "lawfulHouse": 18,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 5,
+        "familyMembers": 12,
+        "militaryPeople": 26,
+        "activeCommands": 3,
+        "captures": 15,
+        "saveBytes": 2184449,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "after": {
+        "month": 1200,
+        "sha256": "4cedbf98ced0404058310d33fd4acc1af532989ae021da66b232abd2d6e9442d",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-4",
+          "state": 2979489093,
+          "position": 6852
+        },
+        "population": 136,
+        "events": 2512,
+        "rulers": 128,
+        "civil": {
+          "people": 18,
+          "appointments": 29,
+          "promotions": 10,
+          "transfers": 0,
+          "lostTerms": 4,
+          "lostPeople": 4,
+          "reappointedAfterLoss": 1,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 3,
+          "peeragesByRank": {
+            "NAN": 2,
+            "ZI": 1,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 59,
+          "devastationRecovered": 79
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 1,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 2
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 18,
+          "lawfulHouse": 18,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 5,
+        "familyMembers": 12,
+        "militaryPeople": 26,
+        "activeCommands": 3,
+        "captures": 15,
+        "saveBytes": 2184449,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 200,
+      "before": {
+        "month": 2400,
+        "sha256": "e0e6c93af41d291eb3950b69a4812f6007aca244a6f25ade76fa348fd07c7c33",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-4",
+          "state": 153926595,
+          "position": 12938
+        },
+        "population": 141,
+        "events": 5147,
+        "rulers": 252,
+        "civil": {
+          "people": 40,
+          "appointments": 58,
+          "promotions": 17,
+          "transfers": 0,
+          "lostTerms": 7,
+          "lostPeople": 7,
+          "reappointedAfterLoss": 1,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 6,
+          "peeragesByRank": {
+            "NAN": 5,
+            "ZI": 1,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 109,
+          "devastationRecovered": 155
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 3,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 7,
+            "NO_HEIR": 1
+          },
+          "civilSourcedSuccessions": 1
+        },
+        "succession": {
+          "total": 29,
+          "lawfulHouse": 29,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 9,
+        "familyMembers": 24,
+        "militaryPeople": 40,
+        "activeCommands": 3,
+        "captures": 24,
+        "saveBytes": 4161295,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "after": {
+        "month": 2400,
+        "sha256": "82d3c852b6e428dfa863210ea9fc018723d89ae234620af5987e4ba14eac5925",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-4",
+          "state": 153926595,
+          "position": 12938
+        },
+        "population": 141,
+        "events": 5147,
+        "rulers": 252,
+        "civil": {
+          "people": 40,
+          "appointments": 58,
+          "promotions": 17,
+          "transfers": 0,
+          "lostTerms": 7,
+          "lostPeople": 7,
+          "reappointedAfterLoss": 1,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 6,
+          "peeragesByRank": {
+            "NAN": 5,
+            "ZI": 1,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 109,
+          "devastationRecovered": 155
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 3,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 7,
+            "NO_HEIR": 1
+          },
+          "civilSourcedSuccessions": 1
+        },
+        "succession": {
+          "total": 29,
+          "lawfulHouse": 29,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 9,
+        "familyMembers": 24,
+        "militaryPeople": 40,
+        "activeCommands": 3,
+        "captures": 24,
+        "saveBytes": 4161295,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-5",
+      "years": 100,
+      "before": {
+        "month": 1200,
+        "sha256": "ba3972a5955098b46c37f5598601c5c7c17cb85ce71ce1a7b95d19e07a458109",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-5",
+          "state": 1996017219,
+          "position": 7025
+        },
+        "population": 134,
+        "events": 2894,
+        "rulers": 114,
+        "civil": {
+          "people": 23,
+          "appointments": 36,
+          "promotions": 12,
+          "transfers": 0,
+          "lostTerms": 8,
+          "lostPeople": 7,
+          "reappointedAfterLoss": 1,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 0,
+          "peeragesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 54,
+          "devastationRecovered": 70
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 2,
+          "closureReasons": {
+            "NO_HEIR": 3,
+            "RANK_EXHAUSTED": 4
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 15,
+          "lawfulHouse": 15,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 8,
+        "familyMembers": 14,
+        "militaryPeople": 31,
+        "activeCommands": 1,
+        "captures": 27,
+        "saveBytes": 2487894,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "after": {
+        "month": 1200,
+        "sha256": "98d14adeaddeea1d086a8a0a0dbd8f86062af629b6651fb1ec186273beb82d37",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-5",
+          "state": 1996017219,
+          "position": 7025
+        },
+        "population": 134,
+        "events": 2894,
+        "rulers": 114,
+        "civil": {
+          "people": 23,
+          "appointments": 36,
+          "promotions": 12,
+          "transfers": 0,
+          "lostTerms": 8,
+          "lostPeople": 7,
+          "reappointedAfterLoss": 1,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 0,
+          "peeragesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 54,
+          "devastationRecovered": 70
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 2,
+          "closureReasons": {
+            "NO_HEIR": 3,
+            "RANK_EXHAUSTED": 4
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 15,
+          "lawfulHouse": 15,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 8,
+        "familyMembers": 14,
+        "militaryPeople": 31,
+        "activeCommands": 1,
+        "captures": 27,
+        "saveBytes": 2487894,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-6",
+      "years": 100,
+      "before": {
+        "month": 1200,
+        "sha256": "bddafdd3441f9362028d6e8f99bd5d777261f2022486c07081c565ad1700a3d5",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-6",
+          "state": 3897475510,
+          "position": 6815
+        },
+        "population": 140,
+        "events": 2587,
+        "rulers": 117,
+        "civil": {
+          "people": 20,
+          "appointments": 33,
+          "promotions": 12,
+          "transfers": 0,
+          "lostTerms": 7,
+          "lostPeople": 6,
+          "reappointedAfterLoss": 1,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 2,
+          "peeragesByRank": {
+            "NAN": 2,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 93,
+          "devastationRecovered": 84
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 1,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 3,
+            "FORFEITED": 1,
+            "NO_HEIR": 1,
+            "FOREIGN": 1
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 16,
+          "lawfulHouse": 15,
+          "unrelatedContinuations": 1,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 8,
+        "familyMembers": 16,
+        "militaryPeople": 27,
+        "activeCommands": 3,
+        "captures": 24,
+        "saveBytes": 2315540,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "after": {
+        "month": 1200,
+        "sha256": "f7e32285ac15c5667598b0225fd9116016dc22049491ca217ca84eb9155b5f74",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-6",
+          "state": 3897475510,
+          "position": 6815
+        },
+        "population": 140,
+        "events": 2598,
+        "rulers": 117,
+        "civil": {
+          "people": 20,
+          "appointments": 34,
+          "promotions": 12,
+          "transfers": 1,
+          "lostTerms": 7,
+          "lostPeople": 6,
+          "reappointedAfterLoss": 1,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 2,
+          "peeragesByRank": {
+            "NAN": 2,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 101,
+          "devastationRecovered": 88
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 1,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 3,
+            "FORFEITED": 1,
+            "NO_HEIR": 1,
+            "FOREIGN": 1
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 16,
+          "lawfulHouse": 15,
+          "unrelatedContinuations": 1,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 8,
+        "familyMembers": 16,
+        "militaryPeople": 27,
+        "activeCommands": 3,
+        "captures": 24,
+        "saveBytes": 2327294,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-7",
+      "years": 100,
+      "before": {
+        "month": 1200,
+        "sha256": "8418682f1671ccce9f909e5e6f760d9ac4a27bb52fedc2f8ae4277cf3955b569",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-7",
+          "state": 1563662199,
+          "position": 7203
+        },
+        "population": 131,
+        "events": 2942,
+        "rulers": 151,
+        "civil": {
+          "people": 24,
+          "appointments": 30,
+          "promotions": 6,
+          "transfers": 0,
+          "lostTerms": 3,
+          "lostPeople": 3,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 1,
+          "peeragesByRank": {
+            "NAN": 1,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 34,
+          "devastationRecovered": 58
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 1,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 2,
+            "NO_HEIR": 2
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 21,
+          "lawfulHouse": 21,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 6,
+        "familyMembers": 11,
+        "militaryPeople": 30,
+        "activeCommands": 3,
+        "captures": 19,
+        "saveBytes": 2462251,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "after": {
+        "month": 1200,
+        "sha256": "a93fe0f4811d030d1105013e5ca3412c9e9b88d4db804e4bf03133f434b0fde0",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-7",
+          "state": 1563662199,
+          "position": 7203
+        },
+        "population": 131,
+        "events": 2942,
+        "rulers": 151,
+        "civil": {
+          "people": 24,
+          "appointments": 30,
+          "promotions": 6,
+          "transfers": 0,
+          "lostTerms": 3,
+          "lostPeople": 3,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 1,
+          "peeragesByRank": {
+            "NAN": 1,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 34,
+          "devastationRecovered": 58
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 1,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 2,
+            "NO_HEIR": 2
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 21,
+          "lawfulHouse": 21,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 6,
+        "familyMembers": 11,
+        "militaryPeople": 30,
+        "activeCommands": 3,
+        "captures": 19,
+        "saveBytes": 2462251,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-8",
+      "years": 100,
+      "before": {
+        "month": 1200,
+        "sha256": "86011d4c5b2c34fdb7cf7eedf6b8a2ed62498ea11ce89757ca669113c37e3326",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-8",
+          "state": 1234754895,
+          "position": 7170
+        },
+        "population": 132,
+        "events": 2517,
+        "rulers": 120,
+        "civil": {
+          "people": 22,
+          "appointments": 31,
+          "promotions": 9,
+          "transfers": 0,
+          "lostTerms": 4,
+          "lostPeople": 4,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 2,
+          "peerages": 2,
+          "peeragesByRank": {
+            "NAN": 2,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 23,
+          "devastationRecovered": 63
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 2,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 6
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 19,
+          "lawfulHouse": 19,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 7,
+        "familyMembers": 18,
+        "militaryPeople": 29,
+        "activeCommands": 2,
+        "captures": 18,
+        "saveBytes": 2216333,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "after": {
+        "month": 1200,
+        "sha256": "d5cfdf08e3589c79f304560f0fbbb80eb27e98d27dfdef3e3a0f5c11a6498d80",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-8",
+          "state": 1234754895,
+          "position": 7170
+        },
+        "population": 132,
+        "events": 2523,
+        "rulers": 120,
+        "civil": {
+          "people": 22,
+          "appointments": 33,
+          "promotions": 9,
+          "transfers": 2,
+          "lostTerms": 5,
+          "lostPeople": 5,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 2,
+          "peerages": 2,
+          "peeragesByRank": {
+            "NAN": 2,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 23,
+          "devastationRecovered": 64
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 2,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 6
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 19,
+          "lawfulHouse": 19,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 7,
+        "familyMembers": 18,
+        "militaryPeople": 29,
+        "activeCommands": 2,
+        "captures": 18,
+        "saveBytes": 2226876,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-1",
+      "years": 300,
+      "before": {
+        "month": 3600,
+        "sha256": "6f4eb7ead5ce4e05c1bff3b1a3ecd55e7c2df75e9fb4ed8a402139094409afaa",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-1",
+          "state": 58152313,
+          "position": 21619
+        },
+        "population": 134,
+        "events": 10559,
+        "rulers": 504,
+        "civil": {
+          "people": 71,
+          "appointments": 113,
+          "promotions": 41,
+          "transfers": 0,
+          "lostTerms": 17,
+          "lostPeople": 16,
+          "reappointedAfterLoss": 1,
+          "civilToMilitary": 0,
+          "militaryToCivil": 1,
+          "peerages": 13,
+          "peeragesByRank": {
+            "NAN": 11,
+            "ZI": 2,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 229,
+          "devastationRecovered": 356
+        },
+        "titles": {
+          "newPeriods": 4,
+          "crossCountryPeriods": 0,
+          "successions": 13,
+          "closureReasons": {
+            "REGIME_ENDED": 3,
+            "RANK_EXHAUSTED": 13,
+            "FOREIGN": 3,
+            "NO_HEIR": 1
+          },
+          "civilSourcedSuccessions": 2
+        },
+        "succession": {
+          "total": 62,
+          "lawfulHouse": 60,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 21,
+        "familyMembers": 80,
+        "militaryPeople": 75,
+        "activeCommands": 1,
+        "captures": 130,
+        "saveBytes": 8252693,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "after": {
+        "month": 3600,
+        "sha256": "d34d5f855a7be964d7e4d2481879b216c811549c5108fcb70bfff67ea3eda58a",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-1",
+          "state": 2515806908,
+          "position": 19402
+        },
+        "population": 136,
+        "events": 7342,
+        "rulers": 405,
+        "civil": {
+          "people": 68,
+          "appointments": 103,
+          "promotions": 30,
+          "transfers": 3,
+          "lostTerms": 13,
+          "lostPeople": 12,
+          "reappointedAfterLoss": 2,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 10,
+          "peeragesByRank": {
+            "NAN": 7,
+            "ZI": 3,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 228,
+          "devastationRecovered": 287
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 9,
+          "closureReasons": {
+            "REGIME_ENDED": 2,
+            "RANK_EXHAUSTED": 9,
+            "NO_HEIR": 1,
+            "FORFEITED": 1
+          },
+          "civilSourcedSuccessions": 3
+        },
+        "succession": {
+          "total": 50,
+          "lawfulHouse": 50,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 13,
+        "familyMembers": 52,
+        "militaryPeople": 60,
+        "activeCommands": 1,
+        "captures": 63,
+        "saveBytes": 6035381,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    },
+    {
+      "seed": "regional-1",
+      "years": 500,
+      "before": {
+        "month": 6000,
+        "sha256": "554b5046f4e0ac0b233c91d7ac0af85c3fe09b1bdda0b31c3f2e90260604a809",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-1",
+          "state": 3764256273,
+          "position": 33707
+        },
+        "population": 133,
+        "events": 15019,
+        "rulers": 742,
+        "civil": {
+          "people": 114,
+          "appointments": 178,
+          "promotions": 63,
+          "transfers": 0,
+          "lostTerms": 20,
+          "lostPeople": 19,
+          "reappointedAfterLoss": 1,
+          "civilToMilitary": 0,
+          "militaryToCivil": 2,
+          "peerages": 23,
+          "peeragesByRank": {
+            "NAN": 19,
+            "ZI": 4,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 423,
+          "devastationRecovered": 549
+        },
+        "titles": {
+          "newPeriods": 4,
+          "crossCountryPeriods": 0,
+          "successions": 20,
+          "closureReasons": {
+            "REGIME_ENDED": 4,
+            "RANK_EXHAUSTED": 22,
+            "FOREIGN": 3,
+            "NO_HEIR": 3
+          },
+          "civilSourcedSuccessions": 4
+        },
+        "succession": {
+          "total": 93,
+          "lawfulHouse": 91,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 32,
+        "familyMembers": 127,
+        "militaryPeople": 106,
+        "activeCommands": 0,
+        "captures": 160,
+        "saveBytes": 11894034,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "after": {
+        "month": 6000,
+        "sha256": "4d87d183b6fa60ad0495b7c3a2ad916f2babebfc8610e53461515e617e4f04b5",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-1",
+          "state": 4029426773,
+          "position": 31327
+        },
+        "population": 129,
+        "events": 11920,
+        "rulers": 664,
+        "civil": {
+          "people": 105,
+          "appointments": 156,
+          "promotions": 45,
+          "transfers": 4,
+          "lostTerms": 15,
+          "lostPeople": 14,
+          "reappointedAfterLoss": 2,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 12,
+          "peeragesByRank": {
+            "NAN": 9,
+            "ZI": 3,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 297,
+          "devastationRecovered": 381
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 9,
+          "closureReasons": {
+            "REGIME_ENDED": 2,
+            "RANK_EXHAUSTED": 13,
+            "NO_HEIR": 1,
+            "FORFEITED": 1
+          },
+          "civilSourcedSuccessions": 3
+        },
+        "succession": {
+          "total": 72,
+          "lawfulHouse": 72,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 17,
+        "familyMembers": 64,
+        "militaryPeople": 91,
+        "activeCommands": 2,
+        "captures": 81,
+        "saveBytes": 9506950,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      },
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      }
+    }
+  ],
+  "maximalIndependentPrefixes": [
+    {
+      "seed": "regional-1",
+      "years": 500,
+      "after": {
+        "month": 6000,
+        "sha256": "4d87d183b6fa60ad0495b7c3a2ad916f2babebfc8610e53461515e617e4f04b5",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-1",
+          "state": 4029426773,
+          "position": 31327
+        },
+        "population": 129,
+        "events": 11920,
+        "rulers": 664,
+        "civil": {
+          "people": 105,
+          "appointments": 156,
+          "promotions": 45,
+          "transfers": 4,
+          "lostTerms": 15,
+          "lostPeople": 14,
+          "reappointedAfterLoss": 2,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 12,
+          "peeragesByRank": {
+            "NAN": 9,
+            "ZI": 3,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 297,
+          "devastationRecovered": 381
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 9,
+          "closureReasons": {
+            "REGIME_ENDED": 2,
+            "RANK_EXHAUSTED": 13,
+            "NO_HEIR": 1,
+            "FORFEITED": 1
+          },
+          "civilSourcedSuccessions": 3
+        },
+        "succession": {
+          "total": 72,
+          "lawfulHouse": 72,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 17,
+        "familyMembers": 64,
+        "militaryPeople": 91,
+        "activeCommands": 2,
+        "captures": 81,
+        "saveBytes": 9506950,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      }
+    },
+    {
+      "seed": "regional-2",
+      "years": 200,
+      "after": {
+        "month": 2400,
+        "sha256": "32298b0de7d3d5432d840688038b058f19d297e31d1e6d903850d72857258ee0",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-2",
+          "state": 3880003953,
+          "position": 13810
+        },
+        "population": 124,
+        "events": 4678,
+        "rulers": 267,
+        "civil": {
+          "people": 38,
+          "appointments": 53,
+          "promotions": 15,
+          "transfers": 0,
+          "lostTerms": 8,
+          "lostPeople": 8,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 3,
+          "peeragesByRank": {
+            "NAN": 3,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 88,
+          "devastationRecovered": 119
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 3,
+          "closureReasons": {
+            "FORFEITED": 1,
+            "NO_HEIR": 4,
+            "RANK_EXHAUSTED": 3,
+            "REGIME_ENDED": 1
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 35,
+          "lawfulHouse": 34,
+          "unrelatedContinuations": 1,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 12,
+        "familyMembers": 36,
+        "militaryPeople": 39,
+        "activeCommands": 0,
+        "captures": 35,
+        "saveBytes": 3849728,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 200,
+      "after": {
+        "month": 2400,
+        "sha256": "ac51b52a19ab5919920a7503403d68287db067c80f726b80b8cc3003a4f4579d",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-3",
+          "state": 1188603157,
+          "position": 14573
+        },
+        "population": 145,
+        "events": 5251,
+        "rulers": 258,
+        "civil": {
+          "people": 39,
+          "appointments": 60,
+          "promotions": 20,
+          "transfers": 1,
+          "lostTerms": 4,
+          "lostPeople": 4,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 3,
+          "peeragesByRank": {
+            "NAN": 2,
+            "ZI": 1,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 85,
+          "devastationRecovered": 144
+        },
+        "titles": {
+          "newPeriods": 3,
+          "crossCountryPeriods": 0,
+          "successions": 5,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 8,
+            "NO_HEIR": 4
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 39,
+          "lawfulHouse": 38,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 11,
+        "familyMembers": 32,
+        "militaryPeople": 51,
+        "activeCommands": 3,
+        "captures": 59,
+        "saveBytes": 4451976,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 200,
+      "after": {
+        "month": 2400,
+        "sha256": "82d3c852b6e428dfa863210ea9fc018723d89ae234620af5987e4ba14eac5925",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-4",
+          "state": 153926595,
+          "position": 12938
+        },
+        "population": 141,
+        "events": 5147,
+        "rulers": 252,
+        "civil": {
+          "people": 40,
+          "appointments": 58,
+          "promotions": 17,
+          "transfers": 0,
+          "lostTerms": 7,
+          "lostPeople": 7,
+          "reappointedAfterLoss": 1,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 6,
+          "peeragesByRank": {
+            "NAN": 5,
+            "ZI": 1,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 109,
+          "devastationRecovered": 155
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 3,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 7,
+            "NO_HEIR": 1
+          },
+          "civilSourcedSuccessions": 1
+        },
+        "succession": {
+          "total": 29,
+          "lawfulHouse": 29,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 9,
+        "familyMembers": 24,
+        "militaryPeople": 40,
+        "activeCommands": 3,
+        "captures": 24,
+        "saveBytes": 4161295,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      }
+    },
+    {
+      "seed": "regional-5",
+      "years": 100,
+      "after": {
+        "month": 1200,
+        "sha256": "98d14adeaddeea1d086a8a0a0dbd8f86062af629b6651fb1ec186273beb82d37",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-5",
+          "state": 1996017219,
+          "position": 7025
+        },
+        "population": 134,
+        "events": 2894,
+        "rulers": 114,
+        "civil": {
+          "people": 23,
+          "appointments": 36,
+          "promotions": 12,
+          "transfers": 0,
+          "lostTerms": 8,
+          "lostPeople": 7,
+          "reappointedAfterLoss": 1,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 0,
+          "peeragesByRank": {
+            "NAN": 0,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 54,
+          "devastationRecovered": 70
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 2,
+          "closureReasons": {
+            "NO_HEIR": 3,
+            "RANK_EXHAUSTED": 4
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 15,
+          "lawfulHouse": 15,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 8,
+        "familyMembers": 14,
+        "militaryPeople": 31,
+        "activeCommands": 1,
+        "captures": 27,
+        "saveBytes": 2487894,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      }
+    },
+    {
+      "seed": "regional-6",
+      "years": 100,
+      "after": {
+        "month": 1200,
+        "sha256": "f7e32285ac15c5667598b0225fd9116016dc22049491ca217ca84eb9155b5f74",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-6",
+          "state": 3897475510,
+          "position": 6815
+        },
+        "population": 140,
+        "events": 2598,
+        "rulers": 117,
+        "civil": {
+          "people": 20,
+          "appointments": 34,
+          "promotions": 12,
+          "transfers": 1,
+          "lostTerms": 7,
+          "lostPeople": 6,
+          "reappointedAfterLoss": 1,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 2,
+          "peeragesByRank": {
+            "NAN": 2,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 101,
+          "devastationRecovered": 88
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 1,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 3,
+            "FORFEITED": 1,
+            "NO_HEIR": 1,
+            "FOREIGN": 1
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 16,
+          "lawfulHouse": 15,
+          "unrelatedContinuations": 1,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 8,
+        "familyMembers": 16,
+        "militaryPeople": 27,
+        "activeCommands": 3,
+        "captures": 24,
+        "saveBytes": 2327294,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      }
+    },
+    {
+      "seed": "regional-7",
+      "years": 100,
+      "after": {
+        "month": 1200,
+        "sha256": "a93fe0f4811d030d1105013e5ca3412c9e9b88d4db804e4bf03133f434b0fde0",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-7",
+          "state": 1563662199,
+          "position": 7203
+        },
+        "population": 131,
+        "events": 2942,
+        "rulers": 151,
+        "civil": {
+          "people": 24,
+          "appointments": 30,
+          "promotions": 6,
+          "transfers": 0,
+          "lostTerms": 3,
+          "lostPeople": 3,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 0,
+          "peerages": 1,
+          "peeragesByRank": {
+            "NAN": 1,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 34,
+          "devastationRecovered": 58
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 1,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 2,
+            "NO_HEIR": 2
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 21,
+          "lawfulHouse": 21,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 6,
+        "familyMembers": 11,
+        "militaryPeople": 30,
+        "activeCommands": 3,
+        "captures": 19,
+        "saveBytes": 2462251,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      }
+    },
+    {
+      "seed": "regional-8",
+      "years": 100,
+      "after": {
+        "month": 1200,
+        "sha256": "d5cfdf08e3589c79f304560f0fbbb80eb27e98d27dfdef3e3a0f5c11a6498d80",
+        "rng": {
+          "algorithm": "mulberry32-v1",
+          "seed": "regional-8",
+          "state": 1234754895,
+          "position": 7170
+        },
+        "population": 132,
+        "events": 2523,
+        "rulers": 120,
+        "civil": {
+          "people": 22,
+          "appointments": 33,
+          "promotions": 9,
+          "transfers": 2,
+          "lostTerms": 5,
+          "lostPeople": 5,
+          "reappointedAfterLoss": 0,
+          "civilToMilitary": 0,
+          "militaryToCivil": 2,
+          "peerages": 2,
+          "peeragesByRank": {
+            "NAN": 2,
+            "ZI": 0,
+            "BO": 0,
+            "HOU": 0,
+            "GONG": 0
+          },
+          "loyaltyRecovered": 23,
+          "devastationRecovered": 64
+        },
+        "titles": {
+          "newPeriods": 0,
+          "crossCountryPeriods": 0,
+          "successions": 2,
+          "closureReasons": {
+            "RANK_EXHAUSTED": 6
+          },
+          "civilSourcedSuccessions": 0
+        },
+        "succession": {
+          "total": 19,
+          "lawfulHouse": 19,
+          "unrelatedContinuations": 0,
+          "existingPoliticalContinuations": 0,
+          "civilContinuations": 0,
+          "usurpations": 0,
+          "realMilitaryUsurpers": 0
+        },
+        "families": 7,
+        "familyMembers": 18,
+        "militaryPeople": 29,
+        "activeCommands": 2,
+        "captures": 18,
+        "saveBytes": 2226876,
+        "strictSaveValid": true,
+        "conflicts": {
+          "population": 0,
+          "formations": 0,
+          "residents": 0
+        }
+      }
+    }
+  ],
+  "naturalExamples": [
+    {
+      "seed": "regional-1",
+      "kind": "civil-governor-appointed",
+      "eventId": "civil-governor-秦-28-appointed",
+      "month": 852,
+      "text": "秦王嬴康以阙秉澄治理有绩，由富春县令调任郢县令。"
+    },
+    {
+      "seed": "regional-1",
+      "kind": "family-title-succeeded",
+      "eventId": "military-family-military-person-5-韩-ruler-11-succession-1",
+      "month": 528,
+      "text": "臧彦卒后，其子臧景仪袭子爵。"
+    },
+    {
+      "seed": "regional-2",
+      "kind": "family-title-succeeded",
+      "eventId": "military-family-military-person-16-楚-ruler-13-succession-1",
+      "month": 1269,
+      "text": "常伯达卒后，其子常子诚袭侯爵。"
+    },
+    {
+      "seed": "regional-3",
+      "kind": "civil-governor-appointed",
+      "eventId": "civil-governor-秦-22-appointed",
+      "month": 756,
+      "text": "秦王嬴怀济以卢文允治理有绩，由咸阳郡守调任邯郸郡守。"
+    },
+    {
+      "seed": "regional-3",
+      "kind": "family-title-started",
+      "eventId": "military-family-military-person-32-齐-ruler-9-succession-2",
+      "month": 1776,
+      "text": "葛维忠以本人新功所获男爵开立葛氏第2期爵位传承，旧期史实保留。"
+    },
+    {
+      "seed": "regional-3",
+      "kind": "family-title-succeeded",
+      "eventId": "military-family-military-person-5-魏-ruler-10-succession-1",
+      "month": 387,
+      "text": "罗晤卒后，其子罗刚袭子爵。"
+    },
+    {
+      "seed": "regional-4",
+      "kind": "family-title-succeeded",
+      "eventId": "military-family-military-person-16-韩-ruler-13-succession-1",
+      "month": 1080,
+      "text": "邱伦卒后，其子邱伯和袭伯爵。"
+    },
+    {
+      "seed": "regional-5",
+      "kind": "family-title-succeeded",
+      "eventId": "military-family-military-person-2-燕-ruler-3-succession-1",
+      "month": 272,
+      "text": "古璠卒后，其子古惟珩袭子爵。"
+    },
+    {
+      "seed": "regional-6",
+      "kind": "civil-governor-appointed",
+      "eventId": "civil-governor-齐-29-appointed",
+      "month": 972,
+      "text": "齐王田景正以何惟敬治理有绩，由汝阴郡守调任吴兴郡守。"
+    },
+    {
+      "seed": "regional-6",
+      "kind": "family-title-succeeded",
+      "eventId": "military-family-military-person-12-赵-ruler-32-succession-1",
+      "month": 776,
+      "text": "萧彦澄卒后，其子萧明温袭子爵。"
+    },
+    {
+      "seed": "regional-7",
+      "kind": "family-title-succeeded",
+      "eventId": "military-family-military-person-14-赵-ruler-4-succession-1",
+      "month": 960,
+      "text": "闵珽卒后，其子闵怀衡袭子爵。"
+    },
+    {
+      "seed": "regional-8",
+      "kind": "civil-governor-appointed",
+      "eventId": "civil-governor-秦-20-appointed",
+      "month": 600,
+      "text": "秦王嬴绍良以汤旭治理有绩，由睢阳郡守调任合州郡守。"
+    },
+    {
+      "seed": "regional-8",
+      "kind": "family-title-succeeded",
+      "eventId": "military-family-military-person-7-燕-ruler-5-succession-1",
+      "month": 744,
+      "text": "饶克信卒后，其子饶仲远袭子爵。"
+    }
+  ],
+  "strictSnapshotAudit": [
+    {
+      "file": "regional-1-100.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 173,
+      "unchanged": true
+    },
+    {
+      "file": "regional-1-200.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 219,
+      "unchanged": true
+    },
+    {
+      "file": "regional-2-100.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 142,
+      "unchanged": true
+    },
+    {
+      "file": "regional-2-200.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 177,
+      "unchanged": true
+    },
+    {
+      "file": "regional-3-100.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 170,
+      "unchanged": true
+    },
+    {
+      "file": "regional-3-200.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 205,
+      "unchanged": true
+    },
+    {
+      "file": "regional-4-100.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 165,
+      "unchanged": true
+    },
+    {
+      "file": "regional-4-200.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 199,
+      "unchanged": true
+    },
+    {
+      "file": "regional-5-100.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 170,
+      "unchanged": true
+    },
+    {
+      "file": "regional-6-100.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 174,
+      "unchanged": true
+    },
+    {
+      "file": "regional-7-100.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 161,
+      "unchanged": true
+    },
+    {
+      "file": "regional-8-100.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 165,
+      "unchanged": true
+    },
+    {
+      "file": "regional-1-100.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 173,
+      "unchanged": true
+    },
+    {
+      "file": "regional-1-200.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 219,
+      "unchanged": true
+    },
+    {
+      "file": "regional-1-300.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 239,
+      "unchanged": true
+    },
+    {
+      "file": "regional-1-400.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 258,
+      "unchanged": true
+    },
+    {
+      "file": "regional-1-500.json",
+      "valid": true,
+      "errors": [],
+      "lookupChecks": 285,
+      "unchanged": true
+    }
+  ],
+  "core": {
+    "civil": [
+      {
+        "seed": "civil-administration-z62",
+        "checks": [
+          "actual formal country with multiple cities is available",
+          "actual cities satisfy stable-control appointment conditions",
+          "real living adults produce authoritative governor candidates",
+          "active commanders are excluded from civilian office",
+          "failed governor appointment rolls back registry and history",
+          "appointment binds actual person, city, month and ruling sovereign",
+          "appointment has one canonical city-linked event",
+          "new governor appointment passes strict V59 save validation",
+          "one city has one active governor and no duplicate appointment",
+          "the same person cannot hold a second governorship",
+          "failed governance merit restores actual city loyalty, devastation, civil identity, history and consumed RNG",
+          "governor changes actual city loyalty or devastation recovery",
+          "actual bounded recovery yields one sourced local-governance achievement",
+          "governed city and achievement survive strict save",
+          "ordinary civil profile shares portrait and archive layout, real ability bars and mixed timeline with permanent identity-derived ambition",
+          "ordinary governor displays the actual permanent resident ambition",
+          "ordinary governor card directly exposes recorded birth and local appointment month",
+          "opening ordinary civil profile leaves full authoritative state and RNG unchanged",
+          "local-official tab shows the actual incumbent, city and civil dossier",
+          "city overview shows the same real governor and tenure",
+          "city governor name is a real archive link",
+          "city governor link opens the faction archive panel",
+          "city link opens the same ordinary governor full dossier",
+          "collapsed heading uses compact years while the opened dossier keeps exact months",
+          "repeating the same real civil deep link restores the selected identity heading focus instead of treating the unchanged ID as an old request",
+          "switching country does not retain the previous country civil target or profile",
+          "one compact selector exposes the four real office/title categories",
+          "civil filter does not mount unrelated military identity rows",
+          "external military deep link clears a concealing civil filter",
+          "military external request remains selected after consumption instead of reopening the previous civilian target",
+          "county first appointment shares a person record without inventing military service",
+          "nine actual controlled cities provide existing national capacity for central posts",
+          "failed promotion restores old office, new office, history, population and RNG",
+          "real promotion to JUNSHOU preserves one identity and one office",
+          "central post never masquerades as a city governor",
+          "each promotion strictly round-trips with the original receipt evidence",
+          "failed promotion restores old office, new office, history, population and RNG",
+          "real promotion to YUSHI_DAFU preserves one identity and one office",
+          "central post never masquerades as a city governor",
+          "each promotion strictly round-trips with the original receipt evidence",
+          "failed promotion restores old office, new office, history, population and RNG",
+          "real promotion to CHENGXIANG preserves one identity and one office",
+          "central post never masquerades as a city governor",
+          "each promotion strictly round-trips with the original receipt evidence",
+          "actual accumulated recoveries qualify for a low civil peerage",
+          "failed civil peerage rolls back person, title, history, civil office and consumed RNG",
+          "failure after the civil title while founding its family rolls back both authorities and RNG together",
+          "a real civil grant establishes the existing lawful family charter in the same transaction",
+          "retry awards exactly one real civil title to the canonical person after rollback",
+          "civil merit produces a real distinct peerage source and no fictional command",
+          "civil peerage and four-tier career strictly read again",
+          "lawful political continuation failure at ruler-succession restores ruler, official, civil term, family, population, history and RNG",
+          "lawful political continuation failure at family-title-ended restores ruler, official, civil term, family, population, history and RNG",
+          "an actually vacant royal line continues through the real senior civilian, never a fictitious usurpation",
+          "lawful new monarch retains permanent body, birth, name and abilities",
+          "accession ends real civil and military powers without creating a fictional army",
+          "new monarch settles the old family title in the same actual accession transaction",
+          "lawful civilian continuation strictly reads with its exact political provenance",
+          "strict read rejects fabricated previous political service",
+          "forged promotion evidence is rejected",
+          "an existing third city supports lawful office vacancies after capture",
+          "a second existing same-country city is available for a real transfer",
+          "failed actual transfer restores old term, new term, history, identity and consumed RNG",
+          "transfer preserves one real person, same rank and one active office",
+          "transfer strictly round-trips with actual old receipts and new authority",
+          "actual capture ends the transferred office without inventing a political ban",
+          "a real shared-identity former official can compete again after city loss",
+          "reappointment opens a distinct real term without replacing the lost-city career",
+          "lost-city reappointment strictly reads without duplicate population or identity",
+          "first civilian appointment freezes a natural full name",
+          "active governor cannot simultaneously acquire a military command",
+          "real shared annual military selection treats a civil-only person as initial xiaowei rather than military reappointment",
+          "actual annual civil-to-military selection and complete candidate evidence strictly replay",
+          "failed civil-to-military appointment restores population, identity, history, sequences and formations",
+          "former governor passes existing military qualification and initial command creation",
+          "civilian enters as the same person and initial xiaowei",
+          "civil-to-military transfer preserves the original resident natural lifespan",
+          "same former governor earns a real low military title from actual service and capture",
+          "legally retired military person returns to the real civil candidate pool",
+          "military-to-civil transfer retains permanent name, birth and historical military service",
+          "full civilian military noble and civilian career round-trips strictly",
+          "civil-origin military career dies at the original resident scheduled month, including nonannual months",
+          "four top-level destinations replace the crowded five-tab row",
+          "unified people archive removes both searches and the permanent secondary tab row",
+          "historical identities remain available in one folded archive",
+          "civil military transfer has exactly one permanent identity card in the unified list",
+          "same unified card exposes real identity, both careers and ability bars",
+          "mixed civil military dossier mounts one shared person detail without a nested military list or duplicate ability panel",
+          "family genealogy and merit roll remain reachable",
+          "one real death ends the full career without changing name or duplicating identity",
+          "a real former civil population identity can lead an actual resident-founded polity",
+          "civil founder retains name, permanent population identity and original lifespan",
+          "civil political entry creates no extra population",
+          "civil-born monarch and original governor dossier retain exactly one permanent ability source",
+          "civil-born monarch has the same ambition and no meaningless self-loyalty",
+          "civil-born monarch can die through the actual royal body",
+          "governor archive resolves subsequent actual royal death through resident identity, never personal name",
+          "former governor dossier displays real royal death, permanent ambition and no self-loyalty",
+          "strict save rejects forged civil-governor identity, date or governance result",
+          "strict save rejects forged civil-governor identity, date or governance result",
+          "strict save rejects forged civil-governor identity, date or governance result",
+          "city capture ends the old governor without claiming death",
+          "appointed governor still has the original live population identity",
+          "governor death ends the office in the same real month",
+          "governor save and office continue twelve months deterministically",
+          "second read preserves governor term, city effects and history"
+        ]
+      }
+    ],
+    "military": [
+      {
+        "seed": "royal-military-z11",
+        "count": 1482,
+        "proofs": [
+          "real civilian supports bounded controlled capacity fixture",
+          "real civilian supports bounded controlled capacity fixture",
+          "real military ZI source descends to one already-registered civilian NAN",
+          "real civilian NAN death ends an exhausted chain without creating another title",
+          "low military grants, civilian descent and exhausted chain strictly reread",
+          "existing civilian permits a controlled population-capacity fixture",
+          "existing civilian permits a controlled population-capacity fixture",
+          "existing civilian permits a controlled population-capacity fixture",
+          "existing civilian permits a controlled population-capacity fixture",
+          "existing civilian permits a controlled population-capacity fixture",
+          "existing civilian permits a controlled population-capacity fixture",
+          "founder formally granted BO descends to one real civilian child as ZI with the original political event source",
+          "legitimate political heir remains a civilian without a military appointment",
+          "a real titled civilian has readable current entry qualification without a fake reserve officer or canonical mutation",
+          "one existing shared national opportunity appoints the real inherited civilian as XIAOWEI, with no ancestral combat or title copied",
+          "one bounded national vacancy window selects one real titled civilian, then creates only its legitimate XIAOWEI command",
+          "event failure rolls back the new hereditary period, source event, state, identities and RNG completely",
+          "state failure rolls back the new hereditary period, source event, state, identities and RNG completely",
+          "an existing foreign state supplies an independent lawful political authority",
+          "the same actual descendant obtains a lawful foreign initial command through existing appointment gates",
+          "six pre-existing foreign cities supply actual new-country capture evidence",
+          "foreign independent military merit and later promotions establish the new dukedom authority without reviving or moving the ancestral house",
+          "cross-country new period strictly reads its own grant, promotion and original father-son evidence",
+          "the new foreign duke dies through the actual person and military transaction",
+          "the real registered son lawfully descends GONG to HOU in the new country, with no copied ancestry or population",
+          "second period legally descends BO to one real registered civilian ZI, without a military identity, extra army or extra population",
+          "formal grant source and unique civilian title read without another award",
+          "cache invalidation fixture uses the actual civilian heir and another real faction",
+          "eventless real civilian transfer invalidates the family archive cache without inventing a historical event",
+          "hydration discards the transferred family reading and restores the same original civilian identity",
+          "real natural-entry civilian already has its one family name before political promotion",
+          "the actual family civilian is the first legally eligible local political founder",
+          "actual family civilian can found a polity through the normal city transaction",
+          "isolated founding check restores the actual original civilian",
+          "founder formally granted BO descends to one real civilian child as ZI with the original political event source",
+          "legitimate political heir remains a civilian without a military appointment",
+          "a real titled civilian has readable current entry qualification without a fake reserve officer or canonical mutation",
+          "one existing shared national opportunity appoints the real inherited civilian as XIAOWEI, with no ancestral combat or title copied",
+          "one bounded national vacancy window selects one real titled civilian, then creates only its legitimate XIAOWEI command",
+          "formal grant source and unique civilian title read without another award",
+          "cache invalidation fixture uses the actual civilian heir and another real faction",
+          "eventless real civilian transfer invalidates the family archive cache without inventing a historical event",
+          "hydration discards the transferred family reading and restores the same original civilian identity",
+          "real natural-entry civilian already has its one family name before political promotion",
+          "the actual family civilian is the first legally eligible local political founder",
+          "actual family civilian can found a polity through the normal city transaction",
+          "isolated founding check restores the actual original civilian",
+          "failed punishment court-coup-result write failure rolls back User, army, dynasty, history, IDs and RNG",
+          "success court-coup-result write failure rolls back User, army, dynasty, history, IDs and RNG",
+          "success court-service-granted write failure rolls back User, army, dynasty, history, IDs and RNG",
+          "success military-ennobled write failure rolls back User, army, dynasty, history, IDs and RNG",
+          "success court-reward-granted write failure rolls back User, army, dynasty, history, IDs and RNG",
+          "failed punishment court-coup-result write failure rolls back User, army, dynasty, history, IDs and RNG",
+          "success court-coup-result write failure rolls back User, army, dynasty, history, IDs and RNG",
+          "success court-service-granted write failure rolls back User, army, dynasty, history, IDs and RNG",
+          "success military-ennobled write failure rolls back User, army, dynasty, history, IDs and RNG",
+          "success court-reward-granted write failure rolls back User, army, dynasty, history, IDs and RNG",
+          "execution write failure rolls back the actual body, surname, kin, title, command, history and RNG",
+          "execution write failure rolls back the actual body, surname, kin, title, command, history and RNG",
+          "court-peerage-granted rolls back king, peerage, commands, history and RNG together",
+          "court-reward-granted rolls back king, peerage, commands, history and RNG together",
+          "existing civilian permits a controlled population-capacity fixture",
+          "existing civilian permits a controlled population-capacity fixture",
+          "founder formally granted BO descends to one real civilian child as ZI with the original political event source",
+          "legitimate political heir remains a civilian without a military appointment",
+          "a real titled civilian has readable current entry qualification without a fake reserve officer or canonical mutation",
+          "one existing shared national opportunity appoints the real inherited civilian as XIAOWEI, with no ancestral combat or title copied",
+          "one bounded national vacancy window selects one real titled civilian, then creates only its legitimate XIAOWEI command",
+          "formal grant source and unique civilian title read without another award",
+          "cache invalidation fixture uses the actual civilian heir and another real faction",
+          "eventless real civilian transfer invalidates the family archive cache without inventing a historical event",
+          "hydration discards the transferred family reading and restores the same original civilian identity",
+          "real natural-entry civilian already has its one family name before political promotion",
+          "the actual family civilian is the first legally eligible local political founder",
+          "actual family civilian can found a polity through the normal city transaction",
+          "isolated founding check restores the actual original civilian",
+          "actual civilian exists for controlled population room",
+          "actual civilian exists for controlled population room",
+          "actual civilian exists for controlled population room",
+          "actual civilian exists for controlled population room",
+          "actual civilian exists for controlled population room",
+          "actual civilian exists for controlled population room",
+          "living founder neither retires his title nor gives an adult civilian child an early inheritance",
+          "complete genealogy shows the real civilian without repeated negative title labels",
+          "family UI reads the real inherited baronage separately from a civilian military status",
+          "actual ordinary military founder archive shows its true civilian successor without creating an officer",
+          "history links, shared viewport and civilian detail leave all canonical identities, army and RNG unchanged",
+          "actual inherited civilian can later receive a normal first military appointment",
+          "civilian inheritance followed by real service preserves population, birth and strict family identity",
+          "actual civilian heir can die later in the same month",
+          "actual deceased civilian title holder retains the historical peerage identity and never becomes an ordinary parent bridge",
+          "second read preserves actual inherited civilian identity and title chain",
+          "controlled cross-polity case begins with one actual adult civilian and verified father",
+          "actual independent local civilian can support the original split window",
+          "complete succession rollback including RNG at ruler-captured: []",
+          "rollback keeps original User, ruler and Arcade objects and their iteration order",
+          "complete succession rollback including RNG at ruler-succession: []",
+          "rollback keeps original User, ruler and Arcade objects and their iteration order",
+          "no qualified power holder keeps the lawful house; real dynasty-usurped rollback is checked with the actual commander in MilitaryUsurperCoreChecks",
+          "rollback leaves no orphan command state",
+          "actual non-capital city is available for a controlled civil political resource fixture",
+          "controlled civil political resource setup is a strict native save before accession",
+          "political civil participation creates neither a command, a second identity nor an army",
+          "old dynasty civil appointment ends through its lawful regime boundary",
+          "civil political source strictly replays after old appointment closes: ",
+          "civil political participation and accession read again with identical people, history and RNG",
+          "strict replay rejects forged actual civil political meritEventId",
+          "strict replay rejects forged actual civil political captureEventId",
+          "strict replay rejects forged actual civil political bonus",
+          "civil-supported accession resumes twelve actual months deterministically",
+          "continued civil political evidence reads again after later appointments and loyalty changes",
+          "military accession rollback restores complete world and RNG after military-command-ended: []",
+          "military accession rollback restores complete world and RNG after dynasty-usurped: []",
+          "military accession rollback restores complete world and RNG after ruler-succession: []",
+          "military accession rollback restores complete world and RNG after identity-validation: []",
+          "failed ennoblement rolls back its records and history without population or RNG change",
+          "real transfer ends the old-country estate and cannot relabel it as foreign property",
+          "failed posthumous act rolls back honor and original history atomically"
+        ]
+      }
+    ]
+  },
+  "performance": {
+    "before": [
+      {
+        "seed": "regional-1",
+        "inputSchemaVersion": 63,
+        "inputSeed": "regional-1",
+        "startMonth": 6000,
+        "months": 300,
+        "repetitions": 3,
+        "configuredSpeed": 4,
+        "input": {
+          "users": 133,
+          "factions": 25,
+          "rulers": 742,
+          "events": 15019
+        },
+        "scope": "Manual authoritative fixed steps with real Arcade physics; render loop stopped. Separate from live Electron frame measurement and human acceptance.",
+        "rows": [
+          {
+            "repeat": 0,
+            "monthlyP50Ms": 2,
+            "hydrationMs": 4492.1,
+            "exportMs": 5112.1,
+            "simulationWallMs": 5799.3,
+            "heapBefore": 143778015,
+            "heapAfter": 212258138,
+            "canonicalWithoutVersionSha256": "fdf79c4fbc8889b6f057dedcbfed53b60e8c762c17087b6a3c3f4517d1130f87",
+            "clockMismatches": 0,
+            "uniqueMonths": 300,
+            "phases": {
+              "MilitaryCommandRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 1.136,
+                "p95Ms": 6.6,
+                "p99Ms": 24,
+                "maxMs": 46.6
+              },
+              "MilitaryCommandRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 11.552,
+                "p95Ms": 32.1,
+                "p99Ms": 46.6,
+                "maxMs": 46.6
+              },
+              "MilitaryCommandRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.189,
+                "p95Ms": 0.2,
+                "p99Ms": 0.6,
+                "maxMs": 22.2
+              },
+              "DynastyRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 1.943,
+                "p95Ms": 11,
+                "p99Ms": 21.7,
+                "maxMs": 28.5
+              },
+              "DynastyRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 4.596,
+                "p95Ms": 10.4,
+                "p99Ms": 11,
+                "maxMs": 11
+              },
+              "DynastyRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 1.702,
+                "p95Ms": 11.1,
+                "p99Ms": 23.6,
+                "maxMs": 28.5
+              },
+              "Royal noble succession": {
+                "sampleCount": 300,
+                "averageMs": 0.067,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.4
+              },
+              "Royal noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.076,
+                "p95Ms": 0.2,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Royal noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.066,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.4
+              },
+              "Family household births and life": {
+                "sampleCount": 300,
+                "averageMs": 0.057,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.3
+              },
+              "Family household births and life/January": {
+                "sampleCount": 25,
+                "averageMs": 0.068,
+                "p95Ms": 0.2,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Family household births and life/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.056,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.3
+              },
+              "Family noble succession": {
+                "sampleCount": 300,
+                "averageMs": 0.153,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 32.4
+              },
+              "Family noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.032,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.1
+              },
+              "Family noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.164,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 32.4
+              },
+              "Civil administration": {
+                "sampleCount": 300,
+                "averageMs": 0.36,
+                "p95Ms": 1.3,
+                "p99Ms": 9.8,
+                "maxMs": 11.5
+              },
+              "Civil administration/January": {
+                "sampleCount": 25,
+                "averageMs": 3.512,
+                "p95Ms": 11.2,
+                "p99Ms": 11.5,
+                "maxMs": 11.5
+              },
+              "Civil administration/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.073,
+                "p95Ms": 0.2,
+                "p99Ms": 1.1,
+                "maxMs": 1.3
+              },
+              "total fixed/month step": {
+                "sampleCount": 300,
+                "averageMs": 7.122,
+                "p95Ms": 28.6,
+                "p99Ms": 57,
+                "maxMs": 94.1
+              },
+              "total fixed/month step/January": {
+                "sampleCount": 25,
+                "averageMs": 36.968,
+                "p95Ms": 78.5,
+                "p99Ms": 94.1,
+                "maxMs": 94.1
+              },
+              "total fixed/month step/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 4.408,
+                "p95Ms": 22.4,
+                "p99Ms": 28.6,
+                "maxMs": 54
+              }
+            },
+            "canonicalSha256": "d89e1c8bcbf8b8d4c1380a74bb8fc1f5aa607b5a7fc15d7b2c82959a4c9c393e"
+          },
+          {
+            "repeat": 1,
+            "monthlyP50Ms": 1.9,
+            "hydrationMs": 4676.8,
+            "exportMs": 4952.6,
+            "simulationWallMs": 5676.6,
+            "heapBefore": 170277072,
+            "heapAfter": 199215078,
+            "canonicalWithoutVersionSha256": "fdf79c4fbc8889b6f057dedcbfed53b60e8c762c17087b6a3c3f4517d1130f87",
+            "clockMismatches": 0,
+            "uniqueMonths": 300,
+            "phases": {
+              "MilitaryCommandRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 1.124,
+                "p95Ms": 5.4,
+                "p99Ms": 25.6,
+                "maxMs": 44.8
+              },
+              "MilitaryCommandRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 11.336,
+                "p95Ms": 34.1,
+                "p99Ms": 44.8,
+                "maxMs": 44.8
+              },
+              "MilitaryCommandRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.196,
+                "p95Ms": 0.2,
+                "p99Ms": 0.3,
+                "maxMs": 23
+              },
+              "DynastyRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 1.907,
+                "p95Ms": 11,
+                "p99Ms": 23.1,
+                "maxMs": 25.3
+              },
+              "DynastyRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 4.404,
+                "p95Ms": 9.1,
+                "p99Ms": 12.6,
+                "maxMs": 12.6
+              },
+              "DynastyRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 1.68,
+                "p95Ms": 11,
+                "p99Ms": 23.6,
+                "maxMs": 25.3
+              },
+              "Royal noble succession": {
+                "sampleCount": 300,
+                "averageMs": 0.064,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Royal noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.064,
+                "p95Ms": 0.2,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Royal noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.064,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Family household births and life": {
+                "sampleCount": 300,
+                "averageMs": 0.062,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Family household births and life/January": {
+                "sampleCount": 25,
+                "averageMs": 0.072,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Family household births and life/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.061,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Family noble succession": {
+                "sampleCount": 300,
+                "averageMs": 0.152,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 32.6
+              },
+              "Family noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.048,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.1
+              },
+              "Family noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.162,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 32.6
+              },
+              "Civil administration": {
+                "sampleCount": 300,
+                "averageMs": 0.346,
+                "p95Ms": 1.2,
+                "p99Ms": 9.3,
+                "maxMs": 11.2
+              },
+              "Civil administration/January": {
+                "sampleCount": 25,
+                "averageMs": 3.368,
+                "p95Ms": 10.8,
+                "p99Ms": 11.2,
+                "maxMs": 11.2
+              },
+              "Civil administration/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.071,
+                "p95Ms": 0.1,
+                "p99Ms": 1.2,
+                "maxMs": 1.2
+              },
+              "total fixed/month step": {
+                "sampleCount": 300,
+                "averageMs": 6.882,
+                "p95Ms": 26.2,
+                "p99Ms": 55.9,
+                "maxMs": 93.8
+              },
+              "total fixed/month step/January": {
+                "sampleCount": 25,
+                "averageMs": 35.392,
+                "p95Ms": 75.4,
+                "p99Ms": 93.8,
+                "maxMs": 93.8
+              },
+              "total fixed/month step/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 4.29,
+                "p95Ms": 22.6,
+                "p99Ms": 26.2,
+                "maxMs": 54.5
+              }
+            },
+            "canonicalSha256": "d89e1c8bcbf8b8d4c1380a74bb8fc1f5aa607b5a7fc15d7b2c82959a4c9c393e"
+          },
+          {
+            "repeat": 2,
+            "monthlyP50Ms": 1.9,
+            "hydrationMs": 4669.5,
+            "exportMs": 5143,
+            "simulationWallMs": 5757.1,
+            "heapBefore": 166826404,
+            "heapAfter": 218485057,
+            "canonicalWithoutVersionSha256": "fdf79c4fbc8889b6f057dedcbfed53b60e8c762c17087b6a3c3f4517d1130f87",
+            "clockMismatches": 0,
+            "uniqueMonths": 300,
+            "phases": {
+              "MilitaryCommandRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 1.048,
+                "p95Ms": 5.5,
+                "p99Ms": 23,
+                "maxMs": 43.4
+              },
+              "MilitaryCommandRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 10.608,
+                "p95Ms": 32.4,
+                "p99Ms": 43.4,
+                "maxMs": 43.4
+              },
+              "MilitaryCommandRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.179,
+                "p95Ms": 0.2,
+                "p99Ms": 0.3,
+                "maxMs": 22.3
+              },
+              "DynastyRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 1.94,
+                "p95Ms": 11.2,
+                "p99Ms": 22.6,
+                "maxMs": 26.9
+              },
+              "DynastyRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 4.544,
+                "p95Ms": 10.3,
+                "p99Ms": 12.3,
+                "maxMs": 12.3
+              },
+              "DynastyRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 1.703,
+                "p95Ms": 11.2,
+                "p99Ms": 23.3,
+                "maxMs": 26.9
+              },
+              "Royal noble succession": {
+                "sampleCount": 300,
+                "averageMs": 0.068,
+                "p95Ms": 0.2,
+                "p99Ms": 0.2,
+                "maxMs": 0.3
+              },
+              "Royal noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.064,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Royal noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.069,
+                "p95Ms": 0.2,
+                "p99Ms": 0.2,
+                "maxMs": 0.3
+              },
+              "Family household births and life": {
+                "sampleCount": 300,
+                "averageMs": 0.058,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.3
+              },
+              "Family household births and life/January": {
+                "sampleCount": 25,
+                "averageMs": 0.048,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.1
+              },
+              "Family household births and life/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.059,
+                "p95Ms": 0.2,
+                "p99Ms": 0.2,
+                "maxMs": 0.3
+              },
+              "Family noble succession": {
+                "sampleCount": 300,
+                "averageMs": 0.165,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 35.4
+              },
+              "Family noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.056,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Family noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.175,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 35.4
+              },
+              "Civil administration": {
+                "sampleCount": 300,
+                "averageMs": 0.343,
+                "p95Ms": 1.3,
+                "p99Ms": 9.2,
+                "maxMs": 11.5
+              },
+              "Civil administration/January": {
+                "sampleCount": 25,
+                "averageMs": 3.332,
+                "p95Ms": 10.6,
+                "p99Ms": 11.5,
+                "maxMs": 11.5
+              },
+              "Civil administration/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.072,
+                "p95Ms": 0.1,
+                "p99Ms": 1.1,
+                "maxMs": 1.2
+              },
+              "total fixed/month step": {
+                "sampleCount": 300,
+                "averageMs": 6.888,
+                "p95Ms": 27.7,
+                "p99Ms": 57.7,
+                "maxMs": 94.7
+              },
+              "total fixed/month step/January": {
+                "sampleCount": 25,
+                "averageMs": 34.804,
+                "p95Ms": 73.8,
+                "p99Ms": 94.7,
+                "maxMs": 94.7
+              },
+              "total fixed/month step/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 4.351,
+                "p95Ms": 22.6,
+                "p99Ms": 27.7,
+                "maxMs": 57.7
+              }
+            },
+            "canonicalSha256": "d89e1c8bcbf8b8d4c1380a74bb8fc1f5aa607b5a7fc15d7b2c82959a4c9c393e"
+          }
+        ]
+      }
+    ],
+    "afterBeforeIndex": [
+      {
+        "seed": "regional-1",
+        "inputSchemaVersion": 64,
+        "inputSeed": "regional-1",
+        "startMonth": 6000,
+        "months": 300,
+        "repetitions": 3,
+        "configuredSpeed": 4,
+        "input": {
+          "users": 129,
+          "factions": 10,
+          "rulers": 664,
+          "events": 11920
+        },
+        "scope": "Manual authoritative fixed steps with real Arcade physics; render loop stopped. Separate from live Electron frame measurement and human acceptance.",
+        "rows": [
+          {
+            "repeat": 0,
+            "monthlyP50Ms": 4.4,
+            "hydrationMs": 2561.8,
+            "exportMs": 2621.4,
+            "simulationWallMs": 6373.7,
+            "heapBefore": 127082545,
+            "heapAfter": 164295028,
+            "canonicalWithoutVersionSha256": "088acd49abffef6c9c013e3d8326a75ff1fd57919f3281debd8956977b94dbd5",
+            "clockMismatches": 0,
+            "uniqueMonths": 300,
+            "phases": {
+              "MilitaryCommandRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 0.38,
+                "p95Ms": 2,
+                "p99Ms": 2.7,
+                "maxMs": 18.4
+              },
+              "MilitaryCommandRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 2.108,
+                "p95Ms": 2.7,
+                "p99Ms": 3.3,
+                "maxMs": 3.3
+              },
+              "MilitaryCommandRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.223,
+                "p95Ms": 0.2,
+                "p99Ms": 1.1,
+                "maxMs": 18.4
+              },
+              "DynastyRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 2.254,
+                "p95Ms": 9.8,
+                "p99Ms": 22.4,
+                "maxMs": 38.1
+              },
+              "DynastyRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 2.744,
+                "p95Ms": 3.4,
+                "p99Ms": 11.1,
+                "maxMs": 11.1
+              },
+              "DynastyRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 2.21,
+                "p95Ms": 9.8,
+                "p99Ms": 23.5,
+                "maxMs": 38.1
+              },
+              "Royal noble succession": {
+                "sampleCount": 300,
+                "averageMs": 2.042,
+                "p95Ms": 2.8,
+                "p99Ms": 3.4,
+                "maxMs": 15
+              },
+              "Royal noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 1.976,
+                "p95Ms": 2.8,
+                "p99Ms": 2.9,
+                "maxMs": 2.9
+              },
+              "Royal noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 2.048,
+                "p95Ms": 2.8,
+                "p99Ms": 4,
+                "maxMs": 15
+              },
+              "Family household births and life": {
+                "sampleCount": 300,
+                "averageMs": 0.043,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.3
+              },
+              "Family household births and life/January": {
+                "sampleCount": 25,
+                "averageMs": 0.056,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Family household births and life/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.042,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.3
+              },
+              "Family noble succession": {
+                "sampleCount": 300,
+                "averageMs": 0.164,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 22.1
+              },
+              "Family noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.016,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.1
+              },
+              "Family noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.177,
+                "p95Ms": 0.1,
+                "p99Ms": 0.3,
+                "maxMs": 22.1
+              },
+              "Civil administration": {
+                "sampleCount": 300,
+                "averageMs": 0.824,
+                "p95Ms": 3.7,
+                "p99Ms": 20.7,
+                "maxMs": 25.3
+              },
+              "Civil administration/January": {
+                "sampleCount": 25,
+                "averageMs": 8.956,
+                "p95Ms": 24.7,
+                "p99Ms": 25.3,
+                "maxMs": 25.3
+              },
+              "Civil administration/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.084,
+                "p95Ms": 0.2,
+                "p99Ms": 1.1,
+                "maxMs": 1.3
+              },
+              "total fixed/month step": {
+                "sampleCount": 300,
+                "averageMs": 8.884,
+                "p95Ms": 28.4,
+                "p99Ms": 43.9,
+                "maxMs": 46.9
+              },
+              "total fixed/month step/January": {
+                "sampleCount": 25,
+                "averageMs": 29.128,
+                "p95Ms": 45.2,
+                "p99Ms": 46.9,
+                "maxMs": 46.9
+              },
+              "total fixed/month step/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 7.044,
+                "p95Ms": 21.7,
+                "p99Ms": 43.2,
+                "maxMs": 45.6
+              }
+            },
+            "canonicalSha256": "e6f39d6d800161cfa42068cb1a4394d4630ad64c117bd0c8d0e84c57262cdfd6"
+          },
+          {
+            "repeat": 1,
+            "monthlyP50Ms": 4.7,
+            "hydrationMs": 2391.2,
+            "exportMs": 2516.8,
+            "simulationWallMs": 6267.5,
+            "heapBefore": 128960449,
+            "heapAfter": 189282038,
+            "canonicalWithoutVersionSha256": "088acd49abffef6c9c013e3d8326a75ff1fd57919f3281debd8956977b94dbd5",
+            "clockMismatches": 0,
+            "uniqueMonths": 300,
+            "phases": {
+              "MilitaryCommandRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 0.381,
+                "p95Ms": 1.9,
+                "p99Ms": 2.4,
+                "maxMs": 18
+              },
+              "MilitaryCommandRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 1.988,
+                "p95Ms": 2.4,
+                "p99Ms": 2.7,
+                "maxMs": 2.7
+              },
+              "MilitaryCommandRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.235,
+                "p95Ms": 0.2,
+                "p99Ms": 0.5,
+                "maxMs": 18
+              },
+              "DynastyRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 2.162,
+                "p95Ms": 9.7,
+                "p99Ms": 22.1,
+                "maxMs": 25.4
+              },
+              "DynastyRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 2.668,
+                "p95Ms": 2.9,
+                "p99Ms": 11.1,
+                "maxMs": 11.1
+              },
+              "DynastyRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 2.116,
+                "p95Ms": 9.7,
+                "p99Ms": 22.8,
+                "maxMs": 25.4
+              },
+              "Royal noble succession": {
+                "sampleCount": 300,
+                "averageMs": 2.298,
+                "p95Ms": 2.8,
+                "p99Ms": 3.1,
+                "maxMs": 22.6
+              },
+              "Royal noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 2.056,
+                "p95Ms": 2.7,
+                "p99Ms": 3,
+                "maxMs": 3
+              },
+              "Royal noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 2.32,
+                "p95Ms": 2.8,
+                "p99Ms": 3.2,
+                "maxMs": 22.6
+              },
+              "Family household births and life": {
+                "sampleCount": 300,
+                "averageMs": 0.042,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Family household births and life/January": {
+                "sampleCount": 25,
+                "averageMs": 0.048,
+                "p95Ms": 0.2,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Family household births and life/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.041,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Family noble succession": {
+                "sampleCount": 300,
+                "averageMs": 0.185,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 24.5
+              },
+              "Family noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.016,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.1
+              },
+              "Family noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.2,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 24.5
+              },
+              "Civil administration": {
+                "sampleCount": 300,
+                "averageMs": 0.814,
+                "p95Ms": 3.7,
+                "p99Ms": 21.5,
+                "maxMs": 28.3
+              },
+              "Civil administration/January": {
+                "sampleCount": 25,
+                "averageMs": 8.9,
+                "p95Ms": 23.2,
+                "p99Ms": 28.3,
+                "maxMs": 28.3
+              },
+              "Civil administration/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.079,
+                "p95Ms": 0.2,
+                "p99Ms": 0.9,
+                "maxMs": 1
+              },
+              "total fixed/month step": {
+                "sampleCount": 300,
+                "averageMs": 8.935,
+                "p95Ms": 28.3,
+                "p99Ms": 41,
+                "maxMs": 50.5
+              },
+              "total fixed/month step/January": {
+                "sampleCount": 25,
+                "averageMs": 29.228,
+                "p95Ms": 41,
+                "p99Ms": 50.5,
+                "maxMs": 50.5
+              },
+              "total fixed/month step/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 7.09,
+                "p95Ms": 22,
+                "p99Ms": 35,
+                "maxMs": 47.5
+              }
+            },
+            "canonicalSha256": "e6f39d6d800161cfa42068cb1a4394d4630ad64c117bd0c8d0e84c57262cdfd6"
+          },
+          {
+            "repeat": 2,
+            "monthlyP50Ms": 4.2,
+            "hydrationMs": 2349.5,
+            "exportMs": 2662.9,
+            "simulationWallMs": 6280.4,
+            "heapBefore": 213077162,
+            "heapAfter": 184965247,
+            "canonicalWithoutVersionSha256": "088acd49abffef6c9c013e3d8326a75ff1fd57919f3281debd8956977b94dbd5",
+            "clockMismatches": 0,
+            "uniqueMonths": 300,
+            "phases": {
+              "MilitaryCommandRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 0.377,
+                "p95Ms": 1.9,
+                "p99Ms": 2.4,
+                "maxMs": 19.3
+              },
+              "MilitaryCommandRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 1.928,
+                "p95Ms": 2.2,
+                "p99Ms": 2.4,
+                "maxMs": 2.4
+              },
+              "MilitaryCommandRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.236,
+                "p95Ms": 0.2,
+                "p99Ms": 8.2,
+                "maxMs": 19.3
+              },
+              "DynastyRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 2.211,
+                "p95Ms": 9.6,
+                "p99Ms": 21.5,
+                "maxMs": 24
+              },
+              "DynastyRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 2.572,
+                "p95Ms": 2.9,
+                "p99Ms": 10.7,
+                "maxMs": 10.7
+              },
+              "DynastyRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 2.178,
+                "p95Ms": 9.7,
+                "p99Ms": 23.4,
+                "maxMs": 24
+              },
+              "Royal noble succession": {
+                "sampleCount": 300,
+                "averageMs": 1.891,
+                "p95Ms": 2.2,
+                "p99Ms": 2.9,
+                "maxMs": 14.8
+              },
+              "Royal noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 1.812,
+                "p95Ms": 2.1,
+                "p99Ms": 2.6,
+                "maxMs": 2.6
+              },
+              "Royal noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 1.899,
+                "p95Ms": 2.3,
+                "p99Ms": 3.9,
+                "maxMs": 14.8
+              },
+              "Family household births and life": {
+                "sampleCount": 300,
+                "averageMs": 0.042,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.2
+              },
+              "Family household births and life/January": {
+                "sampleCount": 25,
+                "averageMs": 0.052,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.2
+              },
+              "Family household births and life/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.041,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.2
+              },
+              "Family noble succession": {
+                "sampleCount": 300,
+                "averageMs": 0.17,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 21.8
+              },
+              "Family noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.032,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.1
+              },
+              "Family noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.183,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 21.8
+              },
+              "Civil administration": {
+                "sampleCount": 300,
+                "averageMs": 0.799,
+                "p95Ms": 4.1,
+                "p99Ms": 20.6,
+                "maxMs": 25.3
+              },
+              "Civil administration/January": {
+                "sampleCount": 25,
+                "averageMs": 8.828,
+                "p95Ms": 22.8,
+                "p99Ms": 25.3,
+                "maxMs": 25.3
+              },
+              "Civil administration/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.069,
+                "p95Ms": 0.1,
+                "p99Ms": 1,
+                "maxMs": 1.4
+              },
+              "total fixed/month step": {
+                "sampleCount": 300,
+                "averageMs": 8.513,
+                "p95Ms": 27.2,
+                "p99Ms": 39.5,
+                "maxMs": 47.6
+              },
+              "total fixed/month step/January": {
+                "sampleCount": 25,
+                "averageMs": 28.24,
+                "p95Ms": 39.5,
+                "p99Ms": 47.6,
+                "maxMs": 47.6
+              },
+              "total fixed/month step/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 6.719,
+                "p95Ms": 21.4,
+                "p99Ms": 30.3,
+                "maxMs": 45.5
+              }
+            },
+            "canonicalSha256": "e6f39d6d800161cfa42068cb1a4394d4630ad64c117bd0c8d0e84c57262cdfd6"
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "seed": "regional-1",
+        "inputSchemaVersion": 64,
+        "inputSeed": "regional-1",
+        "startMonth": 6000,
+        "months": 300,
+        "repetitions": 3,
+        "configuredSpeed": 4,
+        "input": {
+          "users": 129,
+          "factions": 10,
+          "rulers": 664,
+          "events": 11920
+        },
+        "scope": "Manual authoritative fixed steps with real Arcade physics; render loop stopped. Separate from live Electron frame measurement and human acceptance.",
+        "rows": [
+          {
+            "repeat": 0,
+            "monthlyP50Ms": 3.2,
+            "hydrationMs": 2428.2,
+            "exportMs": 2611.6,
+            "simulationWallMs": 5745.7,
+            "heapBefore": 149439845,
+            "heapAfter": 170398907,
+            "canonicalWithoutVersionSha256": "088acd49abffef6c9c013e3d8326a75ff1fd57919f3281debd8956977b94dbd5",
+            "clockMismatches": 0,
+            "uniqueMonths": 300,
+            "phases": {
+              "MilitaryCommandRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 0.362,
+                "p95Ms": 1.9,
+                "p99Ms": 2.7,
+                "maxMs": 17.7
+              },
+              "MilitaryCommandRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 2.04,
+                "p95Ms": 2.7,
+                "p99Ms": 3.4,
+                "maxMs": 3.4
+              },
+              "MilitaryCommandRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.21,
+                "p95Ms": 0.2,
+                "p99Ms": 0.8,
+                "maxMs": 17.7
+              },
+              "DynastyRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 2.141,
+                "p95Ms": 9.2,
+                "p99Ms": 21.7,
+                "maxMs": 25.9
+              },
+              "DynastyRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 2.768,
+                "p95Ms": 5.2,
+                "p99Ms": 10.7,
+                "maxMs": 10.7
+              },
+              "DynastyRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 2.084,
+                "p95Ms": 9.4,
+                "p99Ms": 21.9,
+                "maxMs": 25.9
+              },
+              "Royal noble succession": {
+                "sampleCount": 300,
+                "averageMs": 0.995,
+                "p95Ms": 1.1,
+                "p99Ms": 1.4,
+                "maxMs": 10.3
+              },
+              "Royal noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.928,
+                "p95Ms": 1.1,
+                "p99Ms": 1.1,
+                "maxMs": 1.1
+              },
+              "Royal noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 1.001,
+                "p95Ms": 1.2,
+                "p99Ms": 1.5,
+                "maxMs": 10.3
+              },
+              "Family household births and life": {
+                "sampleCount": 300,
+                "averageMs": 0.032,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.3
+              },
+              "Family household births and life/January": {
+                "sampleCount": 25,
+                "averageMs": 0.032,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.1
+              },
+              "Family household births and life/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.032,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 0.3
+              },
+              "Family noble succession": {
+                "sampleCount": 300,
+                "averageMs": 0.165,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 21.9
+              },
+              "Family noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.032,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.1
+              },
+              "Family noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.177,
+                "p95Ms": 0.1,
+                "p99Ms": 0.4,
+                "maxMs": 21.9
+              },
+              "Civil administration": {
+                "sampleCount": 300,
+                "averageMs": 0.777,
+                "p95Ms": 3.6,
+                "p99Ms": 19.3,
+                "maxMs": 24.3
+              },
+              "Civil administration/January": {
+                "sampleCount": 25,
+                "averageMs": 8.536,
+                "p95Ms": 24.1,
+                "p99Ms": 24.3,
+                "maxMs": 24.3
+              },
+              "Civil administration/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.071,
+                "p95Ms": 0.1,
+                "p99Ms": 1.1,
+                "maxMs": 1.1
+              },
+              "total fixed/month step": {
+                "sampleCount": 300,
+                "averageMs": 7.459,
+                "p95Ms": 27.1,
+                "p99Ms": 40.7,
+                "maxMs": 44.9
+              },
+              "total fixed/month step/January": {
+                "sampleCount": 25,
+                "averageMs": 26.82,
+                "p95Ms": 40.7,
+                "p99Ms": 44.9,
+                "maxMs": 44.9
+              },
+              "total fixed/month step/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 5.699,
+                "p95Ms": 20.1,
+                "p99Ms": 32.3,
+                "maxMs": 42.8
+              }
+            },
+            "canonicalSha256": "e6f39d6d800161cfa42068cb1a4394d4630ad64c117bd0c8d0e84c57262cdfd6"
+          },
+          {
+            "repeat": 1,
+            "monthlyP50Ms": 3.3,
+            "hydrationMs": 2403.8,
+            "exportMs": 2376.7,
+            "simulationWallMs": 5716.6,
+            "heapBefore": 157049966,
+            "heapAfter": 197204623,
+            "canonicalWithoutVersionSha256": "088acd49abffef6c9c013e3d8326a75ff1fd57919f3281debd8956977b94dbd5",
+            "clockMismatches": 0,
+            "uniqueMonths": 300,
+            "phases": {
+              "MilitaryCommandRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 0.374,
+                "p95Ms": 1.9,
+                "p99Ms": 2.7,
+                "maxMs": 19
+              },
+              "MilitaryCommandRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 1.952,
+                "p95Ms": 2.7,
+                "p99Ms": 2.8,
+                "maxMs": 2.8
+              },
+              "MilitaryCommandRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.23,
+                "p95Ms": 0.2,
+                "p99Ms": 0.3,
+                "maxMs": 19
+              },
+              "DynastyRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 2.106,
+                "p95Ms": 9.4,
+                "p99Ms": 21.5,
+                "maxMs": 22.5
+              },
+              "DynastyRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 2.6,
+                "p95Ms": 2.6,
+                "p99Ms": 11.6,
+                "maxMs": 11.6
+              },
+              "DynastyRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 2.061,
+                "p95Ms": 9.4,
+                "p99Ms": 22.3,
+                "maxMs": 22.5
+              },
+              "Royal noble succession": {
+                "sampleCount": 300,
+                "averageMs": 1.009,
+                "p95Ms": 1.2,
+                "p99Ms": 1.3,
+                "maxMs": 10.7
+              },
+              "Royal noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.9,
+                "p95Ms": 1.1,
+                "p99Ms": 1.2,
+                "maxMs": 1.2
+              },
+              "Royal noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 1.019,
+                "p95Ms": 1.2,
+                "p99Ms": 1.3,
+                "maxMs": 10.7
+              },
+              "Family household births and life": {
+                "sampleCount": 300,
+                "averageMs": 0.034,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.2
+              },
+              "Family household births and life/January": {
+                "sampleCount": 25,
+                "averageMs": 0.024,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.1
+              },
+              "Family household births and life/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.035,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.2
+              },
+              "Family noble succession": {
+                "sampleCount": 300,
+                "averageMs": 0.158,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 20.4
+              },
+              "Family noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.024,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.1
+              },
+              "Family noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.171,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 20.4
+              },
+              "Civil administration": {
+                "sampleCount": 300,
+                "averageMs": 0.768,
+                "p95Ms": 3.8,
+                "p99Ms": 20.9,
+                "maxMs": 25.2
+              },
+              "Civil administration/January": {
+                "sampleCount": 25,
+                "averageMs": 8.568,
+                "p95Ms": 25,
+                "p99Ms": 25.2,
+                "maxMs": 25.2
+              },
+              "Civil administration/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.059,
+                "p95Ms": 0.1,
+                "p99Ms": 0.9,
+                "maxMs": 1
+              },
+              "total fixed/month step": {
+                "sampleCount": 300,
+                "averageMs": 7.44,
+                "p95Ms": 26.1,
+                "p99Ms": 40.6,
+                "maxMs": 44.2
+              },
+              "total fixed/month step/January": {
+                "sampleCount": 25,
+                "averageMs": 27.22,
+                "p95Ms": 43.8,
+                "p99Ms": 44.2,
+                "maxMs": 44.2
+              },
+              "total fixed/month step/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 5.642,
+                "p95Ms": 20.6,
+                "p99Ms": 29.5,
+                "maxMs": 43.2
+              }
+            },
+            "canonicalSha256": "e6f39d6d800161cfa42068cb1a4394d4630ad64c117bd0c8d0e84c57262cdfd6"
+          },
+          {
+            "repeat": 2,
+            "monthlyP50Ms": 2.8,
+            "hydrationMs": 2153.4,
+            "exportMs": 2263.7,
+            "simulationWallMs": 5417.6,
+            "heapBefore": 215787287,
+            "heapAfter": 294306761,
+            "canonicalWithoutVersionSha256": "088acd49abffef6c9c013e3d8326a75ff1fd57919f3281debd8956977b94dbd5",
+            "clockMismatches": 0,
+            "uniqueMonths": 300,
+            "phases": {
+              "MilitaryCommandRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 0.328,
+                "p95Ms": 1.7,
+                "p99Ms": 1.9,
+                "maxMs": 17.5
+              },
+              "MilitaryCommandRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 1.748,
+                "p95Ms": 1.9,
+                "p99Ms": 1.9,
+                "maxMs": 1.9
+              },
+              "MilitaryCommandRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.199,
+                "p95Ms": 0.2,
+                "p99Ms": 0.3,
+                "maxMs": 17.5
+              },
+              "DynastyRegistry.update": {
+                "sampleCount": 300,
+                "averageMs": 1.965,
+                "p95Ms": 9.2,
+                "p99Ms": 20.6,
+                "maxMs": 21.8
+              },
+              "DynastyRegistry.update/January": {
+                "sampleCount": 25,
+                "averageMs": 2.256,
+                "p95Ms": 2.9,
+                "p99Ms": 10.2,
+                "maxMs": 10.2
+              },
+              "DynastyRegistry.update/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 1.938,
+                "p95Ms": 9.3,
+                "p99Ms": 20.7,
+                "maxMs": 21.8
+              },
+              "Royal noble succession": {
+                "sampleCount": 300,
+                "averageMs": 0.859,
+                "p95Ms": 1,
+                "p99Ms": 1.1,
+                "maxMs": 10
+              },
+              "Royal noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.804,
+                "p95Ms": 0.9,
+                "p99Ms": 0.9,
+                "maxMs": 0.9
+              },
+              "Royal noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.864,
+                "p95Ms": 1,
+                "p99Ms": 1.1,
+                "maxMs": 10
+              },
+              "Family household births and life": {
+                "sampleCount": 300,
+                "averageMs": 0.028,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.2
+              },
+              "Family household births and life/January": {
+                "sampleCount": 25,
+                "averageMs": 0.024,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.1
+              },
+              "Family household births and life/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.028,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.2
+              },
+              "Family noble succession": {
+                "sampleCount": 300,
+                "averageMs": 0.154,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 20.3
+              },
+              "Family noble succession/January": {
+                "sampleCount": 25,
+                "averageMs": 0.036,
+                "p95Ms": 0.1,
+                "p99Ms": 0.1,
+                "maxMs": 0.1
+              },
+              "Family noble succession/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.164,
+                "p95Ms": 0.1,
+                "p99Ms": 0.2,
+                "maxMs": 20.3
+              },
+              "Civil administration": {
+                "sampleCount": 300,
+                "averageMs": 0.737,
+                "p95Ms": 3.5,
+                "p99Ms": 20,
+                "maxMs": 24.8
+              },
+              "Civil administration/January": {
+                "sampleCount": 25,
+                "averageMs": 8.208,
+                "p95Ms": 22.6,
+                "p99Ms": 24.8,
+                "maxMs": 24.8
+              },
+              "Civil administration/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 0.058,
+                "p95Ms": 0.1,
+                "p99Ms": 0.9,
+                "maxMs": 0.9
+              },
+              "total fixed/month step": {
+                "sampleCount": 300,
+                "averageMs": 6.882,
+                "p95Ms": 23.9,
+                "p99Ms": 38,
+                "maxMs": 44.1
+              },
+              "total fixed/month step/January": {
+                "sampleCount": 25,
+                "averageMs": 25.26,
+                "p95Ms": 38,
+                "p99Ms": 44.1,
+                "maxMs": 44.1
+              },
+              "total fixed/month step/ordinary": {
+                "sampleCount": 275,
+                "averageMs": 5.211,
+                "p95Ms": 19.8,
+                "p99Ms": 28,
+                "maxMs": 41.1
+              }
+            },
+            "canonicalSha256": "e6f39d6d800161cfa42068cb1a4394d4630ad64c117bd0c8d0e84c57262cdfd6"
+          }
+        ]
+      }
+    ],
+    "royalPlannerOracle": [
+      {
+        "file": "regional-1-100.json",
+        "cases": 19,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-1-200.json",
+        "cases": 28,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-2-100.json",
+        "cases": 7,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-2-200.json",
+        "cases": 7,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-3-100.json",
+        "cases": 7,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-3-200.json",
+        "cases": 21,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-4-100.json",
+        "cases": 15,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-4-200.json",
+        "cases": 24,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-5-100.json",
+        "cases": 23,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-6-100.json",
+        "cases": 20,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-7-100.json",
+        "cases": 13,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-8-100.json",
+        "cases": 12,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-1-100.json",
+        "cases": 19,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-1-200.json",
+        "cases": 28,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-1-300.json",
+        "cases": 28,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-1-400.json",
+        "cases": 28,
+        "equal": true,
+        "unchanged": true
+      },
+      {
+        "file": "regional-1-500.json",
+        "cases": 34,
+        "equal": true,
+        "unchanged": true
+      }
+    ],
+    "save300": [
+      {
+        "seed": "regional-1",
+        "oracleCases": 0,
+        "month": 3600,
+        "saveVersion": 64,
+        "rows": [
+          {
+            "repeat": 0,
+            "validationMs": 1009.1,
+            "phases": {
+              "validateSiegeBattles": 0,
+              "validateCollisionSchedule": 1,
+              "validateResidentIdentities": 7.4,
+              "validateRoyalMilitaryIdentities": 1.2,
+              "validateMilitarySecessions": 1.5,
+              "validateRoyalNobility": 28.4,
+              "validateRoyalHouseholds": 109.6,
+              "validateFactionLifetime": 0.2,
+              "validateRulerLifeRecord": 0.5,
+              "validateMilitaryCommandState": 617.4,
+              "validateInsurgentCommands": 1.9,
+              "validateMilitaryNobility": 40.7,
+              "validateMilitaryHonors": 6.3,
+              "validateMilitaryAppanages": 4.8,
+              "validateMilitaryPoliticalParticipation": 2.6,
+              "validatePoliticalCrises": 3.6,
+              "validateMilitaryUsurpers": 2,
+              "validateMilitaryNarrativeLinks": 1.6,
+              "validateMilitaryOfficeAuthorities": 0.9,
+              "validateMilitaryBattleNames": 0.6,
+              "validateRoyalHonors": 5,
+              "validateCourtCoups": 10.1,
+              "validateAppointmentSelections": 10,
+              "validateMilitaryCourt": 5.8,
+              "validateRoyalSuccessionStanding": 0.8,
+              "validateMilitaryFamilies": 41,
+              "validateFamilyChildren": 11.3,
+              "validateCivilAdministration": 6.7,
+              "validateFamilyNobility": 58.8
+            },
+            "stringifyMs": 11,
+            "parseMs": 13.4,
+            "hydrationMs": 1105.3,
+            "exportMs": 1037.6,
+            "bytes": 6035381,
+            "heapBytes": 149912109,
+            "canonicalUnchanged": true
+          },
+          {
+            "repeat": 1,
+            "validationMs": 918,
+            "phases": {
+              "validateSiegeBattles": 0,
+              "validateCollisionSchedule": 0.7,
+              "validateResidentIdentities": 2.2,
+              "validateRoyalMilitaryIdentities": 0.6,
+              "validateMilitarySecessions": 0.5,
+              "validateRoyalNobility": 27,
+              "validateRoyalHouseholds": 84.5,
+              "validateFactionLifetime": 0.1,
+              "validateRulerLifeRecord": 0.3,
+              "validateMilitaryCommandState": 591,
+              "validateInsurgentCommands": 0.9,
+              "validateMilitaryNobility": 37.7,
+              "validateMilitaryHonors": 5.4,
+              "validateMilitaryAppanages": 3.4,
+              "validateMilitaryPoliticalParticipation": 1.8,
+              "validatePoliticalCrises": 2.3,
+              "validateMilitaryUsurpers": 1.7,
+              "validateMilitaryNarrativeLinks": 0.9,
+              "validateMilitaryOfficeAuthorities": 0.5,
+              "validateMilitaryBattleNames": 0.3,
+              "validateRoyalHonors": 3.1,
+              "validateCourtCoups": 6.4,
+              "validateAppointmentSelections": 6.3,
+              "validateMilitaryCourt": 4.3,
+              "validateRoyalSuccessionStanding": 0.7,
+              "validateMilitaryFamilies": 40.3,
+              "validateFamilyChildren": 10,
+              "validateCivilAdministration": 4.8,
+              "validateFamilyNobility": 63.7
+            },
+            "stringifyMs": 8.3,
+            "parseMs": 13.9,
+            "hydrationMs": 996.9,
+            "exportMs": 954.2,
+            "bytes": 6035381,
+            "heapBytes": 183891016,
+            "canonicalUnchanged": true
+          },
+          {
+            "repeat": 2,
+            "validationMs": 912.3,
+            "phases": {
+              "validateSiegeBattles": 0,
+              "validateCollisionSchedule": 0.8,
+              "validateResidentIdentities": 1.8,
+              "validateRoyalMilitaryIdentities": 0.5,
+              "validateMilitarySecessions": 0.4,
+              "validateRoyalNobility": 26.7,
+              "validateRoyalHouseholds": 83.5,
+              "validateFactionLifetime": 0,
+              "validateRulerLifeRecord": 0.4,
+              "validateMilitaryCommandState": 566.5,
+              "validateInsurgentCommands": 0.7,
+              "validateMilitaryNobility": 34.7,
+              "validateMilitaryHonors": 4.7,
+              "validateMilitaryAppanages": 3.3,
+              "validateMilitaryPoliticalParticipation": 1.9,
+              "validatePoliticalCrises": 2.7,
+              "validateMilitaryUsurpers": 1.8,
+              "validateMilitaryNarrativeLinks": 1.2,
+              "validateMilitaryOfficeAuthorities": 0.3,
+              "validateMilitaryBattleNames": 0.3,
+              "validateRoyalHonors": 3.8,
+              "validateCourtCoups": 5.9,
+              "validateAppointmentSelections": 7.8,
+              "validateMilitaryCourt": 9.3,
+              "validateRoyalSuccessionStanding": 0.7,
+              "validateMilitaryFamilies": 51.4,
+              "validateFamilyChildren": 11.4,
+              "validateCivilAdministration": 4.8,
+              "validateFamilyNobility": 70.8
+            },
+            "stringifyMs": 10.1,
+            "parseMs": 15.8,
+            "hydrationMs": 1103.4,
+            "exportMs": 1047.4,
+            "bytes": 6035381,
+            "heapBytes": 162490255,
+            "canonicalUnchanged": true
+          }
+        ],
+        "scope": "Same native DTO, actual complete strict validation, hydration and exporter; no header upgrade, history mutation, RNG or screenshots"
+      }
+    ],
+    "save500": [
+      {
+        "seed": "regional-1",
+        "oracleCases": 0,
+        "month": 6000,
+        "saveVersion": 64,
+        "rows": [
+          {
+            "repeat": 0,
+            "validationMs": 2249.3,
+            "phases": {
+              "validateSiegeBattles": 0,
+              "validateCollisionSchedule": 0.8,
+              "validateResidentIdentities": 6.8,
+              "validateRoyalMilitaryIdentities": 2,
+              "validateMilitarySecessions": 2.1,
+              "validateRoyalNobility": 63.1,
+              "validateRoyalHouseholds": 210.4,
+              "validateFactionLifetime": 0.2,
+              "validateRulerLifeRecord": 0.6,
+              "validateMilitaryCommandState": 1556.5,
+              "validateInsurgentCommands": 2.2,
+              "validateMilitaryNobility": 70.2,
+              "validateMilitaryHonors": 11,
+              "validateMilitaryAppanages": 7.7,
+              "validateMilitaryPoliticalParticipation": 3.7,
+              "validatePoliticalCrises": 6.7,
+              "validateMilitaryUsurpers": 3.1,
+              "validateMilitaryNarrativeLinks": 2.3,
+              "validateMilitaryOfficeAuthorities": 1.1,
+              "validateMilitaryBattleNames": 0.9,
+              "validateRoyalHonors": 13.4,
+              "validateCourtCoups": 20.9,
+              "validateAppointmentSelections": 15.4,
+              "validateMilitaryCourt": 9.8,
+              "validateRoyalSuccessionStanding": 1.4,
+              "validateMilitaryFamilies": 72.4,
+              "validateFamilyChildren": 13.7,
+              "validateCivilAdministration": 9.9,
+              "validateFamilyNobility": 106.4
+            },
+            "stringifyMs": 15.5,
+            "parseMs": 21.6,
+            "hydrationMs": 2461,
+            "exportMs": 2523.4,
+            "bytes": 9506950,
+            "heapBytes": 226285425,
+            "canonicalUnchanged": true
+          },
+          {
+            "repeat": 1,
+            "validationMs": 2247.2,
+            "phases": {
+              "validateSiegeBattles": 0.1,
+              "validateCollisionSchedule": 0.7,
+              "validateResidentIdentities": 4.8,
+              "validateRoyalMilitaryIdentities": 2,
+              "validateMilitarySecessions": 0.7,
+              "validateRoyalNobility": 67.2,
+              "validateRoyalHouseholds": 183.4,
+              "validateFactionLifetime": 0.1,
+              "validateRulerLifeRecord": 0.3,
+              "validateMilitaryCommandState": 1599.9,
+              "validateInsurgentCommands": 1.5,
+              "validateMilitaryNobility": 67.6,
+              "validateMilitaryHonors": 10.5,
+              "validateMilitaryAppanages": 7,
+              "validateMilitaryPoliticalParticipation": 3.4,
+              "validatePoliticalCrises": 5.8,
+              "validateMilitaryUsurpers": 2.9,
+              "validateMilitaryNarrativeLinks": 2.1,
+              "validateMilitaryOfficeAuthorities": 1.1,
+              "validateMilitaryBattleNames": 0.8,
+              "validateRoyalHonors": 11.5,
+              "validateCourtCoups": 16.7,
+              "validateAppointmentSelections": 13.6,
+              "validateMilitaryCourt": 7.5,
+              "validateRoyalSuccessionStanding": 1.2,
+              "validateMilitaryFamilies": 77.7,
+              "validateFamilyChildren": 12.6,
+              "validateCivilAdministration": 9.8,
+              "validateFamilyNobility": 107.2
+            },
+            "stringifyMs": 18,
+            "parseMs": 22.9,
+            "hydrationMs": 2442.1,
+            "exportMs": 2577,
+            "bytes": 9506950,
+            "heapBytes": 537921238,
+            "canonicalUnchanged": true
+          },
+          {
+            "repeat": 2,
+            "validationMs": 2332.2,
+            "phases": {
+              "validateSiegeBattles": 0.2,
+              "validateCollisionSchedule": 1.2,
+              "validateResidentIdentities": 17.3,
+              "validateRoyalMilitaryIdentities": 1.9,
+              "validateMilitarySecessions": 0.4,
+              "validateRoyalNobility": 71.8,
+              "validateRoyalHouseholds": 179.1,
+              "validateFactionLifetime": 0,
+              "validateRulerLifeRecord": 0.5,
+              "validateMilitaryCommandState": 1629.1,
+              "validateInsurgentCommands": 1.9,
+              "validateMilitaryNobility": 70.1,
+              "validateMilitaryHonors": 10.6,
+              "validateMilitaryAppanages": 8.6,
+              "validateMilitaryPoliticalParticipation": 3.3,
+              "validatePoliticalCrises": 4.3,
+              "validateMilitaryUsurpers": 2.7,
+              "validateMilitaryNarrativeLinks": 1.8,
+              "validateMilitaryOfficeAuthorities": 1.3,
+              "validateMilitaryBattleNames": 0.8,
+              "validateRoyalHonors": 15.3,
+              "validateCourtCoups": 18.9,
+              "validateAppointmentSelections": 13.7,
+              "validateMilitaryCourt": 9.1,
+              "validateRoyalSuccessionStanding": 0.8,
+              "validateMilitaryFamilies": 83.7,
+              "validateFamilyChildren": 16.2,
+              "validateCivilAdministration": 12.2,
+              "validateFamilyNobility": 129.1
+            },
+            "stringifyMs": 23.4,
+            "parseMs": 29.3,
+            "hydrationMs": 2700.2,
+            "exportMs": 2673.7,
+            "bytes": 9506950,
+            "heapBytes": 196846005,
+            "canonicalUnchanged": true
+          }
+        ],
+        "scope": "Same native DTO, actual complete strict validation, hydration and exporter; no header upgrade, history mutation, RNG or screenshots"
+      }
+    ]
+  },
+  "limitations": [
+    "Original Ma Zhixuan/Lin Zongyi user saves were not supplied: directed Core is same-class production evidence, not exact natural-life replay.",
+    "Natural and directed evidence are separate. No probability was lowered to obtain rare events.",
+    "One active main family title period is retained; existing graph is not physically deleted or duplicated.",
+    "Baseline data are beta.67 native fixed-seed DTOs; strict baseline timing uses isolated e99314d with identical read-only P50 instrumentation. Different-version native worlds are not asserted equal.",
+    "Performance tests are real fixed-step Core, separate from rendering and manual 4x Electron acceptance.",
+    "Human visual acceptance remains pending."
+  ],
+  "manualGate": "PENDING"
+}

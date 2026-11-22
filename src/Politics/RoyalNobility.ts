@@ -54,7 +54,18 @@ export function royalNobleHeirAssessments(d:Dynasty,holder:Ruler,epoch:string,pe
 }
 export function eligibleRoyalNobleHeirs(d:Dynasty,holder:Ruler,epoch:string,people:readonly MilitaryPerson[],events:readonly WorldEvent[],month:number){return royalNobleHeirAssessments(d,holder,epoch,people,events,month).filter(row=>row.eligible).map(row=>row.ruler);}
 /** Pure, deterministic and one active chain per holder. No population, offices or RNG. */
+/** One invocation only: retain every membership proof and event kind read below,
+ * in original insertion order. Never persisted, shared across months or used to skip validation. */
+function royalNobleEvidenceEvents(d:Dynasty,people:readonly MilitaryPerson[],events:readonly WorldEvent[]){
+ const ids=new Set<string>();
+ for(const p of people)for(const record of [...p.nobilityHistory??[],...p.honorHistory??[],...p.politicalHistory??[]])if(record.eventId)ids.add(record.eventId);
+ for(const r of d.rulers)if(r.registration)ids.add(r.registration.eventId);
+ for(const act of d.royalNobility??[])ids.add(act.eventId);
+ const kinds=new Set([...accessionTypes,'ruler-died','heir-died','royal-kin-died','military-person-died','royal-person-transferred','faction-exiled','faction-extinct','dynasty-line-ended','faction-restored','dynasty-restored','faction-merged','faction-submitted']);
+ return events.filter(e=>ids.has(e.id)||kinds.has(e.type));
+}
 export function nextRoyalNobleAct(d:Dynasty,people:readonly MilitaryPerson[],events:readonly WorldEvent[],month:number,status?:string,countryName?:string):RoyalNobleAct|undefined{
+ events=royalNobleEvidenceEvents(d,people,events);
  const byId=new Map(events.map(e=>[e.id,e])),history=d.royalNobility??[],lasts=new Map<string,RoyalNobleAct>();for(const a of history)lasts.set(a.chainId,a);
  const make=(last:RoyalNobleAct,extra:Partial<RoyalNobleAct>):RoyalNobleAct=>({...last,step:last.step+1,eventId:`${last.chainId}-${last.step+1}`,month,previousEventId:last.eventId,previousRulerId:last.holderRulerId??last.previousRulerId,sourceEventIds:[last.eventId,last.sourceGrantEventId],deathEventId:undefined,...extra});
  for(const last of lasts.values()){
