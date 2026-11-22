@@ -8,3 +8,12 @@ export function resolvePersonArchiveTarget(target:PersonArchiveTarget,factions:r
  const valid=target.kind!=="MILITARY"?dynasties.find(d=>d.factionId===target.factionId)?.rulers.some(r=>r.id===target.id&&(target.kind==="GENEALOGY"||r.reignOrdinal!==undefined||r.militaryIdentity!==undefined)):people.find(p=>p.personId===target.id)?.appointments.some(a=>a.factionId===target.factionId);
  return valid?{...target,tab:target.kind!=="MILITARY"?"house" as const:"military" as const}:undefined;
 }
+
+/** A family identity is not necessarily an official. Choose only an actually recorded career. */
+export function familyMemberArchiveTarget(row:import('../../../Politics/FamilyArchiveProjection').FamilyArchiveProjection['rows'] extends Map<string,infer R>?R:never):PersonArchiveTarget|undefined{
+ const royal=row.political;if(royal)return {kind:'RULER',factionId:royal.factionId,id:royal.r.id};
+ const civil=row.civilTerms.at(-1),appointment=row.appointments.at(-1);
+ if(civil&&(!appointment||civil.startMonth>=appointment.startMonth))return {kind:'CIVIL',factionId:civil.factionId,id:civil.personId};
+ if(row.person&&appointment)return {kind:'MILITARY',factionId:appointment.factionId,id:row.person.personId};
+ return undefined;
+}

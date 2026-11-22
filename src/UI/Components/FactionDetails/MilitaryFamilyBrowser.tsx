@@ -1,3 +1,4 @@
+import {familyMemberArchiveTarget} from './PersonArchiveTarget';
 import {personOfficeSummary} from './PersonOfficeSummary';
 import {personNoblePresentation} from './PersonNoblePresentation';
 import {familyDisplayEligible} from '../../../Politics/FamilyDisplayEligibility';
@@ -75,10 +76,7 @@ export function FamilyTree({family,month,initialMemberId,onClose,onBack}:{family
  const selected=memberId?archive.rows.get(memberId):undefined;
  const openMilitary=useCallback((id:string)=>{
   const member=family.members.find(m=>m.militaryPersonId===id||m.memberId===id),card=member&&cards.get(member.memberId);if(!member||!card)return;
-  const royal=card.royal,person=card.row.person,civil=card.row.civilTerms.at(-1),appointment=person?.appointments.at(-1);
-  if(royal){onClose();nav.open({kind:'RULER',factionId:royal.factionId,id:royal.r.id});return;}
-  if(civil&&(!appointment||civil.startMonth>=appointment.startMonth)){onClose();nav.open({kind:'CIVIL',factionId:civil.factionId,id:civil.personId});return;}
-  if(person&&appointment){onClose();nav.open({kind:'MILITARY',factionId:appointment.factionId,id:person.personId});return;}
+  const target=familyMemberArchiveTarget(card.row);if(target){onClose();nav.open(target);return;}
   setRequested(member.memberId);setMemberId(member.memberId);
  },[cards,onClose,nav,family]);
  const openRoyal=useCallback((id:string)=>{const r=cards.get(id)?.royal;if(r){onClose();nav.open({kind:'RULER',factionId:r.factionId,id:r.r.id});}},[cards,onClose,nav]);

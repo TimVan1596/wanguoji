@@ -1,3 +1,4 @@
+import {familyArchive} from './FamilyArchiveSource';
 import {resolvePersonTheme,royalThemeIdentity} from './PersonRankTheme';
 import {personNoblePresentation} from './PersonNoblePresentation';
 import {familyDisplayEligible} from '../../../Politics/FamilyDisplayEligibility';
@@ -34,7 +35,7 @@ import {militaryIdentityLabels} from "../../../Politics/RoyalArchiveIdentity";
 import {RoyalMilitaryRoster} from "./RoyalMilitaryPanel";
 import {getFactionDisplayNameAtMonth} from "../../../Simulation/FactionIdentity";
 import PortraitSummary from "./PortraitSummary";
-import {resolvePersonArchiveTarget} from "./PersonArchiveTarget";
+import {familyMemberArchiveTarget,resolvePersonArchiveTarget} from "./PersonArchiveTarget";
 import {PersonArchiveNavigation,usePersonArchiveNavigation,type PersonArchiveTarget} from "./PersonArchiveNavigation";
 import {RulerServicePanel,MilitaryServicePanel} from "./PersonServicePanel";
 import {GovernorDetail,governorProfile,CivilServicePanel,PersonPoliticalCareer} from '../CivilAdministration/CivilGovernancePanel';
@@ -182,7 +183,7 @@ export default function FactionDetails() {
   const [civilTarget,setCivilTarget]=useState<(PersonArchiveTarget&{serial:number})|undefined>();
   const navigationSequence=useRef(0),navigationDispatch=useDispatch();
   const openPerson=(target:PersonArchiveTarget)=>{
-    if(target.kind==='FAMILY'){const f=MilitaryCommandRegistry.getFamilies().find(f=>f.familyId===target.id);if(f&&!familyDisplayEligible(f,worldMonth,MilitaryCommandRegistry.getPeople(),DynastyRegistry.getAll()))target={kind:'MILITARY',factionId:f.factionId,id:f.founderPersonId};}
+    if(target.kind==='FAMILY'){const f=MilitaryCommandRegistry.getFamilies().find(f=>f.familyId===target.id);if(f&&!familyDisplayEligible(f,worldMonth,MilitaryCommandRegistry.getPeople(),DynastyRegistry.getAll())){const row=familyArchive(f,worldMonth).rows.get(target.memberId??f.members[0].memberId),destination=row&&familyMemberArchiveTarget(row);if(destination)target=destination;}}
 
     if(target.kind==='CIVIL'&&MilitaryCommandRegistry.getPerson(target.id)?.appointments.some(a=>a.factionId===target.factionId))target={...target,kind:'MILITARY'};
     const resolved=resolvePersonArchiveTarget(target,teams,DynastyRegistry.getAll(),MilitaryCommandRegistry.getPeople(),MilitaryCommandRegistry.getFamilies());
