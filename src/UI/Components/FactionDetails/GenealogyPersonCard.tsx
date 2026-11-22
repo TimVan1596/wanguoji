@@ -1,4 +1,4 @@
-import {formatPersonYearSpan,formatWorldYearLabel} from '../../../Simulation/WorldTime';
+import {formatPersonYearSpan,formatWorldDuration} from '../../../Simulation/WorldTime';
 import {resolvePersonTheme,royalThemeIdentity} from './PersonRankTheme';
 import GenealogyCardFrame from './GenealogyCardFrame';
 import {ROYAL_HONOR_NAMES} from '../../../Politics/RoyalHonors';
@@ -13,7 +13,7 @@ export function GenealogyPersonCard({ ruler, displayName, presentation, worldMon
   ruler: Ruler; displayName: string; presentation?: GenealogyNodePresentation; worldMonth?:number; managedLife?:boolean; compact?:boolean; militaryLabel?:string;
 }) {
   const lifeLine=worldMonth===undefined?'':`${formatPersonYearSpan(ruler.bornYear,ruler.deathMonth!==undefined&&ruler.deathMonth<=worldMonth?ruler.deathMonth:undefined)} · ${formatRulerLifeAge(ruler,worldMonth,false,managedLife)}`;
-  const reignLine=presentation?.reignSummary??(ruler.accessionYear===undefined?'':`在位${formatWorldYearLabel(ruler.accessionYear)}～${ruler.endYear===undefined?'今':formatWorldYearLabel(ruler.endYear)}`);
+  const reignLine=presentation?.reignSummary??(ruler.accessionYear===undefined?'':worldMonth===undefined?'':`承统${formatWorldDuration(Math.max(0,Math.min(ruler.endYear??worldMonth,worldMonth)-ruler.accessionYear))}${ruler.endYear===undefined?' · 今':''}`);
   const theme = presentation?.theme ?? 'neutral';
   const nobleStyle=resolvePersonTheme({...royalThemeIdentity(ruler,worldMonth??Infinity,{currentRulerId:presentation?.roles.includes('当前君主')?ruler.id:undefined,designatedHeirId:presentation?.roles.includes('储君')?ruler.id:undefined,heirIds:presentation?.details.includes('宗室候选')?[ruler.id]:[]}),sanction:theme==='disqualified',noble:presentation?.nobleTheme,officeKind:presentation?.officeKind,officeLevel:presentation?.officeLevel});
 

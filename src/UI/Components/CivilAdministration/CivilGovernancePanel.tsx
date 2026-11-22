@@ -83,6 +83,7 @@ export function CivilServicePanel({personId,month,factionId}:{personId:string;mo
 export function PersonPoliticalCareer({personId,month}:{personId:string;month:number}){
  useHistoryRevision();
  const events=WorldHistory.getRecordedEvents().filter(e=>e.metadata?.personId===personId&&(e.monthIndex??e.year)<=month);
+ const career=events.filter(e=>e.type==='civil-governor-appointed'&&typeof e.metadata?.crossCareerEvidence==='string').flatMap(e=>{try{const proof=JSON.parse(String(e.metadata!.crossCareerEvidence));return proof.multiplier>1?[<Typography key={e.id} fontSize=".76rem">{formatWorldDate(e.monthIndex??e.year)}晋升竞争：经原任命与离任史事核验的既往军旅资历，相对权重增加5%；不替代文治功绩或晋升资格。来源：{proof.militaryEventIds.join('、')}</Typography>]:[];}catch{return [];}});
  const groups=[['政治经历',events.filter(e=>/court|punishment|pardon/.test(e.type))]] as const;
- return <>{groups.filter(([,rows])=>rows.length).map(([title,rows])=><Box key={title}><Typography fontSize=".82rem" fontWeight="bold">{title}</Typography>{rows.map(e=><Typography key={e.id} fontSize=".76rem">{formatWorldDate(e.monthIndex??e.year)}，{e.title}</Typography>)}</Box>)}</>;
+ return <>{career}{groups.filter(([,rows])=>rows.length).map(([title,rows])=><Box key={title}><Typography fontSize=".82rem" fontWeight="bold">{title}</Typography>{rows.map(e=><Typography key={e.id} fontSize=".76rem">{formatWorldDate(e.monthIndex??e.year)}，{e.title}</Typography>)}</Box>)}</>;
 }

@@ -37,3 +37,11 @@ it('retains real civil contributors in a terminated family trunk by permanent po
  const p=projectFamilyArchive(f,s);expect(p.classification).toBe('ACTIVE');expect(p.rows.get('grandson')!.civilTerms).toHaveLength(1);expect(p.importantIds.has('grandson')).toBe(true);expect(p.last?.kind).toBe('ENDED');expect(p.currentInheritedHolderId).toBeUndefined();expect(JSON.stringify(f)).toBe(before);
  s.civilTerms=s.civilTerms.map((t,i)=>i?t:{...t,endMonth:101,endReason:'CITY_LOST'});expect(projectFamilyArchive(f,s).classification).toBe('HISTORICAL');
 });
+
+it('reads a posthumous epithet only after the exact sourced act and never derives a new title from it',()=>{
+ const {f,s}=fixture(),p=s.people[0],h:any={kind:'POSTHUMOUS',eventId:'posthumous',month:120,personId:'p',rank:'GONG',epithet:'武烈',factionId:'home',epochFounderId:'king'};
+ p.honorHistory=[h];s.events=[...s.events,{id:h.eventId,year:120,type:'military-posthumous',actorFactionId:'home',metadata:{personId:'p',honor:JSON.stringify(h)}} as any];
+ expect(projectFamilyArchive(f,{...s,month:119}).rows.get('father')!.posthumous).toBeUndefined();const row=projectFamilyArchive(f,{...s,month:120}).rows.get('father')!;expect(row.posthumous?.epithet).toBe('武烈');expect(row.effectivePersonal).toBeUndefined();
+ expect(projectFamilyArchive(f,{...s,month:121,events:s.events.filter(e=>e.id!==h.eventId)}).rows.get('father')!.posthumous).toBeUndefined();
+ s.events.at(-1)!.metadata!.personId='another';expect(projectFamilyArchive(f,{...s,month:121}).rows.get('father')!.posthumous).toBeUndefined();
+});

@@ -4,8 +4,9 @@ import type {WorldEvent} from '../History/WorldHistory';
 export type CrossCareerPolicy='BASELINE'|'LOW'|'MEDIUM';
 /** A bounded relative competition weight only. It cannot supply governance receipts or military victories. */
 export function civilCrossCareerEvidence(term:CivilGovernorTerm,person:MilitaryPerson|undefined,events:readonly WorldEvent[],policy:CrossCareerPolicy='LOW'){
- const byId=new Map(events.map(e=>[e.id,e])),ids:string[]=[];
+ const ids:string[]=[];
  if(person&&person.personId===term.personId&&person.sourceUserId===term.sourceUserId&&person.bornMonth===term.bornMonth){
+  const byId=person.appointments.length?new Map(events.map(e=>[e.id,e])):new Map<string,WorldEvent>();
   for(const a of person.appointments){
    if(a.endMonth===undefined||a.endMonth>term.startMonth||a.endMonth-a.startMonth<36||a.endReason==='DEATH')continue;
    const start=byId.get(`military-appointment-${a.commandId}`),end=byId.get(`military-command-ended-${a.commandId}`);

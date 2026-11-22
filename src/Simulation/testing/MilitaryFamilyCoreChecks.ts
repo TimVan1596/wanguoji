@@ -1,3 +1,4 @@
+import {checkFamilyNavigation} from './FamilyNavigationCoreChecks';
 import {checkCrossRoyalKin} from './CrossRoyalKinCoreChecks';
 import {PersonArchiveNavigation} from '../../UI/Components/FactionDetails/PersonArchiveNavigation';
 import type {PersonArchiveTarget} from '../../UI/Components/FactionDetails/PersonArchiveTarget';
@@ -44,7 +45,7 @@ export async function checkMilitaryFamilies(core:any,base:ReturnType<typeof expo
   const child=population.spawn(team(),undefined,false,{cause:'NATURAL_GROWTH',month:240});check(child&&child.familyMemberId,`actual natural population entry creates one named resident with frozen genealogy: result=${child?.name}/${child?.familyMemberId}; pop=${team().users.size}/${population.getCapacity(team())}; counter=${population.counters[factionId]}; expected=${selected}; families=${Military.getFamilies().length}`);
   const link=Military.getFamilyMember(child.id,child.bornMonth)!;
   check(link.member.parentMemberId===link.family.members[0].memberId&&link.member.bornMonth===child.bornMonth&&child.name===link.member.name&&core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===count+1&&Military.getPeople().length===people,'family relation is new-entry sourced, not an extra resident or an automatic military person');
-  const civilianFamilySave=exportWorldSave(core);
+  const civilianFamilySave=exportWorldSave(core);await checkFamilyNavigation(core,check);
   check(familyAppointmentWeight(link.family,link.member,factionId,epoch,240)===1.1,'the same eligible child receives bounded ten-percent first appointment weight');
   for(const p of Military.getPeople().filter(p=>p.factionId===factionId&&p.status==='ACTIVE'&&p.personId!==family.founderPersonId))Military.endPersonCommands(p.personId,240,'DISMISSED');
   check((Military as any).isEligible(child,240),'adult child passes every existing military entry condition');

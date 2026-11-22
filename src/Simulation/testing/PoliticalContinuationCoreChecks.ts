@@ -1,3 +1,4 @@
+import {checkFamilyNavigation} from './FamilyNavigationCoreChecks';
 import Civil from '../../Politics/CivilAdministration';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
@@ -8,7 +9,7 @@ import {exportWorldSave} from '../../Persistence/WorldSaveExporter';
 import {hydrateWorldSave} from '../../Persistence/WorldSaveHydrator';
 import {diffCanonicalWorldSave,type WorldSaveV1} from '../../Persistence/WorldSaveSchema';
 /** Real capture/succession and royal-death hooks in a directed extinct-house fixture, never natural frequency. */
-export function checkPoliticalContinuation(core:any,input:WorldSaveV1,personId:string,check:(v:unknown,label:string)=>void){
+export async function checkPoliticalContinuation(core:any,input:WorldSaveV1,personId:string,check:(v:unknown,label:string)=>void){
  const clock=(month:number)=>core.simulator.clock.importState({worldMonth:month,elapsedMs:0,running:false});
  try{
   hydrateWorldSave(core,structuredClone(input));Civil.setPolicyForSimulation('BASELINE');
@@ -30,6 +31,7 @@ export function checkPoliticalContinuation(core:any,input:WorldSaveV1,personId:s
   check(!Civil.getByPerson(personId).some(t=>t.endMonth===undefined)&&!Military.getPerson(personId)!.appointments.some(a=>a.endMonth===undefined),'accession ends real civil and military powers without creating a fictional army');
   check(Military.getFamilyMember(identity.id,identity.born)?.family.nobleSuccession?.at(-1)?.kind==='ENDED','new monarch settles the old family title in the same actual accession transaction');
   const saved=exportWorldSave(core);hydrateWorldSave(core,structuredClone(saved));check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'lawful civilian continuation strictly reads with its exact political provenance');
+  await checkFamilyNavigation(core,check);
   const forged=structuredClone(saved),r=(forged.dynasties.find(d=>d.factionId===team.name)!.rulers as any[]).find(r=>r.rulerId===ruler.id);r.residentIdentity.succession.candidate.eventIds=['invented'];let rejected=false;try{hydrateWorldSave(core,forged);}catch{rejected=true;}check(rejected,'strict read rejects fabricated previous political service');
  }finally{hydrateWorldSave(core,structuredClone(input));}
 }

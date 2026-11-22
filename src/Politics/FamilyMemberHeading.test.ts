@@ -19,3 +19,9 @@ it('keeps a live unrevoked peerage separate from court disqualification and a ci
 });
 
 it('a later independent legal grant is not obscured by an older forfeited high title',()=>{const r=row({personalHistory:[{rank:'GONG',month:60,factionId:'qi',epochFounderId:'king',countryName:'齐'},{rank:'BO',month:120,factionId:'qi',epochFounderId:'king',countryName:'齐'}],person:{honorHistory:[{kind:'REVOKED',month:90,factionId:'qi',epochFounderId:'king'}]}});expect(familyMemberHeading(r,180,country)).toBe('齐 · 伯爵 · 栾允平');});
+
+it('uses only the matching dated posthumous dignity and never restores a confiscated title',()=>{
+ const r=row({personalHistory:[{rank:'GONG',month:60,factionId:'qi',epochFounderId:'king',countryName:'齐'}],posthumous:{rank:'GONG',month:120,epithet:'武烈',factionId:'qi',epochFounderId:'king'}});
+ expect(familyMemberHeading(r,119,country)).toBe('齐 · 公爵 · 栾允平');expect(familyMemberHeading(r,120,country)).toBe('齐 · 武烈公 · 栾允平');
+ r.posthumous.factionId='zhao';expect(familyMemberHeading(r,150,country)).toBe('齐 · 公爵 · 栾允平');r.posthumous.factionId='qi';r.person={honorHistory:[{kind:'REVOKED',month:100,factionId:'qi',epochFounderId:'king'}]};expect(familyMemberHeading(r,150,country)).toBe('旧爵已追夺 · 栾允平');
+});

@@ -1,3 +1,5 @@
+import {civilCrossCareerEvidence,civilPromotionCompetitionWeight} from '../../Politics/CrossCareerCompetition';
+import {civilPromotionEvidence} from '../../Politics/CivilPromotion';
 import random from '../WorldRandom';
 import {governorProfile,GovernorDetail} from '../../UI/Components/CivilAdministration/CivilGovernancePanel';
 import {personAbilities,personAmbition,rulerAbilities} from '../../Politics/PersonAbilities';
@@ -60,6 +62,17 @@ export function checkCivilCareer(core:any,saved:WorldSaveV1,term:CivilGovernorTe
  const again=Civil.appoint(awardMonth,team(),target,candidate!,dynasty);
  check(again.personalName===term.personalName&&again.bornMonth===term.bornMonth&&again.personId===term.personId&&person().appointments.length===1,'military-to-civil transfer retains permanent name, birth and historical military service');
  const career=strict();hydrateWorldSave(core,structuredClone(career));check(diffCanonicalWorldSave(career,strict()).matched,'full civilian military noble and civilian career round-trips strictly');
+ {const current=Civil.getByPerson(term.personId).at(-1)!,proof=civilCrossCareerEvidence(current,person(),History.getRecordedEvents());
+  check(proof.multiplier===1.05&&proof.militaryEventIds.length===2,'actual ended military service supplies the sourced low five-percent civil promotion competition advantage');
+  user().loyalty=100;for(const c of team().cities){c.loyalty=20;c.devastation=100;}
+  for(let m=awardMonth+12;m<=awardMonth+36;m+=12){clock(m);(Civil as any).applyGovernance(m,core.teams);}
+  const currentTerm=Civil.getByPerson(term.personId).at(-1)!,e=civilPromotionEvidence(currentTerm,core.simulator.year,100,team().cities.length,Civil.getTerms());check(e,'a genuine dual-career official still needs the unchanged actual governance and tenure promotion gates');
+  if(e){const state=random.exportState(),weights=['BASELINE','LOW','MEDIUM'].map(policy=>civilPromotionCompetitionWeight(currentTerm,e,person(),History.getRecordedEvents(),policy as any));check(Math.abs(weights[1]/weights[0]-1.05)<1e-10&&Math.abs(weights[2]/weights[0]-1.1)<1e-10&&JSON.stringify(state)===JSON.stringify(random.exportState()),'baseline low medium calibration has bounded relative weights and consumes no world RNG');
+   Civil.promote(core.simulator.year,currentTerm,team(),Dynasty.get(term.factionId)!);const promoted=strict();hydrateWorldSave(core,structuredClone(promoted));check(diffCanonicalWorldSave(promoted,strict()).matched,'real dual-career promotion proof strictly reads with the same permanent identity and military source events');
+   const bad=structuredClone(promoted),event=(bad.worldHistory.events as any[]).filter(e=>e.type==='civil-governor-appointed'&&e.metadata?.personId===term.personId).at(-1);event.metadata.crossCareerEvidence=JSON.stringify({...proof,multiplier:2});let rejected=false;try{hydrateWorldSave(core,bad);}catch{rejected=true;}check(rejected,'strict read rejects a forged cross-career multiplier rather than accepting matching UI text');
+  }
+  hydrateWorldSave(core,structuredClone(career));
+ }
  const scheduledDeath=deriveMilitaryLifeSchedule(person()).naturalDeathMonth;clock(scheduledDeath);Military.update(scheduledDeath,core.teams,core.allCities);Civil.update(scheduledDeath,core.teams,Dynasty.getAll());check(person().status==='DEAD'&&person().deathMonth===scheduledDeath,'civil-origin military career dies at the original resident scheduled month, including nonannual months');hydrateWorldSave(core,structuredClone(career));
  const host=document.createElement('div'),root=createRoot(host);document.body.append(host);
  store.dispatch(setTeams(core.teams));store.dispatch(setWorldMonth({monthIndex:career.world.worldMonth,year:career.world.worldMonth}));store.dispatch(setSelectedFactionName(term.factionId));store.dispatch(setFactionDetailTab('people'));

@@ -1,3 +1,4 @@
+import {checkFamilyNavigation} from './FamilyNavigationCoreChecks';
 import {checkPoliticalContinuation} from './PoliticalContinuationCoreChecks';
 import random from '../WorldRandom';
 import Civil from '../../Politics/CivilAdministration';
@@ -12,7 +13,7 @@ import {hydrateWorldSave} from '../../Persistence/WorldSaveHydrator';
 import {diffCanonicalWorldSave,type WorldSaveV1} from '../../Persistence/WorldSaveSchema';
 import type {CivilGovernorTerm} from '../../Politics/CivilAdministrationSchema';
 /** Controlled real transactions, not natural event-frequency evidence. No invented people or receipts. */
-export function checkCivilPromotion(core:any,input:WorldSaveV1,term:CivilGovernorTerm,check:(v:unknown,label:string)=>void){
+export async function checkCivilPromotion(core:any,input:WorldSaveV1,term:CivilGovernorTerm,check:(v:unknown,label:string)=>void){
  const clock=(m:number)=>core.simulator.clock.importState({worldMonth:m,elapsedMs:0,running:false});
  try{
   hydrateWorldSave(core,structuredClone(input));Civil.setPolicyForSimulation('BASELINE');
@@ -54,7 +55,7 @@ export function checkCivilPromotion(core:any,input:WorldSaveV1,term:CivilGoverno
    check(Military.getPerson(term.personId)!.nobilityHistory?.filter(n=>n.eventId===g.eventId).length===1,'retry awards exactly one real civil title to the canonical person after rollback');
    check(History.getRecordedEvents().some(e=>e.id===g.eventId&&e.title===nobleChronicle(g))&&p.appointments.length===0,'civil merit produces a real distinct peerage source and no fictional command');
    const saved=exportWorldSave(core);hydrateWorldSave(core,structuredClone(saved));check(diffCanonicalWorldSave(saved,exportWorldSave(core)).matched,'civil peerage and four-tier career strictly read again');void dy;
-   checkPoliticalContinuation(core,saved,term.personId,check);
+   await checkFamilyNavigation(core,check);await checkPoliticalContinuation(core,saved,term.personId,check);
    const bad=structuredClone(saved);bad.registries.civilAdministration.terms.find(t=>t.promotion)!.promotion!.meritEventIds=['forged'];let rejected=false;try{hydrateWorldSave(core,bad);}catch{rejected=true;}check(rejected,'forged promotion evidence is rejected');
   }
  }finally{hydrateWorldSave(core,structuredClone(input));}

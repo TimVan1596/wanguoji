@@ -2,7 +2,7 @@ import {useState,type ComponentProps} from "react";
 import {Box,Button,Popover,Typography} from "@mui/material";
 import PersonPortrait from "./PersonPortrait";
 /** One existing identity projection, no new record or simulation state. */
-export default function PortraitSummary({portrait,name,lines,onFull,status}:{status?:'叛离'|'禁仕'|'已赦'|'伏诛'|'被废';portrait:ComponentProps<typeof PersonPortrait>;name:string;lines:string[];onFull:()=>void}){
+export default function PortraitSummary({portrait,name,lines,onFull,status}:{status?:'叛离'|'禁仕'|'已赦'|'伏诛'|'被废'|'追夺';portrait:ComponentProps<typeof PersonPortrait>;name:string;lines:string[];onFull:()=>void}){
  const [anchor,setAnchor]=useState<HTMLButtonElement|null>(null);
  return <>
   <button type="button" aria-label={`查看${name}人物摘要`} aria-haspopup="dialog" onClick={e=>setAnchor(e.currentTarget)} style={{border:0,padding:0,background:"transparent",cursor:"pointer",flexShrink:0}}><Box component="span" sx={{position:'relative',display:'inline-flex'}}><PersonPortrait {...portrait} politicalStatus={status??portrait.politicalStatus}/></Box></button>
