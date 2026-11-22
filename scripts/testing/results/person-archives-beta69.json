@@ -1,5 +1,5 @@
 {
-  "sourceFilesSha256": "ab70e35963cf6f8f3c4a4698d179e0680ef79dfb517115dedfd3e1d4604f7e58",
+  "sourceFilesSha256": "e5309a30766f92e5cec1dc75faa26b606562d6a604874dee627a75ceae4fbf03",
   "version": "0.100.0-beta.69",
   "worldSave": 65,
   "baseline": "0cc2105a37176b69c7ed40716003f68184cfed4d",
@@ -182,6 +182,7 @@
         "rngEqual": true
       },
       "continuation": {
+        "fromMonth": 2400,
         "months": 12,
         "deterministic": true,
         "secondRead": true
@@ -352,6 +353,7 @@
         "rngEqual": true
       },
       "continuation": {
+        "fromMonth": 2400,
         "months": 12,
         "deterministic": true,
         "secondRead": true
@@ -518,6 +520,7 @@
         "rngEqual": true
       },
       "continuation": {
+        "fromMonth": 2400,
         "months": 12,
         "deterministic": true,
         "secondRead": true
@@ -688,6 +691,7 @@
         "rngEqual": true
       },
       "continuation": {
+        "fromMonth": 2400,
         "months": 12,
         "deterministic": true,
         "secondRead": true
@@ -854,6 +858,7 @@
         "rngEqual": true
       },
       "continuation": {
+        "fromMonth": 2400,
         "months": 12,
         "deterministic": true,
         "secondRead": true
@@ -1020,6 +1025,7 @@
         "rngEqual": true
       },
       "continuation": {
+        "fromMonth": 2400,
         "months": 12,
         "deterministic": true,
         "secondRead": true
@@ -1184,6 +1190,7 @@
         "rngEqual": true
       },
       "continuation": {
+        "fromMonth": 2400,
         "months": 12,
         "deterministic": true,
         "secondRead": true
@@ -1350,6 +1357,7 @@
         "rngEqual": true
       },
       "continuation": {
+        "fromMonth": 2400,
         "months": 12,
         "deterministic": true,
         "secondRead": true
@@ -1516,6 +1524,7 @@
         "rngEqual": true
       },
       "continuation": {
+        "fromMonth": 1200,
         "months": 12,
         "deterministic": true,
         "secondRead": true
@@ -1686,6 +1695,7 @@
         "rngEqual": true
       },
       "continuation": {
+        "fromMonth": 1200,
         "months": 12,
         "deterministic": true,
         "secondRead": true
@@ -1852,6 +1862,7 @@
         "rngEqual": true
       },
       "continuation": {
+        "fromMonth": 1200,
         "months": 12,
         "deterministic": true,
         "secondRead": true
@@ -2029,6 +2040,7 @@
         "rngEqual": true
       },
       "continuation": {
+        "fromMonth": 1200,
         "months": 12,
         "deterministic": true,
         "secondRead": true
@@ -2199,6 +2211,7 @@
         "rngEqual": true
       },
       "continuation": {
+        "fromMonth": 6000,
         "months": 12,
         "deterministic": true,
         "secondRead": true
@@ -2369,6 +2382,7 @@
         "rngEqual": true
       },
       "continuation": {
+        "fromMonth": 6000,
         "months": 12,
         "deterministic": true,
         "secondRead": true
@@ -2684,7 +2698,7 @@
     "military": [
       {
         "seed": "royal-military-z11",
-        "checks": 1519,
+        "checks": 1520,
         "proofs": [
           "new family birth strictly replays its parent, source, date, policy and fixed life",
           "one real distinct capture and three service years grant a sourced military NAN",
@@ -2742,7 +2756,7 @@
     "naturalReact": [
       {
         "seed": "regional-1",
-        "checks": 21,
+        "checks": 29,
         "categories": [
           "MILITARY/DEAD/ORIGINAL",
           "TITLED_NO_OFFICE/DEAD/ORIGINAL",
@@ -2765,6 +2779,70 @@
         ]
       }
     ]
+  },
+  "verification": {
+    "version": "0.100.0-beta.69",
+    "worldSave": 65,
+    "tests": {
+      "files": 371,
+      "passed": 2742
+    },
+    "typescript": {
+      "passed": true,
+      "via": [
+        "pnpm build",
+        "pnpm desktop:build",
+        "pnpm desktop:renderer-debug-build"
+      ]
+    },
+    "builds": {
+      "web": {
+        "passed": true,
+        "logSha256": "3dc0ce67a7d963dc5856bbc038a4809d36b32be2df76ceb746fd40922ef98f24"
+      },
+      "desktop": {
+        "passed": true,
+        "logSha256": "1c52a0197e2edd0aa5c4c44372dde81fcc3b85357018a4c0a37ae6cc2b805216"
+      },
+      "debug": {
+        "passed": true,
+        "logSha256": "3c1d2e49e636c2c853a5548aebf619ffd2c9e3a7e4b132247e17fdac20fc4b79"
+      }
+    },
+    "coreChecks": {
+      "civil": 121,
+      "military": 1520
+    },
+    "realReact500YearChecks": 29,
+    "strictNativeSnapshotFiles": 17,
+    "deterministic12MonthRunEndpoints": 9,
+    "secondRead": true,
+    "failureRollbackAndForgeryRejection": true,
+    "pairedPerformance": {
+      "repetitionsPerVersion": 3,
+      "monthsPerRepetition": 300,
+      "startMonth": 6000,
+      "comparableAuthoritySha256": "088acd49abffef6c9c013e3d8326a75ff1fd57919f3281debd8956977b94dbd5",
+      "excludedOnly": [
+        "appVersion",
+        "saveSchemaVersion",
+        "crossCareerEvidence"
+      ],
+      "beforeMedianMs": {
+        "averageMs": 7.099,
+        "p95Ms": 23.9,
+        "p99Ms": 37.7,
+        "maxMs": 44.7
+      },
+      "afterMedianMs": {
+        "averageMs": 7.729,
+        "p95Ms": 25.5,
+        "p99Ms": 42.7,
+        "maxMs": 46
+      },
+      "conclusion": "No proven simulation speedup; measured P95 median increased. Sequential three-repeat sampling is not a live4x FPS or visual acceptance test."
+    },
+    "humanGate": "PENDING"
   },
   "performance": {
     "before": [
@@ -6097,7 +6175,7 @@
         "direct": [
           {
             "repeat": 0,
-            "listSummaryMs": 7.4,
+            "listSummaryMs": 9.6,
             "listCache": {
               "indexBuilds": 1,
               "summaryBuilds": 4,
@@ -6108,17 +6186,17 @@
               "archiveCache": 0,
               "events": 11920
             },
-            "archiveMs": 7,
+            "archiveMs": 8.5,
             "importantMs": 0,
             "parentBridgeMs": 0,
-            "layoutMs": 0.3,
+            "layoutMs": 0.5,
             "cardModel": {
               "archiveMs": 0,
               "importantMs": 0,
-              "bridgeMs": 0,
+              "bridgeMs": 0.1,
               "cardsMs": 1,
-              "layoutMs": 0,
-              "totalMs": 1
+              "layoutMs": 0.1,
+              "totalMs": 1.3
             },
             "retainedNodes": 2,
             "registeredNodes": 8,
@@ -6135,7 +6213,7 @@
           },
           {
             "repeat": 1,
-            "listSummaryMs": 5.8,
+            "listSummaryMs": 7.1,
             "listCache": {
               "indexBuilds": 1,
               "summaryBuilds": 4,
@@ -6146,17 +6224,17 @@
               "archiveCache": 0,
               "events": 11920
             },
-            "archiveMs": 6.3,
+            "archiveMs": 8.5,
             "importantMs": 0,
             "parentBridgeMs": 0,
-            "layoutMs": 0,
+            "layoutMs": 0.1,
             "cardModel": {
               "archiveMs": 0,
               "importantMs": 0,
               "bridgeMs": 0,
-              "cardsMs": 0.2,
+              "cardsMs": 0.4,
               "layoutMs": 0,
-              "totalMs": 0.2
+              "totalMs": 0.4
             },
             "retainedNodes": 2,
             "registeredNodes": 8,
@@ -6173,7 +6251,7 @@
           },
           {
             "repeat": 2,
-            "listSummaryMs": 8.3,
+            "listSummaryMs": 7.7,
             "listCache": {
               "indexBuilds": 1,
               "summaryBuilds": 4,
@@ -6184,7 +6262,7 @@
               "archiveCache": 0,
               "events": 11920
             },
-            "archiveMs": 5.8,
+            "archiveMs": 6.9,
             "importantMs": 0,
             "parentBridgeMs": 0,
             "layoutMs": 0.1,
@@ -6192,9 +6270,9 @@
               "archiveMs": 0,
               "importantMs": 0,
               "bridgeMs": 0,
-              "cardsMs": 0.2,
-              "layoutMs": 0.1,
-              "totalMs": 0.3
+              "cardsMs": 0.1,
+              "layoutMs": 0,
+              "totalMs": 0.1
             },
             "retainedNodes": 2,
             "registeredNodes": 8,
@@ -6213,9 +6291,9 @@
         "phases": [
           {
             "phase": "list-open-0",
-            "wallMs": 18.4,
-            "settledMs": 31.6,
-            "reactMs": 13.4,
+            "wallMs": 28.9,
+            "settledMs": 49.1,
+            "reactMs": 22.1,
             "mountedNodes": 0,
             "cache": {
               "indexBuilds": 1,
@@ -6232,9 +6310,9 @@
           },
           {
             "phase": "all-houses-0",
-            "wallMs": 3.4,
-            "settledMs": 18.7,
-            "reactMs": 2.3,
+            "wallMs": 3.9,
+            "settledMs": 25.1,
+            "reactMs": 2.9,
             "mountedNodes": 0,
             "cache": {
               "indexBuilds": 1,
@@ -6251,9 +6329,9 @@
           },
           {
             "phase": "family-open-0",
-            "wallMs": 14,
+            "wallMs": 19.1,
             "settledMs": 50,
-            "reactMs": 10.3,
+            "reactMs": 13.1,
             "mountedNodes": 2,
             "cache": {
               "indexBuilds": 1,
@@ -6270,9 +6348,9 @@
           },
           {
             "phase": "select-person-0",
-            "wallMs": 5.3,
-            "settledMs": 33.4,
-            "reactMs": 7.5,
+            "wallMs": 6.3,
+            "settledMs": 33.3,
+            "reactMs": 11.1,
             "mountedNodes": 2,
             "cache": {
               "indexBuilds": 1,
@@ -6289,9 +6367,9 @@
           },
           {
             "phase": "zoom-0",
-            "wallMs": 4.3,
-            "settledMs": 33.3,
-            "reactMs": 4.8,
+            "wallMs": 5.5,
+            "settledMs": 33.4,
+            "reactMs": 6.4,
             "mountedNodes": 2,
             "cache": {
               "indexBuilds": 1,
@@ -6308,9 +6386,9 @@
           },
           {
             "phase": "fit-0",
-            "wallMs": 4.4,
-            "settledMs": 33.2,
-            "reactMs": 4.8,
+            "wallMs": 7.8,
+            "settledMs": 33.1,
+            "reactMs": 6.8,
             "mountedNodes": 2,
             "cache": {
               "indexBuilds": 1,
@@ -6327,9 +6405,9 @@
           },
           {
             "phase": "locate-founder-0",
-            "wallMs": 8.5,
-            "settledMs": 33.3,
-            "reactMs": 7,
+            "wallMs": 9.6,
+            "settledMs": 33.1,
+            "reactMs": 7.8,
             "mountedNodes": 2,
             "cache": {
               "indexBuilds": 1,
@@ -6346,8 +6424,8 @@
           },
           {
             "phase": "return-0",
-            "wallMs": 2.6,
-            "settledMs": 33.2,
+            "wallMs": 2.7,
+            "settledMs": 33.5,
             "reactMs": 2.2,
             "mountedNodes": 0,
             "cache": {
@@ -6365,9 +6443,9 @@
           },
           {
             "phase": "all-after-return-0",
-            "wallMs": 2.7,
-            "settledMs": 33.3,
-            "reactMs": 2.6,
+            "wallMs": 2.8,
+            "settledMs": 33.1,
+            "reactMs": 3.3,
             "mountedNodes": 0,
             "cache": {
               "indexBuilds": 1,
@@ -6384,9 +6462,9 @@
           },
           {
             "phase": "switch-family-0",
-            "wallMs": 8.8,
-            "settledMs": 33.2,
-            "reactMs": 8.2,
+            "wallMs": 10.5,
+            "settledMs": 33.3,
+            "reactMs": 8.8,
             "mountedNodes": 5,
             "cache": {
               "indexBuilds": 1,
@@ -6403,8 +6481,8 @@
           },
           {
             "phase": "close-0",
-            "wallMs": 0.9,
-            "settledMs": 33.2,
+            "wallMs": 1.1,
+            "settledMs": 33.4,
             "reactMs": 0,
             "mountedNodes": 0,
             "cache": {
@@ -6422,8 +6500,8 @@
           },
           {
             "phase": "reopen-0",
-            "wallMs": 3.6,
-            "settledMs": 33.3,
+            "wallMs": 3.4,
+            "settledMs": 33.1,
             "reactMs": 2.7,
             "mountedNodes": 0,
             "cache": {
@@ -6441,9 +6519,9 @@
           },
           {
             "phase": "switch-faction-0",
-            "wallMs": 3.7,
-            "settledMs": 32.9,
-            "reactMs": 2.3,
+            "wallMs": 3.8,
+            "settledMs": 32.8,
+            "reactMs": 2.5,
             "mountedNodes": 0,
             "cache": {
               "indexBuilds": 1,
@@ -6479,9 +6557,9 @@
           },
           {
             "phase": "list-open-1",
-            "wallMs": 11,
-            "settledMs": 25.1,
-            "reactMs": 9,
+            "wallMs": 12.8,
+            "settledMs": 26.4,
+            "reactMs": 10.5,
             "mountedNodes": 0,
             "cache": {
               "indexBuilds": 1,
@@ -6498,9 +6576,9 @@
           },
           {
             "phase": "all-houses-1",
-            "wallMs": 3.7,
-            "settledMs": 33.8,
-            "reactMs": 3.3,
+            "wallMs": 25.5,
+            "settledMs": 31,
+            "reactMs": 18.7,
             "mountedNodes": 0,
             "cache": {
               "indexBuilds": 1,
@@ -6517,9 +6595,9 @@
           },
           {
             "phase": "family-open-1",
-            "wallMs": 6.6,
-            "settledMs": 33.3,
-            "reactMs": 5.8,
+            "wallMs": 11.9,
+            "settledMs": 39.5,
+            "reactMs": 11.9,
             "mountedNodes": 2,
             "cache": {
               "indexBuilds": 1,
@@ -6536,9 +6614,9 @@
           },
           {
             "phase": "select-person-1",
-            "wallMs": 4.2,
-            "settledMs": 33.2,
-            "reactMs": 9.2,
+            "wallMs": 4.3,
+            "settledMs": 24.9,
+            "reactMs": 7,
             "mountedNodes": 2,
             "cache": {
               "indexBuilds": 1,
@@ -6556,8 +6634,8 @@
           {
             "phase": "zoom-1",
             "wallMs": 4.2,
-            "settledMs": 33.5,
-            "reactMs": 5.3,
+            "settledMs": 33.3,
+            "reactMs": 4.6,
             "mountedNodes": 2,
             "cache": {
               "indexBuilds": 1,
@@ -6574,9 +6652,9 @@
           },
           {
             "phase": "fit-1",
-            "wallMs": 4,
-            "settledMs": 33.1,
-            "reactMs": 4.3,
+            "wallMs": 4.2,
+            "settledMs": 33.9,
+            "reactMs": 4.7,
             "mountedNodes": 2,
             "cache": {
               "indexBuilds": 1,
@@ -6593,9 +6671,9 @@
           },
           {
             "phase": "locate-founder-1",
-            "wallMs": 7.2,
+            "wallMs": 6.3,
             "settledMs": 33.3,
-            "reactMs": 5.5,
+            "reactMs": 4.7,
             "mountedNodes": 2,
             "cache": {
               "indexBuilds": 1,
@@ -6612,9 +6690,9 @@
           },
           {
             "phase": "return-1",
-            "wallMs": 2.3,
+            "wallMs": 1.9,
             "settledMs": 33.2,
-            "reactMs": 2.3,
+            "reactMs": 1.7,
             "mountedNodes": 0,
             "cache": {
               "indexBuilds": 1,
@@ -6631,9 +6709,9 @@
           },
           {
             "phase": "all-after-return-1",
-            "wallMs": 2,
-            "settledMs": 33.2,
-            "reactMs": 2,
+            "wallMs": 1.9,
+            "settledMs": 33.4,
+            "reactMs": 1.9,
             "mountedNodes": 0,
             "cache": {
               "indexBuilds": 1,
@@ -6650,8 +6728,8 @@
           },
           {
             "phase": "switch-family-1",
-            "wallMs": 6.7,
-            "settledMs": 33.3,
+            "wallMs": 6.8,
+            "settledMs": 33.2,
             "reactMs": 5.7,
             "mountedNodes": 5,
             "cache": {
@@ -6670,7 +6748,7 @@
           {
             "phase": "close-1",
             "wallMs": 0.7,
-            "settledMs": 33.4,
+            "settledMs": 33.3,
             "reactMs": 0,
             "mountedNodes": 0,
             "cache": {
@@ -6688,272 +6766,6 @@
           },
           {
             "phase": "reopen-1",
-            "wallMs": 3.1,
-            "settledMs": 33.3,
-            "reactMs": 2.7,
-            "mountedNodes": 0,
-            "cache": {
-              "indexBuilds": 1,
-              "summaryBuilds": 4,
-              "projectionBuilds": 2,
-              "hits": 40,
-              "invalidations": 1,
-              "summaryCache": 4,
-              "archiveCache": 2,
-              "events": 11920
-            },
-            "dom": 13,
-            "longTasks": []
-          },
-          {
-            "phase": "switch-faction-1",
-            "wallMs": 3.7,
-            "settledMs": 32.9,
-            "reactMs": 2.8,
-            "mountedNodes": 0,
-            "cache": {
-              "indexBuilds": 1,
-              "summaryBuilds": 7,
-              "projectionBuilds": 2,
-              "hits": 40,
-              "invalidations": 1,
-              "summaryCache": 7,
-              "archiveCache": 2,
-              "events": 11920
-            },
-            "dom": 13,
-            "longTasks": []
-          },
-          {
-            "phase": "close-again-1",
-            "wallMs": 0.6,
-            "settledMs": 33.2,
-            "reactMs": 0,
-            "mountedNodes": 0,
-            "cache": {
-              "indexBuilds": 1,
-              "summaryBuilds": 7,
-              "projectionBuilds": 2,
-              "hits": 40,
-              "invalidations": 1,
-              "summaryCache": 7,
-              "archiveCache": 2,
-              "events": 11920
-            },
-            "dom": 0,
-            "longTasks": []
-          },
-          {
-            "phase": "list-open-2",
-            "wallMs": 32.5,
-            "settledMs": 59.8,
-            "reactMs": 12.8,
-            "mountedNodes": 0,
-            "cache": {
-              "indexBuilds": 1,
-              "summaryBuilds": 4,
-              "projectionBuilds": 0,
-              "hits": 0,
-              "invalidations": 1,
-              "summaryCache": 4,
-              "archiveCache": 0,
-              "events": 11920
-            },
-            "dom": 13,
-            "longTasks": []
-          },
-          {
-            "phase": "all-houses-2",
-            "wallMs": 5.2,
-            "settledMs": 29.5,
-            "reactMs": 2.3,
-            "mountedNodes": 0,
-            "cache": {
-              "indexBuilds": 1,
-              "summaryBuilds": 4,
-              "projectionBuilds": 0,
-              "hits": 0,
-              "invalidations": 1,
-              "summaryCache": 4,
-              "archiveCache": 0,
-              "events": 11920
-            },
-            "dom": 28,
-            "longTasks": []
-          },
-          {
-            "phase": "family-open-2",
-            "wallMs": 18.2,
-            "settledMs": 33.1,
-            "reactMs": 9.8,
-            "mountedNodes": 2,
-            "cache": {
-              "indexBuilds": 1,
-              "summaryBuilds": 4,
-              "projectionBuilds": 1,
-              "hits": 5,
-              "invalidations": 1,
-              "summaryCache": 4,
-              "archiveCache": 1,
-              "events": 11920
-            },
-            "dom": 42,
-            "longTasks": []
-          },
-          {
-            "phase": "select-person-2",
-            "wallMs": 3.4,
-            "settledMs": 33.5,
-            "reactMs": 5.9,
-            "mountedNodes": 2,
-            "cache": {
-              "indexBuilds": 1,
-              "summaryBuilds": 4,
-              "projectionBuilds": 1,
-              "hits": 13,
-              "invalidations": 1,
-              "summaryCache": 4,
-              "archiveCache": 1,
-              "events": 11920
-            },
-            "dom": 66,
-            "longTasks": []
-          },
-          {
-            "phase": "zoom-2",
-            "wallMs": 5.7,
-            "settledMs": 33.1,
-            "reactMs": 4.7,
-            "mountedNodes": 2,
-            "cache": {
-              "indexBuilds": 1,
-              "summaryBuilds": 4,
-              "projectionBuilds": 1,
-              "hits": 13,
-              "invalidations": 1,
-              "summaryCache": 4,
-              "archiveCache": 1,
-              "events": 11920
-            },
-            "dom": 66,
-            "longTasks": []
-          },
-          {
-            "phase": "fit-2",
-            "wallMs": 3.6,
-            "settledMs": 33.3,
-            "reactMs": 4.1,
-            "mountedNodes": 2,
-            "cache": {
-              "indexBuilds": 1,
-              "summaryBuilds": 4,
-              "projectionBuilds": 1,
-              "hits": 13,
-              "invalidations": 1,
-              "summaryCache": 4,
-              "archiveCache": 1,
-              "events": 11920
-            },
-            "dom": 66,
-            "longTasks": []
-          },
-          {
-            "phase": "locate-founder-2",
-            "wallMs": 7.2,
-            "settledMs": 33.3,
-            "reactMs": 5.5,
-            "mountedNodes": 2,
-            "cache": {
-              "indexBuilds": 1,
-              "summaryBuilds": 4,
-              "projectionBuilds": 1,
-              "hits": 21,
-              "invalidations": 1,
-              "summaryCache": 4,
-              "archiveCache": 1,
-              "events": 11920
-            },
-            "dom": 81,
-            "longTasks": []
-          },
-          {
-            "phase": "return-2",
-            "wallMs": 2.5,
-            "settledMs": 33.3,
-            "reactMs": 2,
-            "mountedNodes": 0,
-            "cache": {
-              "indexBuilds": 1,
-              "summaryBuilds": 4,
-              "projectionBuilds": 1,
-              "hits": 25,
-              "invalidations": 1,
-              "summaryCache": 4,
-              "archiveCache": 1,
-              "events": 11920
-            },
-            "dom": 13,
-            "longTasks": []
-          },
-          {
-            "phase": "all-after-return-2",
-            "wallMs": 2,
-            "settledMs": 33.2,
-            "reactMs": 1.9,
-            "mountedNodes": 0,
-            "cache": {
-              "indexBuilds": 1,
-              "summaryBuilds": 4,
-              "projectionBuilds": 1,
-              "hits": 25,
-              "invalidations": 1,
-              "summaryCache": 4,
-              "archiveCache": 1,
-              "events": 11920
-            },
-            "dom": 28,
-            "longTasks": []
-          },
-          {
-            "phase": "switch-family-2",
-            "wallMs": 7.3,
-            "settledMs": 33.3,
-            "reactMs": 6.6,
-            "mountedNodes": 5,
-            "cache": {
-              "indexBuilds": 1,
-              "summaryBuilds": 4,
-              "projectionBuilds": 2,
-              "hits": 36,
-              "invalidations": 1,
-              "summaryCache": 4,
-              "archiveCache": 2,
-              "events": 11920
-            },
-            "dom": 68,
-            "longTasks": []
-          },
-          {
-            "phase": "close-2",
-            "wallMs": 1.4,
-            "settledMs": 33.2,
-            "reactMs": 0,
-            "mountedNodes": 0,
-            "cache": {
-              "indexBuilds": 1,
-              "summaryBuilds": 4,
-              "projectionBuilds": 2,
-              "hits": 36,
-              "invalidations": 1,
-              "summaryCache": 4,
-              "archiveCache": 2,
-              "events": 11920
-            },
-            "dom": 0,
-            "longTasks": []
-          },
-          {
-            "phase": "reopen-2",
             "wallMs": 2.9,
             "settledMs": 33.2,
             "reactMs": 2.4,
@@ -6972,10 +6784,276 @@
             "longTasks": []
           },
           {
-            "phase": "switch-faction-2",
-            "wallMs": 3.9,
+            "phase": "switch-faction-1",
+            "wallMs": 3.3,
             "settledMs": 32.8,
-            "reactMs": 2.7,
+            "reactMs": 2.2,
+            "mountedNodes": 0,
+            "cache": {
+              "indexBuilds": 1,
+              "summaryBuilds": 7,
+              "projectionBuilds": 2,
+              "hits": 40,
+              "invalidations": 1,
+              "summaryCache": 7,
+              "archiveCache": 2,
+              "events": 11920
+            },
+            "dom": 13,
+            "longTasks": []
+          },
+          {
+            "phase": "close-again-1",
+            "wallMs": 0.5,
+            "settledMs": 33.2,
+            "reactMs": 0,
+            "mountedNodes": 0,
+            "cache": {
+              "indexBuilds": 1,
+              "summaryBuilds": 7,
+              "projectionBuilds": 2,
+              "hits": 40,
+              "invalidations": 1,
+              "summaryCache": 7,
+              "archiveCache": 2,
+              "events": 11920
+            },
+            "dom": 0,
+            "longTasks": []
+          },
+          {
+            "phase": "list-open-2",
+            "wallMs": 15.5,
+            "settledMs": 20,
+            "reactMs": 13.7,
+            "mountedNodes": 0,
+            "cache": {
+              "indexBuilds": 1,
+              "summaryBuilds": 4,
+              "projectionBuilds": 0,
+              "hits": 0,
+              "invalidations": 1,
+              "summaryCache": 4,
+              "archiveCache": 0,
+              "events": 11920
+            },
+            "dom": 13,
+            "longTasks": []
+          },
+          {
+            "phase": "all-houses-2",
+            "wallMs": 2.6,
+            "settledMs": 32.9,
+            "reactMs": 2.6,
+            "mountedNodes": 0,
+            "cache": {
+              "indexBuilds": 1,
+              "summaryBuilds": 4,
+              "projectionBuilds": 0,
+              "hits": 0,
+              "invalidations": 1,
+              "summaryCache": 4,
+              "archiveCache": 0,
+              "events": 11920
+            },
+            "dom": 28,
+            "longTasks": []
+          },
+          {
+            "phase": "family-open-2",
+            "wallMs": 10.5,
+            "settledMs": 33.5,
+            "reactMs": 8.8,
+            "mountedNodes": 2,
+            "cache": {
+              "indexBuilds": 1,
+              "summaryBuilds": 4,
+              "projectionBuilds": 1,
+              "hits": 5,
+              "invalidations": 1,
+              "summaryCache": 4,
+              "archiveCache": 1,
+              "events": 11920
+            },
+            "dom": 42,
+            "longTasks": []
+          },
+          {
+            "phase": "select-person-2",
+            "wallMs": 3.3,
+            "settledMs": 33.3,
+            "reactMs": 5.6,
+            "mountedNodes": 2,
+            "cache": {
+              "indexBuilds": 1,
+              "summaryBuilds": 4,
+              "projectionBuilds": 1,
+              "hits": 13,
+              "invalidations": 1,
+              "summaryCache": 4,
+              "archiveCache": 1,
+              "events": 11920
+            },
+            "dom": 66,
+            "longTasks": []
+          },
+          {
+            "phase": "zoom-2",
+            "wallMs": 4.9,
+            "settledMs": 33.4,
+            "reactMs": 5.6,
+            "mountedNodes": 2,
+            "cache": {
+              "indexBuilds": 1,
+              "summaryBuilds": 4,
+              "projectionBuilds": 1,
+              "hits": 13,
+              "invalidations": 1,
+              "summaryCache": 4,
+              "archiveCache": 1,
+              "events": 11920
+            },
+            "dom": 66,
+            "longTasks": []
+          },
+          {
+            "phase": "fit-2",
+            "wallMs": 3.6,
+            "settledMs": 33.3,
+            "reactMs": 4.4,
+            "mountedNodes": 2,
+            "cache": {
+              "indexBuilds": 1,
+              "summaryBuilds": 4,
+              "projectionBuilds": 1,
+              "hits": 13,
+              "invalidations": 1,
+              "summaryCache": 4,
+              "archiveCache": 1,
+              "events": 11920
+            },
+            "dom": 66,
+            "longTasks": []
+          },
+          {
+            "phase": "locate-founder-2",
+            "wallMs": 7.4,
+            "settledMs": 33.4,
+            "reactMs": 5.6,
+            "mountedNodes": 2,
+            "cache": {
+              "indexBuilds": 1,
+              "summaryBuilds": 4,
+              "projectionBuilds": 1,
+              "hits": 21,
+              "invalidations": 1,
+              "summaryCache": 4,
+              "archiveCache": 1,
+              "events": 11920
+            },
+            "dom": 81,
+            "longTasks": []
+          },
+          {
+            "phase": "return-2",
+            "wallMs": 2.1,
+            "settledMs": 33.2,
+            "reactMs": 2.2,
+            "mountedNodes": 0,
+            "cache": {
+              "indexBuilds": 1,
+              "summaryBuilds": 4,
+              "projectionBuilds": 1,
+              "hits": 25,
+              "invalidations": 1,
+              "summaryCache": 4,
+              "archiveCache": 1,
+              "events": 11920
+            },
+            "dom": 13,
+            "longTasks": []
+          },
+          {
+            "phase": "all-after-return-2",
+            "wallMs": 2.2,
+            "settledMs": 33.4,
+            "reactMs": 2.3,
+            "mountedNodes": 0,
+            "cache": {
+              "indexBuilds": 1,
+              "summaryBuilds": 4,
+              "projectionBuilds": 1,
+              "hits": 25,
+              "invalidations": 1,
+              "summaryCache": 4,
+              "archiveCache": 1,
+              "events": 11920
+            },
+            "dom": 28,
+            "longTasks": []
+          },
+          {
+            "phase": "switch-family-2",
+            "wallMs": 6,
+            "settledMs": 33,
+            "reactMs": 5.2,
+            "mountedNodes": 5,
+            "cache": {
+              "indexBuilds": 1,
+              "summaryBuilds": 4,
+              "projectionBuilds": 2,
+              "hits": 36,
+              "invalidations": 1,
+              "summaryCache": 4,
+              "archiveCache": 2,
+              "events": 11920
+            },
+            "dom": 68,
+            "longTasks": []
+          },
+          {
+            "phase": "close-2",
+            "wallMs": 0.9,
+            "settledMs": 33.4,
+            "reactMs": 0,
+            "mountedNodes": 0,
+            "cache": {
+              "indexBuilds": 1,
+              "summaryBuilds": 4,
+              "projectionBuilds": 2,
+              "hits": 36,
+              "invalidations": 1,
+              "summaryCache": 4,
+              "archiveCache": 2,
+              "events": 11920
+            },
+            "dom": 0,
+            "longTasks": []
+          },
+          {
+            "phase": "reopen-2",
+            "wallMs": 3,
+            "settledMs": 33.4,
+            "reactMs": 2.2,
+            "mountedNodes": 0,
+            "cache": {
+              "indexBuilds": 1,
+              "summaryBuilds": 4,
+              "projectionBuilds": 2,
+              "hits": 40,
+              "invalidations": 1,
+              "summaryCache": 4,
+              "archiveCache": 2,
+              "events": 11920
+            },
+            "dom": 13,
+            "longTasks": []
+          },
+          {
+            "phase": "switch-faction-2",
+            "wallMs": 3.1,
+            "settledMs": 33.1,
+            "reactMs": 2.3,
             "mountedNodes": 0,
             "cache": {
               "indexBuilds": 1,
@@ -6993,7 +7071,7 @@
           {
             "phase": "close-again-2",
             "wallMs": 0.7,
-            "settledMs": 33.4,
+            "settledMs": 33.1,
             "reactMs": 0,
             "mountedNodes": 0,
             "cache": {
@@ -7014,19 +7092,19 @@
         "longTasksSupported": true,
         "allLongTasks": [
           {
-            "startTime": 997.4,
-            "duration": 11331
+            "startTime": 1179.5,
+            "duration": 13777
           },
           {
-            "startTime": 12777.3,
-            "duration": 9736
+            "startTime": 15419.3,
+            "duration": 11307
           },
           {
-            "startTime": 22960.2,
-            "duration": 10136
+            "startTime": 27168.3,
+            "duration": 10895
           }
         ],
-        "heapBytes": 238382149,
+        "heapBytes": 272228979,
         "cache": {
           "indexBuilds": 1,
           "summaryBuilds": 7,
@@ -7049,7 +7127,8 @@
     "Recorded foreign allegiance can lawfully block a home-country title. Missing matching transfer source is explicitly unverified, never invented migration or treason. No titles backdated.",
     "Baseline native V64 and current native V65 worlds are compared after removing only version headers and new cross-career promotion proof metadata; raw JSON hashes are not asserted identical. Rules can legitimately cause future divergence.",
     "Core step, React commit and save timings do not constitute live4x frame-rate or human visual acceptance.",
-    "Natural examples and directed production transactions are separate. No seeds or probabilities changed to manufacture rare events."
+    "Natural examples and directed production transactions are separate. No seeds or probabilities changed to manufacture rare events.",
+    "All17 native snapshot files are strictly validated;12-month continuation and second read apply to each of9 run endpoints, not separately to every overlapping prefix."
   ],
   "manualGate": "PENDING"
 }

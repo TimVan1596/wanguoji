@@ -1,3 +1,5 @@
+import FamilyPersonSources from '../../UI/Components/FactionDetails/FamilyPersonSources';
+import {getFactionDisplayNameAtMonth} from '../FactionIdentity';
 import {checkFamilyNavigation} from './FamilyNavigationCoreChecks';
 import {explainFamilyTitleEnd} from '../../Politics/FamilyArchiveProjection';
 import PosthumousPeeragePanel from '../../UI/Components/FactionDetails/PosthumousPeeragePanel';
@@ -48,6 +50,7 @@ export async function checkFamilyNobleCore(core:any,factionId:string,childId:num
    team().getUserById(childId).setTeam(foreign,{cause:'LIVE_TRANSFER',month:240});update();
    const ended=family().nobleSuccession!.at(-1)!,reading=explainFamilyTitleEnd(family(),ended,{month:240,people:Military.getPeople(),events:History.getRecordedEvents(),dynasties:Dynasty.getAll()});
    check(ended.reason==='NO_HEIR'&&reading.text.includes('结算时')&&reading.text.includes(foreign.name),'real same-month transfer before settlement blocks the foreign heir with original/admission/settlement country evidence');
+   {const host=document.createElement('div'),root=createRoot(host);document.body.append(host);try{flushSync(()=>root.render(React.createElement(Provider,{store,children:React.createElement(FamilyPersonSources,{family:family(),memberId:family().members.find(m=>m.sourceUserId===childId)!.memberId,month:240})})));check(host.textContent?.includes(`承袭结算时：${getFactionDisplayNameAtMonth(foreign,240)}`)&&host.textContent?.includes(`入籍时：${getFactionDisplayNameAtMonth(team(),240)}`),'actual React heir archive uses settlement order, not father death or later same-month nationality, while preserving admission country');}finally{flushSync(()=>root.unmount());host.remove();}}
    const transferred=exportWorldSave(core);hydrateWorldSave(core,structuredClone(transferred));check(diffCanonicalWorldSave(transferred,exportWorldSave(core)).matched,'real foreign-heir settlement strictly round-trips without backdating a title');await checkFamilyNavigation(core,check);
    hydrateWorldSave(core,structuredClone(death));
   }
