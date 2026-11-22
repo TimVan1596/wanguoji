@@ -2208,5 +2208,1578 @@
         "secondRead": true
       }
     }
-  ]
+  ],
+  "performance": {
+    "protocol": "Separate serial Electron runs; 3x300 authoritative fixed-step months from native year500 DTOs, 1440x900 offscreen UI, 5s live4x per panel state. Same machine, background world paused by user. New rules produce different native worlds; comparisons are descriptive, not proof of identical beta66/beta67 worlds or human visual acceptance.",
+    "baseline66": {
+      "input": {
+        "users": 138,
+        "factions": 26,
+        "rulers": 829,
+        "events": 14682
+      },
+      "months": 300,
+      "repetitions": 3,
+      "rows": [
+        {
+          "repeat": 0,
+          "hydrationMs": 4696.799999982119,
+          "exportMs": 5037.5,
+          "simulationWallMs": 11185,
+          "heapBefore": 137398707,
+          "heapAfter": 224744502,
+          "clockMismatches": 0,
+          "canonicalSha256": "2bf0d8bb7e2ad5fbdd08b3a462af04358239cdd813c0ef61a380b19bfba8c063",
+          "phases": {
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 10.889333333571752,
+              "p95Ms": 54.900000005960464,
+              "p99Ms": 85.19999998807907,
+              "maxMs": 137.09999999403954
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 57.82399999976158,
+              "p95Ms": 104,
+              "p99Ms": 137.09999999403954,
+              "maxMs": 137.09999999403954
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 6.622545454827222,
+              "p95Ms": 29.5,
+              "p99Ms": 45.19999998807907,
+              "maxMs": 66.19999998807907
+            },
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 1.2859999995430311,
+              "p95Ms": 2.7000000178813934,
+              "p99Ms": 30.399999976158142,
+              "maxMs": 73.80000001192093
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 3.280000000298023,
+              "p95Ms": 15.599999994039536,
+              "p99Ms": 34.60000002384186,
+              "maxMs": 49.20000001788139
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 1.500666667620341,
+              "p95Ms": 15.099999994039536,
+              "p99Ms": 16.5,
+              "maxMs": 32.599999994039536
+            },
+            "Civil administration/January": {
+              "sampleCount": 25,
+              "averageMs": 14.923999999761582,
+              "p95Ms": 31.599999994039536,
+              "p99Ms": 32.599999994039536,
+              "maxMs": 32.599999994039536
+            },
+            "Military families": {
+              "sampleCount": 300,
+              "averageMs": 0.11300000011920928,
+              "p95Ms": 0.09999999403953552,
+              "p99Ms": 2.600000023841858,
+              "maxMs": 7.799999982118607
+            },
+            "Family household births and life": {
+              "sampleCount": 300,
+              "averageMs": 0.0733333330353101,
+              "p95Ms": 0.19999998807907104,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 0.5
+            },
+            "Family noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.030999999841054282,
+              "p95Ms": 0.10000002384185791,
+              "p99Ms": 0.10000002384185791,
+              "maxMs": 0.4000000059604645
+            },
+            "Royal noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.07300000011920929,
+              "p95Ms": 0.19999998807907104,
+              "p99Ms": 0.29999998211860657,
+              "maxMs": 0.5999999940395355
+            }
+          }
+        },
+        {
+          "repeat": 1,
+          "hydrationMs": 7764.300000011921,
+          "exportMs": 6815.800000011921,
+          "simulationWallMs": 13361.100000023842,
+          "heapBefore": 173513547,
+          "heapAfter": 213133171,
+          "clockMismatches": 0,
+          "canonicalSha256": "2bf0d8bb7e2ad5fbdd08b3a462af04358239cdd813c0ef61a380b19bfba8c063",
+          "phases": {
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 12.617666667103768,
+              "p95Ms": 56,
+              "p99Ms": 112.69999998807907,
+              "maxMs": 155.40000000596046
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 67.16799999952316,
+              "p95Ms": 150,
+              "p99Ms": 155.40000000596046,
+              "maxMs": 155.40000000596046
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 7.65854545506564,
+              "p95Ms": 32.80000001192093,
+              "p99Ms": 53.30000001192093,
+              "maxMs": 79.19999998807907
+            },
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 1.4750000004967054,
+              "p95Ms": 3.800000011920929,
+              "p99Ms": 41.20000001788139,
+              "maxMs": 71.09999999403954
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 3.850666667123636,
+              "p95Ms": 22.400000005960464,
+              "p99Ms": 42.69999998807907,
+              "maxMs": 59.400000005960464
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 1.5759999996423721,
+              "p95Ms": 15.200000017881393,
+              "p99Ms": 22.099999994039536,
+              "maxMs": 33.89999997615814
+            },
+            "Civil administration/January": {
+              "sampleCount": 25,
+              "averageMs": 15.548000000715255,
+              "p95Ms": 31.599999994039536,
+              "p99Ms": 33.89999997615814,
+              "maxMs": 33.89999997615814
+            },
+            "Military families": {
+              "sampleCount": 300,
+              "averageMs": 0.16500000009934107,
+              "p95Ms": 0.09999999403953552,
+              "p99Ms": 3.5999999940395355,
+              "maxMs": 11.800000011920929
+            },
+            "Family household births and life": {
+              "sampleCount": 300,
+              "averageMs": 0.09733333379030228,
+              "p95Ms": 0.20000001788139343,
+              "p99Ms": 0.30000001192092896,
+              "maxMs": 0.3999999761581421
+            },
+            "Family noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.028666666348775228,
+              "p95Ms": 0.10000002384185791,
+              "p99Ms": 0.19999998807907104,
+              "maxMs": 0.20000001788139343
+            },
+            "Royal noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.09133333325386048,
+              "p95Ms": 0.20000001788139343,
+              "p99Ms": 0.30000001192092896,
+              "maxMs": 0.5
+            }
+          }
+        },
+        {
+          "repeat": 2,
+          "hydrationMs": 4676.199999988079,
+          "exportMs": 5131.699999988079,
+          "simulationWallMs": 12309.699999988079,
+          "heapBefore": 175831142,
+          "heapAfter": 239108417,
+          "clockMismatches": 0,
+          "canonicalSha256": "2bf0d8bb7e2ad5fbdd08b3a462af04358239cdd813c0ef61a380b19bfba8c063",
+          "phases": {
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 11.523666667441526,
+              "p95Ms": 54,
+              "p99Ms": 107.90000000596046,
+              "maxMs": 155.10000002384186
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 61.23200000286102,
+              "p95Ms": 125.59999999403954,
+              "p99Ms": 155.10000002384186,
+              "maxMs": 155.10000002384186
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 7.004727273312482,
+              "p95Ms": 30.80000001192093,
+              "p99Ms": 50.80000001192093,
+              "maxMs": 68.30000001192093
+            },
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 1.312333333194256,
+              "p95Ms": 2.5999999940395355,
+              "p99Ms": 34.400000005960464,
+              "maxMs": 78
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 3.5843333342671393,
+              "p95Ms": 20.19999998807907,
+              "p99Ms": 36.69999998807907,
+              "maxMs": 50.60000002384186
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 1.5410000002384185,
+              "p95Ms": 15.699999988079071,
+              "p99Ms": 19.30000001192093,
+              "maxMs": 31.900000005960464
+            },
+            "Civil administration/January": {
+              "sampleCount": 25,
+              "averageMs": 15.33600000023842,
+              "p95Ms": 31.099999994039536,
+              "p99Ms": 31.900000005960464,
+              "maxMs": 31.900000005960464
+            },
+            "Military families": {
+              "sampleCount": 300,
+              "averageMs": 0.13566666652758916,
+              "p95Ms": 0.09999999403953552,
+              "p99Ms": 4.699999988079071,
+              "maxMs": 8.099999994039536
+            },
+            "Family household births and life": {
+              "sampleCount": 300,
+              "averageMs": 0.0873333336909612,
+              "p95Ms": 0.20000001788139343,
+              "p99Ms": 0.29999998211860657,
+              "maxMs": 0.4000000059604645
+            },
+            "Family noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.036666666766007744,
+              "p95Ms": 0.10000002384185791,
+              "p99Ms": 0.10000002384185791,
+              "maxMs": 0.20000001788139343
+            },
+            "Royal noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.08066666642824809,
+              "p95Ms": 0.20000001788139343,
+              "p99Ms": 0.29999998211860657,
+              "maxMs": 0.3999999761581421
+            }
+          }
+        }
+      ]
+    },
+    "beta67BeforeHistoryJournal": {
+      "input": {
+        "users": 133,
+        "factions": 25,
+        "rulers": 742,
+        "events": 15019
+      },
+      "months": 300,
+      "repetitions": 3,
+      "rows": [
+        {
+          "repeat": 0,
+          "hydrationMs": 7107.200000017881,
+          "exportMs": 7701.0999999940395,
+          "simulationWallMs": 9122.5,
+          "heapBefore": 148449579,
+          "heapAfter": 202252818,
+          "clockMismatches": 0,
+          "canonicalSha256": "d89e1c8bcbf8b8d4c1380a74bb8fc1f5aa607b5a7fc15d7b2c82959a4c9c393e",
+          "phases": {
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 12.038666667242845,
+              "p95Ms": 69.5,
+              "p99Ms": 107,
+              "maxMs": 150.09999999403954
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 74.13199999809265,
+              "p95Ms": 136.40000000596046,
+              "p99Ms": 150.09999999403954,
+              "maxMs": 150.09999999403954
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 6.3938181826201355,
+              "p95Ms": 30.399999976158142,
+              "p99Ms": 48.70000001788139,
+              "maxMs": 76.5
+            },
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 1.608333334128062,
+              "p95Ms": 8.900000005960464,
+              "p99Ms": 33.5,
+              "maxMs": 63.30000001192093
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 2.717333333790302,
+              "p95Ms": 15.199999988079071,
+              "p99Ms": 31.900000005960464,
+              "maxMs": 46
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 2.4853333335121475,
+              "p95Ms": 17.599999994039536,
+              "p99Ms": 52.19999998807907,
+              "maxMs": 69
+            },
+            "Civil administration/January": {
+              "sampleCount": 25,
+              "averageMs": 25.340000002384187,
+              "p95Ms": 67.09999999403954,
+              "p99Ms": 69,
+              "maxMs": 69
+            },
+            "Military families": {
+              "sampleCount": 300,
+              "averageMs": 0.9016666666666666,
+              "p95Ms": 8.700000017881393,
+              "p99Ms": 13.900000005960464,
+              "maxMs": 33.5
+            },
+            "Family household births and life": {
+              "sampleCount": 300,
+              "averageMs": 0.0833333334326744,
+              "p95Ms": 0.19999998807907104,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 0.4000000059604645
+            },
+            "Family noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.2129999996225039,
+              "p95Ms": 0.19999998807907104,
+              "p99Ms": 0.29999998211860657,
+              "maxMs": 47.69999998807907
+            },
+            "Royal noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.08566666732231776,
+              "p95Ms": 0.20000001788139343,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 0.5
+            }
+          }
+        },
+        {
+          "repeat": 1,
+          "hydrationMs": 7044.9000000059605,
+          "exportMs": 7058.9000000059605,
+          "simulationWallMs": 9221.399999976158,
+          "heapBefore": 167952496,
+          "heapAfter": 254935487,
+          "clockMismatches": 0,
+          "canonicalSha256": "d89e1c8bcbf8b8d4c1380a74bb8fc1f5aa607b5a7fc15d7b2c82959a4c9c393e",
+          "phases": {
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 11.855333333114784,
+              "p95Ms": 69,
+              "p99Ms": 102.7999999821186,
+              "maxMs": 154.60000002384186
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 72.91999999761582,
+              "p95Ms": 126.7999999821186,
+              "p99Ms": 154.60000002384186,
+              "maxMs": 154.60000002384186
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 6.303999999978325,
+              "p95Ms": 31.100000023841858,
+              "p99Ms": 44.70000001788139,
+              "maxMs": 79.2999999821186
+            },
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 1.5746666651964187,
+              "p95Ms": 11.799999982118607,
+              "p99Ms": 33.30000001192093,
+              "maxMs": 61
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 2.7063333330551784,
+              "p95Ms": 15.099999994039536,
+              "p99Ms": 31.099999994039536,
+              "maxMs": 39.5
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 2.48300000021855,
+              "p95Ms": 17.899999976158142,
+              "p99Ms": 52.79999998211861,
+              "maxMs": 68.5
+            },
+            "Civil administration/January": {
+              "sampleCount": 25,
+              "averageMs": 25.47599999666214,
+              "p95Ms": 67.69999998807907,
+              "p99Ms": 68.5,
+              "maxMs": 68.5
+            },
+            "Military families": {
+              "sampleCount": 300,
+              "averageMs": 0.9553333334128062,
+              "p95Ms": 9.5,
+              "p99Ms": 14.199999988079071,
+              "maxMs": 32.900000005960464
+            },
+            "Family household births and life": {
+              "sampleCount": 300,
+              "averageMs": 0.07199999978144964,
+              "p95Ms": 0.19999998807907104,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 0.20000001788139343
+            },
+            "Family noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.2239999998609225,
+              "p95Ms": 0.19999998807907104,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 49.599999994039536
+            },
+            "Royal noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.07899999976158142,
+              "p95Ms": 0.19999998807907104,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 0.30000001192092896
+            }
+          }
+        },
+        {
+          "repeat": 2,
+          "hydrationMs": 9505,
+          "exportMs": 12885.200000017881,
+          "simulationWallMs": 9473.200000017881,
+          "heapBefore": 180413515,
+          "heapAfter": 222845905,
+          "clockMismatches": 0,
+          "canonicalSha256": "d89e1c8bcbf8b8d4c1380a74bb8fc1f5aa607b5a7fc15d7b2c82959a4c9c393e",
+          "phases": {
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 12.622666667997837,
+              "p95Ms": 68.90000000596046,
+              "p99Ms": 114.40000000596046,
+              "maxMs": 166.10000002384186
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 79.29600000143051,
+              "p95Ms": 143.7000000178814,
+              "p99Ms": 166.10000002384186,
+              "maxMs": 166.10000002384186
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 6.561454546776685,
+              "p95Ms": 31.30000001192093,
+              "p99Ms": 44.89999997615814,
+              "maxMs": 98
+            },
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 1.6136666665474573,
+              "p95Ms": 10.099999994039536,
+              "p99Ms": 31.80000001192093,
+              "maxMs": 60.900000005960464
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 2.993333332836628,
+              "p95Ms": 15.400000005960464,
+              "p99Ms": 32.400000005960464,
+              "maxMs": 42.79999998211861
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 2.4949999998013177,
+              "p95Ms": 18,
+              "p99Ms": 52.79999998211861,
+              "maxMs": 69.2000000178814
+            },
+            "Civil administration/January": {
+              "sampleCount": 25,
+              "averageMs": 25.615999999046327,
+              "p95Ms": 68.2000000178814,
+              "p99Ms": 69.2000000178814,
+              "maxMs": 69.2000000178814
+            },
+            "Military families": {
+              "sampleCount": 300,
+              "averageMs": 1.1189999996622404,
+              "p95Ms": 11.299999982118607,
+              "p99Ms": 17.19999998807907,
+              "maxMs": 32.89999997615814
+            },
+            "Family household births and life": {
+              "sampleCount": 300,
+              "averageMs": 0.08533333460489909,
+              "p95Ms": 0.19999998807907104,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 0.20000001788139343
+            },
+            "Family noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.28699999968210854,
+              "p95Ms": 0.19999998807907104,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 67.5
+            },
+            "Royal noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.0999999996026357,
+              "p95Ms": 0.20000001788139343,
+              "p99Ms": 0.30000001192092896,
+              "maxMs": 0.5
+            }
+          }
+        }
+      ]
+    },
+    "beta67Final": {
+      "input": {
+        "users": 133,
+        "factions": 25,
+        "rulers": 742,
+        "events": 15019
+      },
+      "months": 300,
+      "repetitions": 3,
+      "rows": [
+        {
+          "repeat": 0,
+          "hydrationMs": 8951.700000017881,
+          "exportMs": 9532.899999976158,
+          "simulationWallMs": 10761.399999976158,
+          "heapBefore": 159795050,
+          "heapAfter": 208859713,
+          "clockMismatches": 0,
+          "canonicalSha256": "d89e1c8bcbf8b8d4c1380a74bb8fc1f5aa607b5a7fc15d7b2c82959a4c9c393e",
+          "phases": {
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 12.442333334783713,
+              "p95Ms": 51.29999998211861,
+              "p99Ms": 111.2000000178814,
+              "maxMs": 167.19999998807907
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 65.02799999952316,
+              "p95Ms": 142.39999997615814,
+              "p99Ms": 167.19999998807907,
+              "maxMs": 167.19999998807907
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 7.661818183443763,
+              "p95Ms": 37.10000002384186,
+              "p99Ms": 50.20000001788139,
+              "maxMs": 111.69999998807907
+            },
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 1.9443333328763643,
+              "p95Ms": 13,
+              "p99Ms": 38.19999998807907,
+              "maxMs": 74
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 3.48266666640838,
+              "p95Ms": 18.599999994039536,
+              "p99Ms": 42.5,
+              "maxMs": 59
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 0.6360000001390775,
+              "p95Ms": 2.399999976158142,
+              "p99Ms": 17.19999998807907,
+              "maxMs": 20.100000023841858
+            },
+            "Civil administration/January": {
+              "sampleCount": 25,
+              "averageMs": 6.095999999046326,
+              "p95Ms": 18.900000005960464,
+              "p99Ms": 20.100000023841858,
+              "maxMs": 20.100000023841858
+            },
+            "Military families": {
+              "sampleCount": 300,
+              "averageMs": 1.0483333335320155,
+              "p95Ms": 9.599999994039536,
+              "p99Ms": 16.299999982118607,
+              "maxMs": 34.5
+            },
+            "Family household births and life": {
+              "sampleCount": 300,
+              "averageMs": 0.07866666654745738,
+              "p95Ms": 0.19999998807907104,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 1
+            },
+            "Family noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.2939999994635582,
+              "p95Ms": 0.19999998807907104,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 67.5
+            },
+            "Royal noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.10133333305517832,
+              "p95Ms": 0.20000001788139343,
+              "p99Ms": 0.30000001192092896,
+              "maxMs": 0.5999999940395355
+            }
+          }
+        },
+        {
+          "repeat": 1,
+          "hydrationMs": 8595.59999999404,
+          "exportMs": 9989.799999982119,
+          "simulationWallMs": 10146.09999999404,
+          "heapBefore": 173170119,
+          "heapAfter": 246665958,
+          "clockMismatches": 0,
+          "canonicalSha256": "d89e1c8bcbf8b8d4c1380a74bb8fc1f5aa607b5a7fc15d7b2c82959a4c9c393e",
+          "phases": {
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 11.711333332161109,
+              "p95Ms": 46,
+              "p99Ms": 101,
+              "maxMs": 153.69999998807907
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 60.95999999761582,
+              "p95Ms": 148.89999997615814,
+              "p99Ms": 153.69999998807907,
+              "maxMs": 153.69999998807907
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 7.234181817119771,
+              "p95Ms": 36.400000005960464,
+              "p99Ms": 46,
+              "maxMs": 92.7000000178814
+            },
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 1.8513333325584729,
+              "p95Ms": 9,
+              "p99Ms": 42.19999998807907,
+              "maxMs": 52.599999994039536
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 3.2156666672229766,
+              "p95Ms": 17.900000005960464,
+              "p99Ms": 35.69999998807907,
+              "maxMs": 56.70000001788139
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 0.6093333328763644,
+              "p95Ms": 2.0999999940395355,
+              "p99Ms": 15.700000017881393,
+              "maxMs": 20.69999998807907
+            },
+            "Civil administration/January": {
+              "sampleCount": 25,
+              "averageMs": 5.979999997615814,
+              "p95Ms": 18.69999998807907,
+              "p99Ms": 20.69999998807907,
+              "maxMs": 20.69999998807907
+            },
+            "Military families": {
+              "sampleCount": 300,
+              "averageMs": 1.0616666666666668,
+              "p95Ms": 10.599999994039536,
+              "p99Ms": 15.699999988079071,
+              "maxMs": 35.5
+            },
+            "Family household births and life": {
+              "sampleCount": 300,
+              "averageMs": 0.0890000006556511,
+              "p95Ms": 0.20000001788139343,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 0.20000001788139343
+            },
+            "Family noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.2719999997814496,
+              "p95Ms": 0.20000001788139343,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 59.599999994039536
+            },
+            "Royal noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.10033333232005437,
+              "p95Ms": 0.20000001788139343,
+              "p99Ms": 0.30000001192092896,
+              "maxMs": 0.3999999761581421
+            }
+          }
+        },
+        {
+          "repeat": 2,
+          "hydrationMs": 10349,
+          "exportMs": 9316.40000000596,
+          "simulationWallMs": 10745.799999982119,
+          "heapBefore": 287880669,
+          "heapAfter": 350419023,
+          "clockMismatches": 0,
+          "canonicalSha256": "d89e1c8bcbf8b8d4c1380a74bb8fc1f5aa607b5a7fc15d7b2c82959a4c9c393e",
+          "phases": {
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 11.695666668315729,
+              "p95Ms": 45,
+              "p99Ms": 107.90000000596046,
+              "maxMs": 160
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 62.415999997854236,
+              "p95Ms": 126.10000002384186,
+              "p99Ms": 160,
+              "maxMs": 160
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 7.0847272747213195,
+              "p95Ms": 37.5,
+              "p99Ms": 45,
+              "maxMs": 90.69999998807907
+            },
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 1.8970000004768373,
+              "p95Ms": 9.800000011920929,
+              "p99Ms": 44.900000005960464,
+              "maxMs": 73.5
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 3.2383333334326743,
+              "p95Ms": 18.599999994039536,
+              "p99Ms": 36.89999997615814,
+              "maxMs": 67.2999999821186
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 0.5786666669448217,
+              "p95Ms": 2.100000023841858,
+              "p99Ms": 15.199999988079071,
+              "maxMs": 21.19999998807907
+            },
+            "Civil administration/January": {
+              "sampleCount": 25,
+              "averageMs": 5.7159999966621395,
+              "p95Ms": 19,
+              "p99Ms": 21.19999998807907,
+              "maxMs": 21.19999998807907
+            },
+            "Military families": {
+              "sampleCount": 300,
+              "averageMs": 1.1236666668454807,
+              "p95Ms": 10.400000005960464,
+              "p99Ms": 16.599999994039536,
+              "maxMs": 37.5
+            },
+            "Family household births and life": {
+              "sampleCount": 300,
+              "averageMs": 0.09033333381017049,
+              "p95Ms": 0.20000001788139343,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 0.30000001192092896
+            },
+            "Family noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.25166666636864343,
+              "p95Ms": 0.19999998807907104,
+              "p99Ms": 0.20000001788139343,
+              "maxMs": 54.80000001192093
+            },
+            "Royal noble succession": {
+              "sampleCount": 300,
+              "averageMs": 0.09166666676600774,
+              "p95Ms": 0.20000001788139343,
+              "p99Ms": 0.29999998211860657,
+              "maxMs": 0.30000001192092896
+            }
+          }
+        }
+      ]
+    },
+    "sameBeta67AuthorityAndRngAcrossOptimizations": true,
+    "saveBeforeEvidenceIndex": {
+      "seed": "regional-1",
+      "oracleCases": 0,
+      "month": 6000,
+      "saveVersion": 63,
+      "rows": [
+        {
+          "repeat": 0,
+          "validationMs": 7319,
+          "phases": {
+            "validateSiegeBattles": 0.30000001192092896,
+            "validateCollisionSchedule": 3,
+            "validateResidentIdentities": 46.19999998807907,
+            "validateRoyalMilitaryIdentities": 6.200000017881393,
+            "validateMilitarySecessions": 37.599999994039536,
+            "validateRoyalNobility": 242.59999999403954,
+            "validateRoyalHouseholds": 328.09999999403954,
+            "validateFactionLifetime": 0.30000001192092896,
+            "validateRulerLifeRecord": 1.7000000178813934,
+            "validateMilitaryCommandState": 4056.300000011921,
+            "validateInsurgentCommands": 4.300000011920929,
+            "validateMilitaryNobility": 800.5,
+            "validateMilitaryHonors": 62.89999997615814,
+            "validateMilitaryAppanages": 48.70000001788139,
+            "validateMilitaryPoliticalParticipation": 7.9000000059604645,
+            "validatePoliticalCrises": 14.299999982118607,
+            "validateMilitaryUsurpers": 6.0999999940395355,
+            "validateMilitaryNarrativeLinks": 5,
+            "validateMilitaryOfficeAuthorities": 2.800000011920929,
+            "validateMilitaryBattleNames": 2.0999999940395355,
+            "validateRoyalHonors": 26.900000005960464,
+            "validateCourtCoups": 46.900000005960464,
+            "validateAppointmentSelections": 23.099999994039536,
+            "validateMilitaryCourt": 24.80000001192093,
+            "validateRoyalSuccessionStanding": 2.899999976158142,
+            "validateMilitaryFamilies": 331.40000000596046,
+            "validateFamilyChildren": 217.59999999403954,
+            "validateCivilAdministration": 22.400000005960464,
+            "validateFamilyNobility": 875.3000000119209
+          },
+          "stringifyMs": 32.900000005960464,
+          "parseMs": 38,
+          "hydrationMs": 7430.199999988079,
+          "exportMs": 7476.5,
+          "bytes": 11894034,
+          "heapBytes": 242725994,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 1,
+          "validationMs": 7114.799999982119,
+          "phases": {
+            "validateSiegeBattles": 0,
+            "validateCollisionSchedule": 2.199999988079071,
+            "validateResidentIdentities": 18.099999994039536,
+            "validateRoyalMilitaryIdentities": 3.4000000059604645,
+            "validateMilitarySecessions": 20.200000017881393,
+            "validateRoyalNobility": 261.39999997615814,
+            "validateRoyalHouseholds": 251.40000000596046,
+            "validateFactionLifetime": 0.09999999403953552,
+            "validateRulerLifeRecord": 0.5000000298023224,
+            "validateMilitaryCommandState": 3767.0999999940395,
+            "validateInsurgentCommands": 4.600000023841858,
+            "validateMilitaryNobility": 858,
+            "validateMilitaryHonors": 59.39999997615814,
+            "validateMilitaryAppanages": 45.5,
+            "validateMilitaryPoliticalParticipation": 6.4000000059604645,
+            "validatePoliticalCrises": 10.700000017881393,
+            "validateMilitaryUsurpers": 6.199999988079071,
+            "validateMilitaryNarrativeLinks": 5.300000011920929,
+            "validateMilitaryOfficeAuthorities": 2.7999999821186066,
+            "validateMilitaryBattleNames": 2.100000023841858,
+            "validateRoyalHonors": 24.099999994039536,
+            "validateCourtCoups": 46.30000001192093,
+            "validateAppointmentSelections": 29.19999998807907,
+            "validateMilitaryCourt": 23.19999998807907,
+            "validateRoyalSuccessionStanding": 2,
+            "validateMilitaryFamilies": 367.5,
+            "validateFamilyChildren": 232,
+            "validateCivilAdministration": 20.600000023841858,
+            "validateFamilyNobility": 996.5999999940395
+          },
+          "stringifyMs": 34.599999994039536,
+          "parseMs": 50,
+          "hydrationMs": 7786.5,
+          "exportMs": 7714.5,
+          "bytes": 11894034,
+          "heapBytes": 270741825,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 2,
+          "validationMs": 6861.699999988079,
+          "phases": {
+            "validateSiegeBattles": 0,
+            "validateCollisionSchedule": 1.800000011920929,
+            "validateResidentIdentities": 17.700000017881393,
+            "validateRoyalMilitaryIdentities": 3.699999988079071,
+            "validateMilitarySecessions": 17.900000005960464,
+            "validateRoyalNobility": 255.59999999403954,
+            "validateRoyalHouseholds": 261.90000000596046,
+            "validateFactionLifetime": 0.19999998807907104,
+            "validateRulerLifeRecord": 0.5,
+            "validateMilitaryCommandState": 3733.0999999940395,
+            "validateInsurgentCommands": 3.2000000178813934,
+            "validateMilitaryNobility": 804.5999999940395,
+            "validateMilitaryHonors": 55.099999994039536,
+            "validateMilitaryAppanages": 39,
+            "validateMilitaryPoliticalParticipation": 6.300000011920929,
+            "validatePoliticalCrises": 9,
+            "validateMilitaryUsurpers": 5.800000011920929,
+            "validateMilitaryNarrativeLinks": 2.399999976158142,
+            "validateMilitaryOfficeAuthorities": 1.4000000059604645,
+            "validateMilitaryBattleNames": 1,
+            "validateRoyalHonors": 17.100000023841858,
+            "validateCourtCoups": 46,
+            "validateAppointmentSelections": 17.799999982118607,
+            "validateMilitaryCourt": 14.599999994039536,
+            "validateRoyalSuccessionStanding": 1.300000011920929,
+            "validateMilitaryFamilies": 341.40000000596046,
+            "validateFamilyChildren": 211.40000000596046,
+            "validateCivilAdministration": 14.299999982118607,
+            "validateFamilyNobility": 936.8000000119209
+          },
+          "stringifyMs": 32.19999998807907,
+          "parseMs": 47.80000001192093,
+          "hydrationMs": 7240.5999999940395,
+          "exportMs": 7239.700000017881,
+          "bytes": 11894034,
+          "heapBytes": 372887581,
+          "canonicalUnchanged": true
+        }
+      ],
+      "scope": "Same native DTO, actual complete strict validation, hydration and exporter; no header upgrade, history mutation, RNG or screenshots"
+    },
+    "saveAfterEvidenceIndex": {
+      "seed": "regional-1",
+      "oracleCases": 0,
+      "month": 6000,
+      "saveVersion": 63,
+      "rows": [
+        {
+          "repeat": 0,
+          "validationMs": 6696.5999999940395,
+          "phases": {
+            "validateSiegeBattles": 0.20000001788139343,
+            "validateCollisionSchedule": 2.5999999940395355,
+            "validateResidentIdentities": 36.900000005960464,
+            "validateRoyalMilitaryIdentities": 7.4000000059604645,
+            "validateMilitarySecessions": 35,
+            "validateRoyalNobility": 215.5,
+            "validateRoyalHouseholds": 298.09999999403954,
+            "validateFactionLifetime": 0.29999998211860657,
+            "validateRulerLifeRecord": 1.300000011920929,
+            "validateMilitaryCommandState": 3885.5,
+            "validateInsurgentCommands": 4.4000000059604645,
+            "validateMilitaryNobility": 384.09999999403954,
+            "validateMilitaryHonors": 58.099999994039536,
+            "validateMilitaryAppanages": 42.900000005960464,
+            "validateMilitaryPoliticalParticipation": 7.300000011920929,
+            "validatePoliticalCrises": 13.199999988079071,
+            "validateMilitaryUsurpers": 6.300000011920929,
+            "validateMilitaryNarrativeLinks": 6.5,
+            "validateMilitaryOfficeAuthorities": 3,
+            "validateMilitaryBattleNames": 3.199999988079071,
+            "validateRoyalHonors": 29.5,
+            "validateCourtCoups": 47.599999994039536,
+            "validateAppointmentSelections": 20.69999998807907,
+            "validateMilitaryCourt": 25.900000005960464,
+            "validateRoyalSuccessionStanding": 2.5,
+            "validateMilitaryFamilies": 371.69999998807907,
+            "validateFamilyChildren": 223.5,
+            "validateCivilAdministration": 21.5,
+            "validateFamilyNobility": 877
+          },
+          "stringifyMs": 29.30000001192093,
+          "parseMs": 44.80000001192093,
+          "hydrationMs": 7878.899999976158,
+          "exportMs": 8236.300000011921,
+          "bytes": 11894034,
+          "heapBytes": 482339555,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 1,
+          "validationMs": 7089.300000011921,
+          "phases": {
+            "validateSiegeBattles": 0,
+            "validateCollisionSchedule": 3.5,
+            "validateResidentIdentities": 19.200000017881393,
+            "validateRoyalMilitaryIdentities": 6,
+            "validateMilitarySecessions": 20.400000005960464,
+            "validateRoyalNobility": 278.59999999403954,
+            "validateRoyalHouseholds": 277.2000000178814,
+            "validateFactionLifetime": 0,
+            "validateRulerLifeRecord": 0.5999999642372131,
+            "validateMilitaryCommandState": 4147.199999988079,
+            "validateInsurgentCommands": 3.9000000059604645,
+            "validateMilitaryNobility": 376.7000000178814,
+            "validateMilitaryHonors": 58.5,
+            "validateMilitaryAppanages": 47.5,
+            "validateMilitaryPoliticalParticipation": 7.4000000059604645,
+            "validatePoliticalCrises": 12.799999982118607,
+            "validateMilitaryUsurpers": 5.700000017881393,
+            "validateMilitaryNarrativeLinks": 7,
+            "validateMilitaryOfficeAuthorities": 2.7999999821186066,
+            "validateMilitaryBattleNames": 3.100000023841858,
+            "validateRoyalHonors": 25.799999982118607,
+            "validateCourtCoups": 44,
+            "validateAppointmentSelections": 19.200000017881393,
+            "validateMilitaryCourt": 20.19999998807907,
+            "validateRoyalSuccessionStanding": 2,
+            "validateMilitaryFamilies": 370.09999999403954,
+            "validateFamilyChildren": 237.09999999403954,
+            "validateCivilAdministration": 17.600000023841858,
+            "validateFamilyNobility": 1027.199999988079
+          },
+          "stringifyMs": 34.19999998807907,
+          "parseMs": 40.900000005960464,
+          "hydrationMs": 7715.700000017881,
+          "exportMs": 7166.899999976158,
+          "bytes": 11894034,
+          "heapBytes": 376132435,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 2,
+          "validationMs": 6780.4000000059605,
+          "phases": {
+            "validateSiegeBattles": 0,
+            "validateCollisionSchedule": 2.0999999940395355,
+            "validateResidentIdentities": 17.19999998807907,
+            "validateRoyalMilitaryIdentities": 5.300000011920929,
+            "validateMilitarySecessions": 18.799999982118607,
+            "validateRoyalNobility": 224.10000002384186,
+            "validateRoyalHouseholds": 255,
+            "validateFactionLifetime": 0.09999999403953552,
+            "validateRulerLifeRecord": 0.5,
+            "validateMilitaryCommandState": 3737.0999999940395,
+            "validateInsurgentCommands": 4.299999982118607,
+            "validateMilitaryNobility": 486.90000000596046,
+            "validateMilitaryHonors": 59.5,
+            "validateMilitaryAppanages": 44.20000001788139,
+            "validateMilitaryPoliticalParticipation": 7.0999999940395355,
+            "validatePoliticalCrises": 9.300000011920929,
+            "validateMilitaryUsurpers": 5.899999976158142,
+            "validateMilitaryNarrativeLinks": 2.7000000178813934,
+            "validateMilitaryOfficeAuthorities": 1.5,
+            "validateMilitaryBattleNames": 2.5999999940395355,
+            "validateRoyalHonors": 24.80000001192093,
+            "validateCourtCoups": 45.599999994039536,
+            "validateAppointmentSelections": 25.099999994039536,
+            "validateMilitaryCourt": 26.599999994039536,
+            "validateRoyalSuccessionStanding": 1.4000000059604645,
+            "validateMilitaryFamilies": 368,
+            "validateFamilyChildren": 228.80000001192093,
+            "validateCivilAdministration": 21.5,
+            "validateFamilyNobility": 1113
+          },
+          "stringifyMs": 33.099999994039536,
+          "parseMs": 45.099999994039536,
+          "hydrationMs": 7657.0999999940395,
+          "exportMs": 7467.600000023842,
+          "bytes": 11894034,
+          "heapBytes": 280912609,
+          "canonicalUnchanged": true
+        }
+      ],
+      "scope": "Same native DTO, actual complete strict validation, hydration and exporter; no header upgrade, history mutation, RNG or screenshots"
+    },
+    "uiBaseline66": {
+      "checks": 25,
+      "familyDisplay": {
+        "raw": 18,
+        "visible": 14
+      },
+      "opens": [
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1932327966-4978",
+          "openMs": 45.5,
+          "dom": 90
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1493787912--221",
+          "openMs": 100.40000000596046,
+          "dom": 404
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1535869355-5172",
+          "openMs": 58.5,
+          "dom": 439
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1306532530-5024",
+          "openMs": 16.80000001192093,
+          "dom": 109
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1359923504-5339",
+          "openMs": 16.19999998807907,
+          "dom": 111
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1143912061-5302",
+          "openMs": 13.800000011920929,
+          "dom": 83
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1306532561-5333",
+          "openMs": 14.899999976158142,
+          "dom": 106
+        },
+        {
+          "kind": "MILITARY",
+          "personId": "military-person-1",
+          "openMs": 180.2999999821186
+        }
+      ],
+      "react": {
+        "commits": 36,
+        "totalMs": 193.0999999344349
+      },
+      "frames": [
+        {
+          "panel": true,
+          "wallMs": 5052.299999982119,
+          "configuredSpeed": 4,
+          "effectiveMonthsPerSecond": 7.125467608837047,
+          "clockMismatches": 0,
+          "runtime": {
+            "renderFrameCount": 266,
+            "frameDeltaMs": {
+              "current": 52.70000001788139,
+              "average": 18.993984962428424,
+              "p95": 35.19999998807907,
+              "max": 105
+            },
+            "longFrames": {
+              "over25ms": 25,
+              "over33ms": 15,
+              "over50ms": 6,
+              "over100ms": 1
+            },
+            "simulationStepsPerFrame": {
+              "average": 4.086466165413534,
+              "max": 8
+            },
+            "fixedStepCpuMs": {
+              "average": 10.190601502370118,
+              "p95": 20.599999994039536
+            },
+            "presentationCpuMs": {
+              "average": 0.175563910065737,
+              "p95": 0.30000001192092896
+            },
+            "sampleCount": 266,
+            "rollingWindowCapacity": 300,
+            "statisticsWindow": "rolling 300 frames (or available samples)",
+            "longFrameCounterWindow": "session cumulative since hydration/reset",
+            "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+          },
+          "phaser": {
+            "Phaser scene update CPU": {
+              "sampleCount": 266,
+              "averageMs": 10.493984962428422,
+              "p95Ms": 20.900000005960464,
+              "p99Ms": 54.099999994039536,
+              "maxMs": 83.40000000596046
+            },
+            "Phaser canvas render CPU": {
+              "sampleCount": 266,
+              "averageMs": 3.4977443613728187,
+              "p95Ms": 6.300000011920929,
+              "p99Ms": 7.4000000059604645,
+              "maxMs": 8.099999994039536
+            }
+          },
+          "heapBefore": 166412439,
+          "heapAfter": 159751886
+        },
+        {
+          "panel": false,
+          "wallMs": 5010.800000011921,
+          "configuredSpeed": 4,
+          "effectiveMonthsPerSecond": 7.783188313224878,
+          "clockMismatches": 0,
+          "runtime": {
+            "renderFrameCount": 287,
+            "frameDeltaMs": {
+              "current": 17.099999994039536,
+              "average": 17.473867595818817,
+              "p95": 24.299999982118607,
+              "max": 73.40000000596046
+            },
+            "longFrames": {
+              "over25ms": 12,
+              "over33ms": 5,
+              "over50ms": 3,
+              "over100ms": 0
+            },
+            "simulationStepsPerFrame": {
+              "average": 4.094076655052265,
+              "max": 7
+            },
+            "fixedStepCpuMs": {
+              "average": 8.544250870519399,
+              "p95": 13.599999994039536
+            },
+            "presentationCpuMs": {
+              "average": 0.16271777082403363,
+              "p95": 0.30000001192092896
+            },
+            "sampleCount": 287,
+            "rollingWindowCapacity": 300,
+            "statisticsWindow": "rolling 300 frames (or available samples)",
+            "longFrameCounterWindow": "session cumulative since hydration/reset",
+            "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+          },
+          "phaser": {
+            "Phaser scene update CPU": {
+              "sampleCount": 287,
+              "averageMs": 8.830662021134373,
+              "p95Ms": 13.799999982118607,
+              "p99Ms": 41.39999997615814,
+              "maxMs": 55.69999998807907
+            },
+            "Phaser canvas render CPU": {
+              "sampleCount": 287,
+              "averageMs": 2.955749128442193,
+              "p95Ms": 3.5,
+              "p99Ms": 4.699999988079071,
+              "maxMs": 43.400000005960464
+            }
+          },
+          "heapBefore": 171645576,
+          "heapAfter": 126049049
+        }
+      ],
+      "longTasks": [
+        10816,
+        172,
+        65,
+        69,
+        86,
+        62,
+        97,
+        52,
+        4714,
+        59,
+        73,
+        56
+      ],
+      "scope": "Actual native 500-year DTO, React controls and offscreen Electron Phaser frame loop; frame residual includes pacing/render/React/GC and does not identify GPU or GC costs. Not human visual acceptance."
+    },
+    "uiFinal": {
+      "checks": 26,
+      "familyDisplay": {
+        "raw": 32,
+        "visible": 23
+      },
+      "opens": [
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1306533339-5218",
+          "openMs": 122.10000002384186,
+          "dom": 151
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1493787912--221",
+          "openMs": 120.59999999403954,
+          "dom": 512
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1619658743-4979",
+          "openMs": 84.59999999403954,
+          "dom": 448
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1298239574-5477",
+          "openMs": 39.60000002384186,
+          "dom": 120
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1298239605-5153",
+          "openMs": 30.599999994039536,
+          "dom": 125
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1969464933-5161",
+          "openMs": 31.099999994039536,
+          "dom": 122
+        },
+        {
+          "kind": "CIVIL",
+          "personId": "resident-1306533400-5228",
+          "openMs": 32.80000001192093,
+          "dom": 123
+        },
+        {
+          "kind": "MILITARY",
+          "personId": "military-person-1",
+          "openMs": 202.69999998807907
+        }
+      ],
+      "react": {
+        "commits": 32,
+        "totalMs": 336.3000000715256
+      },
+      "frames": [
+        {
+          "panel": true,
+          "wallMs": 5020.199999988079,
+          "configuredSpeed": 4,
+          "effectiveMonthsPerSecond": 6.971833791498967,
+          "clockMismatches": 0,
+          "runtime": {
+            "renderFrameCount": 251,
+            "frameDeltaMs": {
+              "current": 14.900000005960464,
+              "average": 20.032669322780404,
+              "p95": 36.39999997615814,
+              "max": 107.90000000596046
+            },
+            "longFrames": {
+              "over25ms": 35,
+              "over33ms": 16,
+              "over50ms": 7,
+              "over100ms": 2
+            },
+            "simulationStepsPerFrame": {
+              "average": 4.195219123505976,
+              "max": 7
+            },
+            "fixedStepCpuMs": {
+              "average": 9.54541832719191,
+              "p95": 18.900000005960464
+            },
+            "presentationCpuMs": {
+              "average": 0.18286852580142687,
+              "p95": 0.4000000059604645
+            },
+            "sampleCount": 251,
+            "rollingWindowCapacity": 300,
+            "statisticsWindow": "rolling 300 frames (or available samples)",
+            "longFrameCounterWindow": "session cumulative since hydration/reset",
+            "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+          },
+          "phaser": {
+            "Phaser scene update CPU": {
+              "sampleCount": 251,
+              "averageMs": 9.870517928049384,
+              "p95Ms": 19.5,
+              "p99Ms": 55.5,
+              "maxMs": 89.69999998807907
+            },
+            "Phaser canvas render CPU": {
+              "sampleCount": 251,
+              "averageMs": 4.136254980150922,
+              "p95Ms": 6.800000011920929,
+              "p99Ms": 8.300000011920929,
+              "maxMs": 10
+            }
+          },
+          "heapBefore": 163601818,
+          "heapAfter": 199202032
+        },
+        {
+          "panel": false,
+          "wallMs": 5008.700000017881,
+          "configuredSpeed": 4,
+          "effectiveMonthsPerSecond": 7.786451574232989,
+          "clockMismatches": 0,
+          "runtime": {
+            "renderFrameCount": 294,
+            "frameDeltaMs": {
+              "current": 16.80000001192093,
+              "average": 17.058503401421365,
+              "p95": 17.700000017881393,
+              "max": 80.30000001192093
+            },
+            "longFrames": {
+              "over25ms": 7,
+              "over33ms": 5,
+              "over50ms": 1,
+              "over100ms": 0
+            },
+            "simulationStepsPerFrame": {
+              "average": 3.9625850340136055,
+              "max": 5
+            },
+            "fixedStepCpuMs": {
+              "average": 6.744897959690515,
+              "p95": 9.300000011920929
+            },
+            "presentationCpuMs": {
+              "average": 0.14251700682299479,
+              "p95": 0.29999998211860657
+            },
+            "sampleCount": 294,
+            "rollingWindowCapacity": 300,
+            "statisticsWindow": "rolling 300 frames (or available samples)",
+            "longFrameCounterWindow": "session cumulative since hydration/reset",
+            "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+          },
+          "phaser": {
+            "Phaser scene update CPU": {
+              "sampleCount": 294,
+              "averageMs": 7.009523810273936,
+              "p95Ms": 9.599999994039536,
+              "p99Ms": 39.70000001788139,
+              "maxMs": 75.80000001192093
+            },
+            "Phaser canvas render CPU": {
+              "sampleCount": 294,
+              "averageMs": 3.1357142848222432,
+              "p95Ms": 3.699999988079071,
+              "p99Ms": 4,
+              "maxMs": 4.5
+            }
+          },
+          "heapBefore": 175704562,
+          "heapAfter": 149821532
+        }
+      ],
+      "longTasks": [
+        20714,
+        104,
+        96,
+        54,
+        67,
+        66,
+        50,
+        98,
+        63,
+        7477,
+        80
+      ],
+      "scope": "Actual native 500-year DTO, React controls and offscreen Electron Phaser frame loop; frame residual includes pacing/render/React/GC and does not identify GPU or GC costs. Not human visual acceptance."
+    }
+  },
+  "identityLookupOracle": {
+    "snapshots": 17,
+    "equivalentQueries": 3319,
+    "allStrictAndUnchanged": true
+  },
+  "directedCore": {
+    "civilFourTierTransferAndRollback": {
+      "assertions": 87,
+      "passed": true
+    },
+    "nativeDeposedRulerIdentity": {
+      "assertions": 12,
+      "passed": true
+    },
+    "militaryNobilityAndPoliticalContinuity": {
+      "assertions": 1465,
+      "passed": true
+    }
+  },
+  "manualGate": "PENDING",
+  "limits": [
+    "The original Qi king Tian Shao save was not provided; a same-class native royal production transaction was verified, not the complete reported natural life.",
+    "No natural civil-to-military transfer in this fixed cohort; actual shared annual military selection is verified only by directed Core. Qualified former civil candidates do exist; no probability/cap changes or seed replacement.",
+    "No natural royal civil-peerage succession sample; finite existing royal chain is covered by rule regression.",
+    "Year500 save/load remains seconds, approximately7-8s in this run; optimizing civil proof membership does not establish a large overall load-time improvement.",
+    "Offscreen Electron frame/DOM measurements do not replace Chrome/Electron human visual acceptance."
+  ],
+  "naturalExamples": {
+    "XIANLING": {
+      "eventId": "civil-governor-楚-city-楚-郢-1-appointed",
+      "worldMonth": 84,
+      "text": "楚王熊定任命蔡宗宁为郢县令。"
+    },
+    "JUNSHOU": {
+      "eventId": "civil-governor-魏-8-appointed",
+      "worldMonth": 324,
+      "text": "魏王魏仲义以洪令安治理有绩，由大梁县令擢任大梁郡守。"
+    },
+    "YUSHI_DAFU": {
+      "eventId": "civil-governor-齐-44-appointed",
+      "worldMonth": 1320,
+      "text": "齐王田思信以江恺治理有绩，由丹水郡守擢任御史大夫。"
+    },
+    "CHENGXIANG": {
+      "eventId": "civil-governor-齐-127-appointed",
+      "worldMonth": 4140,
+      "text": "齐王田克信以余瑜治理有绩，由御史大夫擢任丞相。"
+    },
+    "civilPeerage": [
+      {
+        "eventId": "civil-noble-resident-1433913152--233-楚-ruler-12-NAN",
+        "worldMonth": 696,
+        "text": "楚王熊绍远以于庭允累有真实治理之绩，封为男爵。"
+      },
+      {
+        "eventId": "civil-noble-resident-1306530454-432-齐-ruler-8-NAN",
+        "worldMonth": 1068,
+        "text": "齐王田仁以江恺累有真实治理之绩，封为男爵。"
+      }
+    ]
+  },
+  "verification": {
+    "unitTests": {
+      "files": 368,
+      "tests": 2724,
+      "passed": true
+    },
+    "typescript": true,
+    "builds": {
+      "web": true,
+      "desktop": true,
+      "debug": true
+    },
+    "strictSnapshots": {
+      "count": 17,
+      "passed": true,
+      "identityLookupChecks": 3319
+    },
+    "twelveMonthContinuationAndSecondRead": true,
+    "visualAcceptance": false
+  }
 }

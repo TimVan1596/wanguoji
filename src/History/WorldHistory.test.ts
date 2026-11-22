@@ -1,3 +1,4 @@
+import {beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
 import { describe, expect, it } from "vitest";
 import WorldHistory, { formatEventDate } from "./WorldHistory";
 
@@ -289,4 +290,13 @@ describe("world history", () => {
       "world-unification",
     ]);
   });
+});
+
+it('append-only transaction restores raw sources, chronological and entity indexes, unique keys and pending notifications',()=>{
+ WorldHistory.reset();const base:any={id:'base-append',year:12,type:'city-founded',category:'politics',importance:'normal',actorFactionId:'qin',cityId:'city',title:'原史事',metadata:{proof:'retained'}};
+ WorldHistory.addEvent(base);const before=WorldHistory.exportState(),revision=WorldHistory.getRevision(),snapshot=WorldHistory.snapshotAppendTransaction(),scope=beginPoliticalMutation();
+ WorldHistory.addEvent({...base,id:'backdated-append',year:6,title:'失败事务'});WorldHistory.addUniqueEvent('failed-unique',{...base,year:18,title:'失败唯一记录'});scope.cancel();
+ const restoring=beginPoliticalMutation();WorldHistory.rollbackAppendTransaction(snapshot);restoring.finishRollback();
+ expect(WorldHistory.exportState()).toEqual(before);expect(WorldHistory.getRevision()).toBe(revision);expect(WorldHistory.getEventsForCity('city').map(e=>e.id)).toEqual(['base-append']);expect(WorldHistory.getEventsBetween(0,24).map(e=>e.id)).toEqual(['base-append']);expect(WorldHistory.getEventTypeCount('city-founded')).toBe(1);
+ expect(WorldHistory.addUniqueEvent('failed-unique',{...base,year:18,title:'合法重试'})).toBeUndefined();expect(WorldHistory.getEventCount()).toBe(2);expect(WorldHistory.getEventsForFaction('qin').map(e=>e.title)).toContain('合法重试');
 });

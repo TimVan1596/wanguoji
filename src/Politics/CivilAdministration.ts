@@ -27,8 +27,8 @@ const active=(term:CivilGovernorTerm,month:number)=>term.startMonth<=month&&term
 
 function transaction<T>(work:()=>T,rollback:()=>void=()=>{}):T{
  if(politicalMutationActive())return work();
- const before=structuredClone(CivilAdministration.exportState()),history=WorldHistory.snapshotPoliticalTransaction(),rng=worldRandom.exportState(),scope=beginPoliticalMutation();
- try{const value=work();scope.commit();return value;}catch(error){scope.cancel();rollback();worldRandom.restore(rng);CivilAdministration.importState(before);const restore=beginPoliticalMutation();WorldHistory.rollbackPoliticalTransaction(history);restore.finishRollback();throw error;}
+ const before=CivilAdministration.exportState(),history=WorldHistory.snapshotAppendTransaction(),rng=worldRandom.exportState(),scope=beginPoliticalMutation();
+ try{const value=work();scope.commit();return value;}catch(error){scope.cancel();rollback();worldRandom.restore(rng);CivilAdministration.importState(before);const restore=beginPoliticalMutation();WorldHistory.rollbackAppendTransaction(history);restore.finishRollback();throw error;}
 }
 
 class CivilAdministrationStore {

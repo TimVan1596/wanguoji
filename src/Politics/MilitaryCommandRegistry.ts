@@ -1,5 +1,5 @@
 import {measurePhase,type MonthlyPhaseProfiler} from '../Simulation/MonthlyPhaseProfiler';
-import {civilPopulationIdentity,civilState} from './CivilCareerIdentity';
+import {civilPopulationIdentity,civilState,replaceCivilState} from './CivilCareerIdentity';
 import {familyBirthSource,familyBirthParents,planFamilyChildBirth,hasFamilyBirthOpportunity,isFamilyBirthPolicy,type FamilyBirthPolicy,FAMILY_ANNUAL_BIRTH_LIMIT,COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT} from './FamilyChildBirth';
 import {NOBLE_NAMES,isNobleMeritPolicy,nobleEpochForRuler,type NobleMeritPolicy} from './MilitaryNobility';
 import {appointmentAbilityWeight,type AppointmentAbilityPolicy,type AppointmentSelection,type AppointmentSelectionRow} from './AppointmentSelection';
@@ -503,7 +503,19 @@ export class MilitaryCommandRegistryStore {
     for (const formation of this.formations.values()) if (formation.commanderPersonId === personId) this.endFormation(formation, month, reason, courtCoupEventId);
   }
 
-  civilTransaction<T>(team:Team,work:()=>T):T{return this.familyTransaction(team,work);}
+  /** Civil offices create no units, commands, royal records, city ownership or movement.
+   * Journal every store and User binding they do touch; military/political handoffs keep the full journal. */
+  civilTransaction<T>(team:Team,work:()=>T):T{
+    if(politicalMutationActive())return work();
+    const military=this.snapshotTransaction(),civil=structuredClone(civilState()),history=WorldHistory.snapshotAppendTransaction(),rng=worldRandom.exportState();
+    const users=[...team.users].map(user=>({user,state:user.capturePoliticalState()})),scope=beginPoliticalMutation();
+    try{const value=work();scope.commit();return value;}
+    catch(error){
+      scope.cancel();const restoring=beginPoliticalMutation();
+      replaceCivilState(civil);this.rollbackTransaction(military,true);for(const item of users)item.user.restorePoliticalState(item.state);
+      WorldHistory.rollbackAppendTransaction(history);worldRandom.restore(rng);restoring.finishRollback();throw error;
+    }
+  }
   registerCivilPerson(user:User,term:import('./CivilAdministrationSchema').CivilGovernorTerm){
     let person=this.people.get(term.personId);
     if(person){if(person.sourceUserId!==user.id||person.bornMonth!==user.bornMonth||person.personalName!==term.personalName)throw Error('Civil permanent identity conflict');return person;}

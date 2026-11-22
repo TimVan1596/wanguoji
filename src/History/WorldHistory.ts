@@ -299,9 +299,7 @@ export class WorldHistoryStore {
     return this.events.length;
   }
 
-  exportState() {
-    return {
-      events: this.events.map(({ year, ...event }) => ({ ...event, metadata: event.metadata ? { ...event.metadata } : undefined, monthIndex: event.monthIndex ?? year })),
+  private transactionFacts(){return {
       emittedKeys: [...this.emitted],
       populationLeader: this.populationLeader,
       territoryLeader: this.territoryLeader,
@@ -310,7 +308,16 @@ export class WorldHistoryStore {
       extinctFactionIds: [...this.extinctFactions],
       sequence: this.sequence,
       unificationCount: this.unificationCount,
-    };
+  };}
+  exportState() {
+    return {events:this.events.map(({year,...event})=>({...event,metadata:event.metadata?{...event.metadata}:undefined,monthIndex:event.monthIndex??year})),...this.transactionFacts()};
+  }
+  /** Only for synchronous append-only callers; existing event objects must not be edited.
+   * Keeps every source event and small registry fact, without cloning all historical metadata. */
+  snapshotAppendTransaction(){return {state:this.transactionFacts(),events:[...this.events],pending:[...this.pendingEvents],reset:this.resetPending,revision:this.revision,dirty:this.batchDirty};}
+  rollbackAppendTransaction(s:ReturnType<WorldHistoryStore['snapshotAppendTransaction']>){
+    this.importState({...s.state,events:[]});this.events=s.events;this.orderedEvents=[];this.groupOldestMonth.clear();this.uiEventsByFactionId.clear();this.eventsByFactionId.clear();this.eventsByCityId.clear();this.eventTypeCounts.clear();this.events.forEach(e=>this.indexEvent(e));
+    this.pendingEvents=s.pending;this.resetPending=s.reset;this.revision=s.revision;this.batchDirty=s.dirty;
   }
 
   snapshotPoliticalTransaction(){return {state:this.exportState(),events:[...this.events],pending:[...this.pendingEvents],reset:this.resetPending,revision:this.revision,dirty:this.batchDirty};}
