@@ -65,3 +65,9 @@ it.each([34,48,112])('keeps distinct leader, royal and imperial regalia at %ipx 
  for(const role of ['LEADER','KING','EMPEROR'] as const){const html=renderToStaticMarkup(<Portrait personId='one-life' role={role} age={62} size={size} color={0x224466}/>);expect(html).toContain(`width="${size}"`);faces.add(html.match(/<path data-face="true"[^>]*>/)![0]);if(role==='LEADER')expect(html).not.toContain('data-sovereign-regalia');else{expect(html).toContain(`data-sovereign-regalia="${role}"`);expect(html).toContain(`data-sovereign-robe="${role}"`);expect(html).not.toContain('data-office-insignia');}}
  expect(faces.size).toBe(1);
 });
+
+it('shares explicit political portrait markers while keeping normal death separate and the face unchanged',()=>{
+ const plain=renderToStaticMarkup(<Portrait personId="same-person" deceased/>),before=worldRandom.exportState();expect(plain).not.toContain('data-political-portrait-status');
+ for(const status of ['禁仕','追夺','叛离','伏诛','已赦']){const html=renderToStaticMarkup(<Portrait personId="same-person" deceased politicalStatus={status}/>);expect(html).toContain(`data-political-portrait-status="${status}"`);expect(html.match(/<path data-face="true"[^>]*>/)?.[0]).toBe(plain.match(/<path data-face="true"[^>]*>/)?.[0]);}
+ expect(worldRandom.exportState()).toEqual(before);
+});

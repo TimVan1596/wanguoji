@@ -14,3 +14,8 @@ it('uses only the exact permanent resident evidence before the settlement event 
  expect(familyResidenceEvidence(f,{...m,sourceUserId:8},400,events).transfers[0].eventId).toBeUndefined();expect(familyResidenceEvidence(f,{...m,bornMonth:99},400,events).transfers[0].eventId).toBeUndefined();
  expect(familyResidenceEvidence(f,m,399,events).settlementFactionId).toBe('qi');
 });
+
+it('never leaks future population entry or a later same-month transfer into admission history',()=>{
+ const f:any={factionId:'qi'},m:any={memberId:'child',bornMonth:100,enteredMonth:100,populationEnteredMonth:300,birth:{factionId:'qi'},factionHistory:[{month:300,factionId:'zhao',eventIndex:2}]},events:any[]=[{id:'birth'},{id:'child-population-entered',year:300},{id:'later-transfer',year:300}];
+ expect(familyResidenceEvidence(f,m,200,events).entryFactionId).toBeUndefined();expect(familyResidenceEvidence(f,m,300,events).entryFactionId).toBe('qi');expect(familyResidenceEvidence(f,m,300,events).settlementFactionId).toBe('zhao');
+});

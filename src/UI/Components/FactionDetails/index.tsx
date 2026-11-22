@@ -466,7 +466,7 @@ function FactionProfile({
           <Button
             key={value}
             size="small"
-            sx={{flex:1,minWidth:0,whiteSpace:"nowrap",px:.5}}
+            sx={{flex:value==="people"&&team.identityStage!=="STATE"?1.6:1,minWidth:0,whiteSpace:"nowrap",px:.5}}
             variant={(activeTab === value || value==="people"&&["military","civil"].includes(activeTab)) ? "contained" : "outlined"}
             onClick={() => dispatch(setFactionDetailTab(value))}
           >

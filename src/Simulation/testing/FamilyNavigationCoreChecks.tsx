@@ -5,7 +5,7 @@ import {Provider} from 'react-redux';
 import {store} from '../../store';
 import Military from '../../Politics/MilitaryCommandRegistry';
 import Dynasty from '../../Politics/Dynasty';
-import {FamilyTree} from '../../UI/Components/FactionDetails/MilitaryFamilyBrowser';
+import {FamilyTree,prepareFamilyTree} from '../../UI/Components/FactionDetails/MilitaryFamilyBrowser';
 import {PersonArchiveNavigation,type PersonArchiveTarget} from '../../UI/Components/FactionDetails/PersonArchiveNavigation';
 import {exportWorldSave} from '../../Persistence/WorldSaveExporter';
 import {diffCanonicalWorldSave} from '../../Persistence/WorldSaveSchema';
@@ -20,6 +20,7 @@ export async function checkFamilyNavigation(core:any,check:(v:unknown,label:stri
   let request:PersonArchiveTarget|undefined,closed=false;
   flushSync(()=>root.render(<Provider store={store}><PersonArchiveNavigation.Provider value={{open:t=>{request=t;},consume:()=>{},consumeGenealogy:()=>{}}}><FamilyTree key={`${f.familyId}/${m.memberId}`} family={f} month={month} initialMemberId={m.memberId} onClose={()=>{closed=true;}} onBack={()=>{}}/></PersonArchiveNavigation.Provider></Provider>));
   const card=host.querySelector(`[data-family-member="${m.memberId}"]`),button=card&&Array.from(card.querySelectorAll('button')).find(b=>b.textContent==='人物档案');if(!button)continue;
+  const model=prepareFamilyTree(f,month,m.memberId),display=model.cards.get(m.memberId)!;check(display.height>=14+20+display.lines.length*16+24,'archive action has reserved card height for officials and family-only members');
   flushSync(()=>button.click());
   const p=m.militaryPersonId&&Military.getPerson(m.militaryPersonId),civil=p?before.registries.civilAdministration.terms.filter(t=>t.personId===p.personId).at(-1):undefined,royal=Dynasty.getAll().flatMap(d=>d.rulers.map(r=>({r,factionId:d.factionId}))).find(({r})=>r.accessionYear!==undefined&&r.accessionYear<=month&&r.bornYear===m.bornMonth&&(m.sourceUserId!==undefined&&r.residentIdentity?.sourceUserId===m.sourceUserId||p&&r.id===p.politicalRulerId));
   if(royal)check(closed&&request?.kind==='RULER'&&request.id===royal.r.id,'actual genealogy click opens the same royal person, including a former officer');
