@@ -24,5 +24,5 @@ export function personCareerMilestones(events:readonly WorldEvent[],personId:str
   if(e){if(seen.has(e.id)||(e.monthIndex??e.year)>month)continue;seen.add(e.id);const grouped=e.metadata?.courtReadingKind==='COURT_COUP';rows.push({id:e.id,month:e.monthIndex??e.year,text:grouped?e.title:text.get(e.id)??e.title,sources:grouped?String(e.metadata?.sourceEventIds).split(','):index.reading.sources.get(e.id)??[]});}
   else {const original=military.find(e=>e.eventId===id);if(original&&original.worldMonth<=month&&!seen.has(id)){seen.add(id);rows.push({id,month:original.worldMonth,text:original.text,sources:[]});}}
  }
- return rows.sort((a,b)=>a.month-b.month||(index.order.get(a.id)??Infinity)-(index.order.get(b.id)??Infinity)).map(e=>({id:e.id,sourceIds:e.sources.length?e.sources:[e.id],content:<Typography fontSize=".82rem">{formatWorldDate(e.month)} · {e.text}</Typography>}));
+ return rows.sort((a,b)=>a.month-b.month||(index.order.get(a.id)??Infinity)-(index.order.get(b.id)??Infinity)).map(e=>({id:e.id,sourceIds:e.sources.length?e.sources:[e.id],content:<Typography fontSize=".82rem">{formatWorldDate(e.month)}，{e.text}</Typography>}));
 }
