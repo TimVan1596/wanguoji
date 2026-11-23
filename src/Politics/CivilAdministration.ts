@@ -3,7 +3,7 @@ import {civilCrossCareerEvidence,civilPromotionCompetitionWeight} from './CrossC
 import {civilNobleMerit} from './CivilNobility';
 import {currentNobleGrant,NOBLE_RANKS} from './MilitaryNobility';
 import {familyNobleRankAt,familyNobleAuthorityAt} from './FamilyNobleSuccession';
-import {civilPromotionEvidence} from './CivilPromotion';
+import {civilPromotionEvidence,civilPromotionFacts} from './CivilPromotion';
 import {CIVIL_OFFICES,civilOfficeLevel,civilOfficeTitle,isLocalCivilOffice,civilOfficeCap} from './CivilOffice';
 import {politicalMutationActive} from '../Simulation/PoliticalMutationScope';
 import {isRoyalTitleLabel} from './RoyalPopulationIdentity';
@@ -103,13 +103,21 @@ class CivilAdministrationStore {
   }
  }
  private promoteCandidates(month:number,team:Team,dynasty:Dynasty){
-  const rows=this.state.terms.filter(t=>t.factionId===team.name&&active(t,month)).flatMap(term=>{const user=[...team.users].find(u=>u.id===term.sourceUserId&&u.bornMonth===term.bornMonth),e=user&&civilPromotionEvidence(term,month,user.loyalty,team.cities.length,this.state.terms);return e?[{term,weight:civilPromotionCompetitionWeight(term,e,Military.getPerson(term.personId),WorldHistory.getRecordedEvents())}]:[];});
-  if(!rows.length)return;
+  const policy=this.state.careerPolicy??CIVIL_CAREER_POLICY,historyIndex=WorldHistory.getEventCount(),inputs=this.state.terms.filter(t=>t.factionId===team.name&&active(t,month)).map(term=>({term,loyalty:[...team.users].find(u=>u.id===term.sourceUserId&&u.bornMonth===term.bornMonth)?.loyalty??0}));
+  if(!inputs.length)return;
+  const rows=inputs.flatMap(({term,loyalty})=>{const e=civilPromotionEvidence(term,month,loyalty,team.cities.length,this.state.terms);return e?[{term,weight:civilPromotionCompetitionWeight(term,e,Military.getPerson(term.personId),WorldHistory.getRecordedEvents())}]:[];});
   const rng=new WorldRandom();rng.initialize(`civil-promotion-v1:${worldRandom.exportState().seed}:${team.name}:${month}`);
-  if(rng.next()>=civilPromotionChance(this.state.careerPolicy??CIVIL_CAREER_POLICY))return;
-  let draw=rng.next()*rows.reduce((sum,r)=>sum+r.weight,0);const selected=rows.find(r=>(draw-=r.weight)<0)??rows.at(-1)!;
-  this.promote(month,selected.term,team,dynasty);
+  const sharedRoll=rows.length?rng.next():undefined;let selected:typeof rows[number]|undefined;
+  if(sharedRoll!==undefined&&sharedRoll<civilPromotionChance(policy)){let draw=rng.next()*rows.reduce((sum,r)=>sum+r.weight,0);selected=rows.find(r=>(draw-=r.weight)<0)??rows.at(-1)!;}
+  const commit=()=>{
+   for(const {term,loyalty} of inputs){const current=this.state.terms.find(t=>t.assignmentId===term.assignmentId)!,reasons=civilPromotionFacts(term,month,loyalty,team.cities.length,this.state.terms).reasons;
+    current.promotionReview={month,historyIndex,cityCount:team.cities.length,loyalty,policy,reasons,outcome:reasons.length?'INELIGIBLE':selected?selected.term.assignmentId===term.assignmentId?'SELECTED':'NOT_SELECTED':'CHANCE_NOT_MET',...(sharedRoll!==undefined?{sharedRoll}:{}),...(selected?{selectedAssignmentId:selected.term.assignmentId}:{})};
+   }
+   if(selected)this.promote(month,selected.term,team,dynasty);
+  };
+  if(selected)transaction(commit);else commit();
  }
+
  promote(month:number,term:CivilGovernorTerm,team:Team,dynasty:Dynasty){
   const current=this.state.terms.find(t=>t.assignmentId===term.assignmentId),user=[...team.users].find(u=>u.id===term.sourceUserId&&u.bornMonth===term.bornMonth),person=Military.getPerson(term.personId),ruler=dynasty.rulers.find(r=>r.id===dynasty.currentRulerId);
   const evidence=current&&user&&civilPromotionEvidence(current,month,user.loyalty,team.cities.length,this.state.terms);
@@ -119,7 +127,7 @@ class CivilAdministrationStore {
    this.end(month,current,'PROMOTED');
    const sequence=this.state.sequence+1,assignmentId=`civil-governor-${team.name}-${sequence}`,eventId=`${assignmentId}-appointed`;
    const next:CivilGovernorTerm={...current,office,promotion:evidence,assignmentId,startMonth:month,appointEventId:eventId,receipts:[],stewardshipAssessments:[],loyaltyRecovered:0,devastationRecovered:0,rulerId:ruler.id,rulerTitle:DynastyRegistry.getRulerHistoricalTitle(ruler.id,team.name,month)??ruler.givenName,countryName:team.displayName??team.name};
-   for(const key of ['stewardshipWindow','retirement','transfer','endMonth','endReason','endEventId','lastEffectMonth','meritMonth','meritEventId','meritLoyaltyRecovered','meritDevastationRecovered'] as const)delete next[key];
+   for(const key of ['promotionReview','stewardshipWindow','retirement','transfer','endMonth','endReason','endEventId','lastEffectMonth','meritMonth','meritEventId','meritLoyaltyRecovered','meritDevastationRecovered'] as const)delete next[key];
    if(!isLocalCivilOffice(office)){delete next.cityId;delete next.cityName;}
    if(WorldHistory.addEvent({id:eventId,year:month,monthIndex:month,type:'civil-governor-appointed',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:ruler.id,cityId:next.cityId,cityName:next.cityName,title:`${next.rulerTitle}以${next.personalName}${evidence.stewardshipEventIds?.length?'考绩合格':'治理有绩'}，由${civilOfficeTitle(current)}擢任${civilOfficeTitle(next)}。`,metadata:{personId:next.personId,sourceUserId:next.sourceUserId,bornMonth:next.bornMonth,assignmentId,crossCareerEvidence:JSON.stringify(civilCrossCareerEvidence(current,person,WorldHistory.getRecordedEvents())),term:JSON.stringify(next)}})!==eventId)throw Error('Civil promotion history rejected');
    this.state.sequence=sequence;this.state.terms.push(next);return {...next};
@@ -141,7 +149,7 @@ class CivilAdministrationStore {
    const evidence={fromAssignmentId:current.assignmentId,meritEventIds:(current.receipts??[]).map(r=>r.eventId),sourceLoyalty:source.loyalty,sourceDevastation:source.devastation,targetLoyalty:target.loyalty,targetDevastation:target.devastation};
    this.end(month,current,'TRANSFERRED');
    const sequence=this.state.sequence+1,assignmentId=`civil-governor-${team.name}-${sequence}`,eventId=`${assignmentId}-appointed`,next:CivilGovernorTerm={...current,transfer:evidence,assignmentId,cityId:target.id,cityName:target.name,startMonth:month,appointEventId:eventId,receipts:[],stewardshipAssessments:[],loyaltyRecovered:0,devastationRecovered:0,rulerId:ruler.id,rulerTitle:DynastyRegistry.getRulerHistoricalTitle(ruler.id,team.name,month)??ruler.givenName,countryName:team.displayName??team.name};
-   for(const key of ['stewardshipWindow','retirement','promotion','endMonth','endReason','endEventId','lastEffectMonth','meritMonth','meritEventId','meritLoyaltyRecovered','meritDevastationRecovered'] as const)delete next[key];
+   for(const key of ['promotionReview','stewardshipWindow','retirement','promotion','endMonth','endReason','endEventId','lastEffectMonth','meritMonth','meritEventId','meritLoyaltyRecovered','meritDevastationRecovered'] as const)delete next[key];
    if(WorldHistory.addEvent({id:eventId,year:month,monthIndex:month,type:'civil-governor-appointed',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:ruler.id,cityId:target.id,cityName:target.name,title:`${next.rulerTitle}以${next.personalName}治理有绩，由${civilOfficeTitle(current)}调任${civilOfficeTitle(next)}。`,metadata:{personId:next.personId,sourceUserId:next.sourceUserId,bornMonth:next.bornMonth,assignmentId,term:JSON.stringify(next)}})!==eventId)throw Error('Civil transfer history rejected');
    this.state.sequence=sequence;this.state.terms.push(next);return {...next};
   }));
@@ -188,7 +196,8 @@ class CivilAdministrationStore {
    const team=teams.find(t=>t.name===term.factionId),stable=(c:City)=>!c.destroyed&&c.ownerFactionId===term.factionId&&!c.underSiege&&!c.isInCaptureGrace(month)&&c.loyalty>=75&&c.devastation<=5;
    const city=isLocalCivilOffice(term.office)?team?.cities.find(c=>c.id===term.cityId):team?.cities.filter(stable).sort((a,b)=>a.id.localeCompare(b.id))[0];
    if(!team||team.status!=='ACTIVE'||team.identityStage!=='STATE'||!city||!stable(city)){delete current.stewardshipWindow;continue;}
-   const controlledSince=civilControlledSince(city,team,month),continuous=old?.cityId===city.id&&old.controlledSince===controlledSince&&old.samples.at(-1)!.month===month-1;
+   const disrupted=old&&WorldHistory.getRecordedEvents().slice(old.samples.at(-1)!.historyIndex).some(e=>e.cityId===city.id&&['siege-started','city-captured','capital-fallen','city-recovered','city-destroyed'].includes(e.type));
+   const controlledSince=civilControlledSince(city,team,month),continuous=!disrupted&&old?.cityId===city.id&&old.controlledSince===controlledSince&&old.samples.at(-1)!.month===month-1;
    const window:CivilStewardshipWindow={cityId:city.id,cityName:city.name,controlledSince,samples:[...(continuous?old!.samples:[]),{month,loyalty:city.loyalty,devastation:city.devastation,historyIndex:WorldHistory.getEventCount()}]};
    if(window.samples.length<stewardshipInterval){current.stewardshipWindow=window;continue;}
    if(!validStewardshipWindow(window,term.startMonth,month))throw Error('Invalid civil stewardship observation');

@@ -12,7 +12,9 @@ export type CivilGovernorSource='ORDINARY_RESIDENT'|'FAMILY'|'NOBLE'|'ROYAL'|'RE
 export type CivilGovernorEndReason='DEATH'|'CITY_LOST'|'FACTION_ENDED'|'REGIME_ENDED'|'POLITICAL_SANCTION'|'MILITARY_OFFICE'|'REPLACED'|'IDENTITY_ENDED'|'PROMOTED'|'TRANSFERRED'|'RETIREMENT';
 export interface CivilGovernanceReceipt {eventId:string;month:number;cityId:string;cityName:string;loyalty:number;devastation:number;}
 export interface CivilPromotionEvidence {stewardshipEventIds?:string[];fromAssignmentId:string;fromOffice:CivilOffice;serviceMonths:number;meritEventIds:string[];contribution:number;strategy:number;loyalty:number;}
+export interface CivilPromotionReview {month:number;historyIndex:number;cityCount:number;loyalty:number;policy:CivilCareerPolicy;reasons:string[];outcome:'INELIGIBLE'|'CHANCE_NOT_MET'|'NOT_SELECTED'|'SELECTED';selectedAssignmentId?:string;sharedRoll?:number;}
 export interface CivilGovernorTerm {
+ promotionReview?:CivilPromotionReview;
  stewardshipWindow?:CivilStewardshipWindow;stewardshipAssessments?:CivilStewardshipAssessment[];retirement?:CivilRetirementEvidence;
  transfer?:{fromAssignmentId:string;meritEventIds:string[];sourceLoyalty:number;sourceDevastation:number;targetLoyalty:number;targetDevastation:number};
  office?:CivilOffice;promotion?:CivilPromotionEvidence;receipts?:CivilGovernanceReceipt[];
