@@ -12,7 +12,7 @@ export function validateCivilCareerRecords(t:CivilGovernorTerm,save:WorldSaveV1,
   if(!w||!w.cityId||!w.cityName||!Number.isSafeInteger(w.controlledSince)||!Array.isArray(w.samples)||!w.samples.length||w.samples.length>stewardshipInterval)throw Error('invalid civil observation window');
   if(!validStewardshipWindow(w,t.startMonth,w.samples.at(-1)!.month,w.samples.length===stewardshipInterval))throw Error('non-contiguous or unstable civil observations');
   for(const s of w.samples){if(s.month>ended||s.historyIndex<appointment+1||s.historyIndex>cutoff||s.historyIndex>events.length||s.historyIndex&&at(events[s.historyIndex-1])>s.month||events[s.historyIndex]&&at(events[s.historyIndex])<s.month)throw Error('civil observation history boundary mismatch');}
-  if(events.some((e,i)=>i<cutoff&&i>=w.samples[0].historyIndex&&e.cityId===w.cityId&&at(e)>=w.samples[0].month&&at(e)<=w.samples.at(-1)!.month&&['siege-started','city-captured','capital-fallen','city-destroyed','city-recovered'].includes(e.type)))throw Error('civil peaceful assessment crosses a control or siege disruption');
+  if(events.some((e,i)=>i<Math.min(cutoff,w.samples.at(-1)!.historyIndex)&&i>=w.samples[0].historyIndex&&e.cityId===w.cityId&&at(e)>=w.samples[0].month&&at(e)<=w.samples.at(-1)!.month&&['siege-started','city-captured','capital-fallen','city-destroyed','city-recovered'].includes(e.type)))throw Error('civil peaceful assessment crosses a control or siege disruption');
  };
  let previous=t.startMonth;
  for(const a of t.stewardshipAssessments??[]){
