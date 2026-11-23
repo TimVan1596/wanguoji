@@ -1,0 +1,1973 @@
+{
+  "version": "0.100.0-beta.70",
+  "worldSave": 66,
+  "baseline": "ec190261b81ef98f16880224d10ce2997944e679",
+  "scope": "Native fixed-seed production Core, baseline beta.69 saves vs beta.70 saves. The snapshots diverge after behavioral changes; performance rows are not identical-world comparisons. React checks are structural, not visual acceptance.",
+  "production": [
+    {
+      "seed": "regional-1",
+      "years": 100,
+      "before": {
+        "people": 29,
+        "appointments": 42,
+        "offices": {
+          "XIANLING": 29,
+          "JUNSHOU": 10,
+          "YUSHI_DAFU": 1,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 10,
+          "YUSHI_DAFU": 1,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 19,
+        "longUnpromoted": 15,
+        "recovery": 85,
+        "stewardship": 0,
+        "retirements": 0,
+        "inOfficeDeaths": 14,
+        "civilPeerages": 2,
+        "livingUsers": 131,
+        "militaryPeople": 56,
+        "formations": 27,
+        "rngPosition": 7316,
+        "rngSha256": "f916d5f7ffea8c535fc3376b533aafa1936b422b5826b7b4899701f341974237",
+        "historyCount": 3019,
+        "captureEvents": 17,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "after": {
+        "people": 39,
+        "appointments": 61,
+        "offices": {
+          "XIANLING": 39,
+          "JUNSHOU": 21,
+          "YUSHI_DAFU": 0,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 21,
+          "YUSHI_DAFU": 0,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 12,
+        "longUnpromoted": 5,
+        "recovery": 85,
+        "stewardship": 81,
+        "retirements": 17,
+        "inOfficeDeaths": 10,
+        "civilPeerages": 1,
+        "livingUsers": 138,
+        "militaryPeople": 65,
+        "formations": 26,
+        "rngPosition": 7261,
+        "rngSha256": "c0dcb93209f155cec951dd3d77006ff437b8a828093188fe61c6e08b8558a435",
+        "historyCount": 3179,
+        "captureEvents": 14,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "canonicalSha256": "f9455085dd79995d000c85052df8ac2427f9a2817d0de7cb79816bfd23d21112",
+      "strictSaveValid": true,
+      "continuation": null,
+      "careerTransfers": {
+        "civilToMilitary": 0,
+        "militaryToCivil": 0
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    {
+      "seed": "regional-2",
+      "years": 100,
+      "before": {
+        "people": 19,
+        "appointments": 25,
+        "offices": {
+          "XIANLING": 19,
+          "JUNSHOU": 6,
+          "YUSHI_DAFU": 0,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 6,
+          "YUSHI_DAFU": 0,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 14,
+        "longUnpromoted": 11,
+        "recovery": 59,
+        "stewardship": 0,
+        "retirements": 0,
+        "inOfficeDeaths": 11,
+        "civilPeerages": 1,
+        "livingUsers": 117,
+        "militaryPeople": 41,
+        "formations": 22,
+        "rngPosition": 7082,
+        "rngSha256": "35e2c4a614ed7f901c0ed14baf08b6a0987cae1926a239151a6c9cc0300dbf1f",
+        "historyCount": 2200,
+        "captureEvents": 8,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "after": {
+        "people": 25,
+        "appointments": 39,
+        "offices": {
+          "XIANLING": 25,
+          "JUNSHOU": 14,
+          "YUSHI_DAFU": 0,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 14,
+          "YUSHI_DAFU": 0,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 13,
+        "longUnpromoted": 4,
+        "recovery": 47,
+        "stewardship": 79,
+        "retirements": 14,
+        "inOfficeDeaths": 4,
+        "civilPeerages": 0,
+        "livingUsers": 135,
+        "militaryPeople": 54,
+        "formations": 29,
+        "rngPosition": 7288,
+        "rngSha256": "b5545964811690817f5973e7b23be6b9f57d21b803789c998eb8f22e6ee1bd49",
+        "historyCount": 2654,
+        "captureEvents": 1,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "canonicalSha256": "f351c364e7ebea6a6acb0760bcd8ef8337186d226a18378e4bdbdb1a60772a2e",
+      "strictSaveValid": true,
+      "continuation": null,
+      "careerTransfers": {
+        "civilToMilitary": 0,
+        "militaryToCivil": 0
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 100,
+      "before": {
+        "people": 20,
+        "appointments": 31,
+        "offices": {
+          "XIANLING": 20,
+          "JUNSHOU": 8,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 8,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 11,
+        "longUnpromoted": 7,
+        "recovery": 74,
+        "stewardship": 0,
+        "retirements": 0,
+        "inOfficeDeaths": 15,
+        "civilPeerages": 1,
+        "livingUsers": 139,
+        "militaryPeople": 49,
+        "formations": 29,
+        "rngPosition": 7075,
+        "rngSha256": "e384463c93621efb5912de8c426dd799a2da7c3139e11ffae7a431577e889d0c",
+        "historyCount": 2380,
+        "captureEvents": 9,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "after": {
+        "people": 35,
+        "appointments": 59,
+        "offices": {
+          "XIANLING": 35,
+          "JUNSHOU": 19,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 19,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 5,
+        "longUnpromoted": 3,
+        "recovery": 105,
+        "stewardship": 78,
+        "retirements": 17,
+        "inOfficeDeaths": 10,
+        "civilPeerages": 0,
+        "livingUsers": 140,
+        "militaryPeople": 60,
+        "formations": 25,
+        "rngPosition": 7561,
+        "rngSha256": "afc077617baed746365316b5e82aa408f78083d49994d811a5318dc6b3bf7127",
+        "historyCount": 3220,
+        "captureEvents": 23,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "canonicalSha256": "b5d64b8ad7c992ebde3ba457b74de31b26a97a73e9994961e90849ffeb9aae3c",
+      "strictSaveValid": true,
+      "continuation": null,
+      "careerTransfers": {
+        "civilToMilitary": 0,
+        "militaryToCivil": 0
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 100,
+      "before": {
+        "people": 18,
+        "appointments": 29,
+        "offices": {
+          "XIANLING": 18,
+          "JUNSHOU": 7,
+          "YUSHI_DAFU": 3,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 7,
+          "YUSHI_DAFU": 3,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 11,
+        "longUnpromoted": 8,
+        "recovery": 96,
+        "stewardship": 0,
+        "retirements": 0,
+        "inOfficeDeaths": 11,
+        "civilPeerages": 3,
+        "livingUsers": 136,
+        "militaryPeople": 44,
+        "formations": 26,
+        "rngPosition": 6852,
+        "rngSha256": "b960cc641fabf21cc0644c905fa9c83c6a7560a0226eaf8c8e9557f6f891d6a0",
+        "historyCount": 2512,
+        "captureEvents": 6,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "after": {
+        "people": 25,
+        "appointments": 43,
+        "offices": {
+          "XIANLING": 25,
+          "JUNSHOU": 17,
+          "YUSHI_DAFU": 1,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 17,
+          "YUSHI_DAFU": 1,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 12,
+        "longUnpromoted": 4,
+        "recovery": 47,
+        "stewardship": 78,
+        "retirements": 12,
+        "inOfficeDeaths": 2,
+        "civilPeerages": 1,
+        "livingUsers": 140,
+        "militaryPeople": 52,
+        "formations": 28,
+        "rngPosition": 7102,
+        "rngSha256": "0b4274e26019ca090cca4ec919fdfd56c1e8266780d446617cd30a54b792bb4e",
+        "historyCount": 3346,
+        "captureEvents": 8,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "canonicalSha256": "e86b47d656d5eeaf92fedba7706c13f10fc9ad628fb5e3c89db044518320d86f",
+      "strictSaveValid": true,
+      "continuation": null,
+      "careerTransfers": {
+        "civilToMilitary": 1,
+        "militaryToCivil": 0
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    {
+      "seed": "regional-5",
+      "years": 100,
+      "before": {
+        "people": 23,
+        "appointments": 36,
+        "offices": {
+          "XIANLING": 23,
+          "JUNSHOU": 12,
+          "YUSHI_DAFU": 0,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 12,
+          "YUSHI_DAFU": 0,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 11,
+        "longUnpromoted": 7,
+        "recovery": 100,
+        "stewardship": 0,
+        "retirements": 0,
+        "inOfficeDeaths": 11,
+        "civilPeerages": 0,
+        "livingUsers": 134,
+        "militaryPeople": 54,
+        "formations": 31,
+        "rngPosition": 7025,
+        "rngSha256": "964a7d6523001292bc1e4aff6d21668d6137d50d18ce5de1f96b07bd9a232ad3",
+        "historyCount": 2894,
+        "captureEvents": 18,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "after": {
+        "people": 30,
+        "appointments": 54,
+        "offices": {
+          "XIANLING": 30,
+          "JUNSHOU": 20,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 20,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 6,
+        "longUnpromoted": 3,
+        "recovery": 168,
+        "stewardship": 63,
+        "retirements": 9,
+        "inOfficeDeaths": 7,
+        "civilPeerages": 2,
+        "livingUsers": 129,
+        "militaryPeople": 56,
+        "formations": 26,
+        "rngPosition": 7159,
+        "rngSha256": "ef1498f297aeb5ddfff8fb44fad9662be8e012a733e7d8d2e2c0f1ad4572f43f",
+        "historyCount": 3067,
+        "captureEvents": 23,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "canonicalSha256": "73baabd112f9c1ee780802a0601ebc9e14d37080b4e77f9f18f4eb1984f74f9f",
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "careerTransfers": {
+        "civilToMilitary": 0,
+        "militaryToCivil": 0
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    {
+      "seed": "regional-6",
+      "years": 100,
+      "before": {
+        "people": 20,
+        "appointments": 34,
+        "offices": {
+          "XIANLING": 20,
+          "JUNSHOU": 10,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 10,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 8,
+        "longUnpromoted": 7,
+        "recovery": 134,
+        "stewardship": 0,
+        "retirements": 0,
+        "inOfficeDeaths": 9,
+        "civilPeerages": 2,
+        "livingUsers": 140,
+        "militaryPeople": 47,
+        "formations": 27,
+        "rngPosition": 6815,
+        "rngSha256": "b21eb9684ef77bdf148bfc50747c210472b2455589ad7b5e72d57329da496cfe",
+        "historyCount": 2598,
+        "captureEvents": 15,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "after": {
+        "people": 27,
+        "appointments": 50,
+        "offices": {
+          "XIANLING": 27,
+          "JUNSHOU": 18,
+          "YUSHI_DAFU": 3,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 18,
+          "YUSHI_DAFU": 3,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 6,
+        "longUnpromoted": 1,
+        "recovery": 185,
+        "stewardship": 53,
+        "retirements": 12,
+        "inOfficeDeaths": 4,
+        "civilPeerages": 3,
+        "livingUsers": 139,
+        "militaryPeople": 54,
+        "formations": 27,
+        "rngPosition": 7116,
+        "rngSha256": "31ec773b73ca478a73e39d51d0cadb46669f33885f2c514424f68d4d8acb79ab",
+        "historyCount": 3660,
+        "captureEvents": 16,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "canonicalSha256": "6ce1dbc4c14cf029f546e74be576d36d7459f8d8e16398796f967dcdeb97190e",
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "careerTransfers": {
+        "civilToMilitary": 0,
+        "militaryToCivil": 0
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    {
+      "seed": "regional-7",
+      "years": 100,
+      "before": {
+        "people": 24,
+        "appointments": 30,
+        "offices": {
+          "XIANLING": 24,
+          "JUNSHOU": 5,
+          "YUSHI_DAFU": 1,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 5,
+          "YUSHI_DAFU": 1,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 14,
+        "longUnpromoted": 13,
+        "recovery": 69,
+        "stewardship": 0,
+        "retirements": 0,
+        "inOfficeDeaths": 15,
+        "civilPeerages": 1,
+        "livingUsers": 131,
+        "militaryPeople": 54,
+        "formations": 30,
+        "rngPosition": 7203,
+        "rngSha256": "a37143766d6277c0dbb0ccbd001ef40a65b38cfada6b5faf5ac3337facb7dc17",
+        "historyCount": 2942,
+        "captureEvents": 8,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "after": {
+        "people": 31,
+        "appointments": 50,
+        "offices": {
+          "XIANLING": 31,
+          "JUNSHOU": 14,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 15,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 8,
+        "longUnpromoted": 5,
+        "recovery": 79,
+        "stewardship": 67,
+        "retirements": 13,
+        "inOfficeDeaths": 8,
+        "civilPeerages": 1,
+        "livingUsers": 117,
+        "militaryPeople": 61,
+        "formations": 30,
+        "rngPosition": 7223,
+        "rngSha256": "a26403e70425e4bb19767a475f1fdfa88630221f3d6fb8ca07c1eee98bbbea5b",
+        "historyCount": 3152,
+        "captureEvents": 16,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "canonicalSha256": "b4d930ae3a486953bb1e3301da8bc612a9520a64ae908ebac82bee939eadcb5c",
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "careerTransfers": {
+        "civilToMilitary": 0,
+        "militaryToCivil": 0
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    {
+      "seed": "regional-8",
+      "years": 100,
+      "before": {
+        "people": 22,
+        "appointments": 33,
+        "offices": {
+          "XIANLING": 22,
+          "JUNSHOU": 9,
+          "YUSHI_DAFU": 0,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 9,
+          "YUSHI_DAFU": 0,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 11,
+        "longUnpromoted": 8,
+        "recovery": 69,
+        "stewardship": 0,
+        "retirements": 0,
+        "inOfficeDeaths": 12,
+        "civilPeerages": 2,
+        "livingUsers": 132,
+        "militaryPeople": 49,
+        "formations": 29,
+        "rngPosition": 7170,
+        "rngSha256": "48223685e4ebd768f8df8c7a28257946490222f65b9008b4a12cd2bab8c0d3f5",
+        "historyCount": 2523,
+        "captureEvents": 9,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "after": {
+        "people": 32,
+        "appointments": 58,
+        "offices": {
+          "XIANLING": 32,
+          "JUNSHOU": 21,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 21,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 7,
+        "longUnpromoted": 2,
+        "recovery": 127,
+        "stewardship": 75,
+        "retirements": 13,
+        "inOfficeDeaths": 8,
+        "civilPeerages": 1,
+        "livingUsers": 138,
+        "militaryPeople": 62,
+        "formations": 31,
+        "rngPosition": 7640,
+        "rngSha256": "a0dbf36036787f1e7376fecf3e8f415a64eeb35e1dccf5daf6dcb501ce02953a",
+        "historyCount": 3374,
+        "captureEvents": 23,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "canonicalSha256": "4d5e9e08994246fc0f814b6b23db32758e4744450cdbbca4bfc96a0c95a29c41",
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "careerTransfers": {
+        "civilToMilitary": 0,
+        "militaryToCivil": 2
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    {
+      "seed": "regional-1",
+      "years": 200,
+      "before": {
+        "people": 50,
+        "appointments": 80,
+        "offices": {
+          "XIANLING": 50,
+          "JUNSHOU": 20,
+          "YUSHI_DAFU": 6,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 20,
+          "YUSHI_DAFU": 6,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 29,
+        "longUnpromoted": 25,
+        "recovery": 310,
+        "stewardship": 0,
+        "retirements": 0,
+        "inOfficeDeaths": 33,
+        "civilPeerages": 9,
+        "livingUsers": 139,
+        "militaryPeople": 92,
+        "formations": 42,
+        "rngPosition": 13890,
+        "rngSha256": "7b0a6b412b5c42dd2b477bf01f83f105fb17260848d5806d3c39e785edf577b6",
+        "historyCount": 5698,
+        "captureEvents": 36,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "after": {
+        "people": 70,
+        "appointments": 111,
+        "offices": {
+          "XIANLING": 70,
+          "JUNSHOU": 38,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 38,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 17,
+        "longUnpromoted": 7,
+        "recovery": 171,
+        "stewardship": 194,
+        "retirements": 40,
+        "inOfficeDeaths": 16,
+        "civilPeerages": 4,
+        "livingUsers": 140,
+        "militaryPeople": 125,
+        "formations": 55,
+        "rngPosition": 14356,
+        "rngSha256": "ca574b7c639e20d6121c2425c8067339605e9a21614df9e94b3bdd5e7724b11c",
+        "historyCount": 6529,
+        "captureEvents": 24,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "canonicalSha256": "70d6bfea104d6974f8349b30ca572b37df88c2a77b90763c751fbf09e706f089",
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "careerTransfers": {
+        "civilToMilitary": 0,
+        "militaryToCivil": 0
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    {
+      "seed": "regional-2",
+      "years": 200,
+      "before": {
+        "people": 38,
+        "appointments": 53,
+        "offices": {
+          "XIANLING": 38,
+          "JUNSHOU": 13,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 13,
+          "YUSHI_DAFU": 2,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 23,
+        "longUnpromoted": 17,
+        "recovery": 163,
+        "stewardship": 0,
+        "retirements": 0,
+        "inOfficeDeaths": 26,
+        "civilPeerages": 3,
+        "livingUsers": 124,
+        "militaryPeople": 77,
+        "formations": 39,
+        "rngPosition": 13810,
+        "rngSha256": "99242b4ef83134fe08aea08bfab4e0eb22404d0c1bb90113bb0cac0ad4533fe9",
+        "historyCount": 4678,
+        "captureEvents": 23,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "after": {
+        "people": 61,
+        "appointments": 106,
+        "offices": {
+          "XIANLING": 61,
+          "JUNSHOU": 38,
+          "YUSHI_DAFU": 4,
+          "CHENGXIANG": 1
+        },
+        "promotionSteps": {
+          "JUNSHOU": 38,
+          "YUSHI_DAFU": 4,
+          "CHENGXIANG": 1
+        },
+        "longCountyPeople": 17,
+        "longUnpromoted": 5,
+        "recovery": 228,
+        "stewardship": 142,
+        "retirements": 29,
+        "inOfficeDeaths": 12,
+        "civilPeerages": 5,
+        "livingUsers": 138,
+        "militaryPeople": 115,
+        "formations": 55,
+        "rngPosition": 15096,
+        "rngSha256": "c42a07c436973dda99b32f831b52dd0841c41809ec48c57554d2e589dd2c3e80",
+        "historyCount": 7142,
+        "captureEvents": 38,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "canonicalSha256": "c793d1cda1ab86785ab95eff30892fad4e413233b5f93dbcf486d41a085463e3",
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "careerTransfers": {
+        "civilToMilitary": 0,
+        "militaryToCivil": 1
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    {
+      "seed": "regional-3",
+      "years": 200,
+      "before": {
+        "people": 39,
+        "appointments": 60,
+        "offices": {
+          "XIANLING": 39,
+          "JUNSHOU": 15,
+          "YUSHI_DAFU": 5,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 15,
+          "YUSHI_DAFU": 5,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 23,
+        "longUnpromoted": 18,
+        "recovery": 172,
+        "stewardship": 0,
+        "retirements": 0,
+        "inOfficeDeaths": 30,
+        "civilPeerages": 3,
+        "livingUsers": 145,
+        "militaryPeople": 90,
+        "formations": 51,
+        "rngPosition": 14573,
+        "rngSha256": "2b31aaddb69650e048e13727429e1469112f987ebf1520ed8bc8ca9f70070283",
+        "historyCount": 5251,
+        "captureEvents": 32,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "after": {
+        "people": 72,
+        "appointments": 122,
+        "offices": {
+          "XIANLING": 72,
+          "JUNSHOU": 41,
+          "YUSHI_DAFU": 5,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 41,
+          "YUSHI_DAFU": 5,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 15,
+        "longUnpromoted": 8,
+        "recovery": 282,
+        "stewardship": 172,
+        "retirements": 33,
+        "inOfficeDeaths": 20,
+        "civilPeerages": 6,
+        "livingUsers": 133,
+        "militaryPeople": 127,
+        "formations": 56,
+        "rngPosition": 15422,
+        "rngSha256": "cfed1069055a11e663b39f10fcdf4ea90cc536f54ac5b8c0bd88c2cc8e36dc72",
+        "historyCount": 6961,
+        "captureEvents": 49,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "canonicalSha256": "e3b3488a2d910f587c0f0a5d9802216a42fae9be18be8859e5ddb131af42cf32",
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "careerTransfers": {
+        "civilToMilitary": 0,
+        "militaryToCivil": 1
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    {
+      "seed": "regional-4",
+      "years": 200,
+      "before": {
+        "people": 40,
+        "appointments": 58,
+        "offices": {
+          "XIANLING": 40,
+          "JUNSHOU": 13,
+          "YUSHI_DAFU": 4,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 13,
+          "YUSHI_DAFU": 4,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 22,
+        "longUnpromoted": 17,
+        "recovery": 195,
+        "stewardship": 0,
+        "retirements": 0,
+        "inOfficeDeaths": 29,
+        "civilPeerages": 6,
+        "livingUsers": 141,
+        "militaryPeople": 80,
+        "formations": 40,
+        "rngPosition": 12938,
+        "rngSha256": "d3617e649d615113de5631f8a4bfc31a7d3318cf8f891fc4a9cb7cdbde47c9bf",
+        "historyCount": 5147,
+        "captureEvents": 12,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "after": {
+        "people": 54,
+        "appointments": 96,
+        "offices": {
+          "XIANLING": 54,
+          "JUNSHOU": 35,
+          "YUSHI_DAFU": 3,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 36,
+          "YUSHI_DAFU": 3,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 19,
+        "longUnpromoted": 6,
+        "recovery": 179,
+        "stewardship": 168,
+        "retirements": 33,
+        "inOfficeDeaths": 3,
+        "civilPeerages": 2,
+        "livingUsers": 127,
+        "militaryPeople": 105,
+        "formations": 52,
+        "rngPosition": 14765,
+        "rngSha256": "60c0125ce35c723f19461201a7659b358ce9cb7f153590e36cac9a3ca0665e8c",
+        "historyCount": 6871,
+        "captureEvents": 33,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "canonicalSha256": "edd10592e322bdb8460fe98e3e0b5ed3b6632e268ee00c65acdf36288a4a72c5",
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "careerTransfers": {
+        "civilToMilitary": 1,
+        "militaryToCivil": 0
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 1,
+        "rejectedPostCheckpointForgeries": 1
+      }
+    },
+    {
+      "seed": "regional-1",
+      "years": 300,
+      "before": {
+        "people": 68,
+        "appointments": 103,
+        "offices": {
+          "XIANLING": 68,
+          "JUNSHOU": 23,
+          "YUSHI_DAFU": 7,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 23,
+          "YUSHI_DAFU": 7,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 44,
+        "longUnpromoted": 39,
+        "recovery": 357,
+        "stewardship": 0,
+        "retirements": 0,
+        "inOfficeDeaths": 51,
+        "civilPeerages": 10,
+        "livingUsers": 136,
+        "militaryPeople": 128,
+        "formations": 60,
+        "rngPosition": 19402,
+        "rngSha256": "ba40c6c9d6d09f1fe7ac703c0a7a07f4f0c27c004442c7e86ed4993b3aeaaae1",
+        "historyCount": 7342,
+        "captureEvents": 38,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "after": {
+        "people": 102,
+        "appointments": 160,
+        "offices": {
+          "XIANLING": 102,
+          "JUNSHOU": 53,
+          "YUSHI_DAFU": 3,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 53,
+          "YUSHI_DAFU": 3,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 24,
+        "longUnpromoted": 11,
+        "recovery": 272,
+        "stewardship": 308,
+        "retirements": 63,
+        "inOfficeDeaths": 18,
+        "civilPeerages": 5,
+        "livingUsers": 142,
+        "militaryPeople": 178,
+        "formations": 77,
+        "rngPosition": 21244,
+        "rngSha256": "ff6be78e696fd0083c91afa3e7f70ea6273480937e4b90b8f21be4942598f4df",
+        "historyCount": 9712,
+        "captureEvents": 41,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "canonicalSha256": "03b6a7e73abae39e4326feb0fb1e54fff369c04d01f7134821f37087f3e2c44f",
+      "strictSaveValid": true,
+      "continuation": null,
+      "careerTransfers": {
+        "civilToMilitary": 1,
+        "militaryToCivil": 0
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    },
+    {
+      "seed": "regional-1",
+      "years": 500,
+      "before": {
+        "people": 105,
+        "appointments": 156,
+        "offices": {
+          "XIANLING": 105,
+          "JUNSHOU": 33,
+          "YUSHI_DAFU": 12,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 33,
+          "YUSHI_DAFU": 12,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 72,
+        "longUnpromoted": 65,
+        "recovery": 483,
+        "stewardship": 0,
+        "retirements": 0,
+        "inOfficeDeaths": 87,
+        "civilPeerages": 12,
+        "livingUsers": 129,
+        "militaryPeople": 196,
+        "formations": 91,
+        "rngPosition": 31327,
+        "rngSha256": "2732bb308c6867e0f3a54661ee1fdf40b9c8bdaeba8c691220f4d60e55ddda6b",
+        "historyCount": 11920,
+        "captureEvents": 54,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "after": {
+        "people": 168,
+        "appointments": 282,
+        "offices": {
+          "XIANLING": 168,
+          "JUNSHOU": 94,
+          "YUSHI_DAFU": 12,
+          "CHENGXIANG": 0
+        },
+        "promotionSteps": {
+          "JUNSHOU": 95,
+          "YUSHI_DAFU": 12,
+          "CHENGXIANG": 0
+        },
+        "longCountyPeople": 33,
+        "longUnpromoted": 16,
+        "recovery": 590,
+        "stewardship": 485,
+        "retirements": 103,
+        "inOfficeDeaths": 36,
+        "civilPeerages": 14,
+        "livingUsers": 130,
+        "militaryPeople": 293,
+        "formations": 126,
+        "rngPosition": 35454,
+        "rngSha256": "4a32cf7647014e2ccd13471c6c4eba29a744c666867ff21fe80be7805a35f111",
+        "historyCount": 17281,
+        "captureEvents": 101,
+        "civilTermsInProvisionalFactions": 0,
+        "duplicateHistoryIds": 0
+      },
+      "canonicalSha256": "f7272585c223164d60d65adc8104202a298190edd30da8f66ca78f8675272b56",
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "careerTransfers": {
+        "civilToMilitary": 1,
+        "militaryToCivil": 0
+      },
+      "secessionBoundary": {
+        "actualLateSameMonthCases": 0,
+        "rejectedPostCheckpointForgeries": 0
+      }
+    }
+  ],
+  "calibration": {
+    "BASELINE": {
+      "people": 86,
+      "appointments": 127,
+      "promotions": 37,
+      "assessments": 0,
+      "recoveryReceipts": 314,
+      "retired": 0,
+      "diedInOffice": 51,
+      "longUnpromotedCountyPeople": 41,
+      "civilPeerages": 7,
+      "promotionSteps": {
+        "JUNSHOU": 31,
+        "YUSHI_DAFU": 6,
+        "CHENGXIANG": 0
+      },
+      "countrySamples": {
+        "five-eight-cities": {
+          "samples": 2618,
+          "candidates": 62330,
+          "vacantSamples": 361,
+          "centralVacantSamples": 1871,
+          "eligiblePromotions": 35,
+          "maxVacancySampleSpanMonths": 48
+        },
+        "nine-plus-cities": {
+          "samples": 45,
+          "candidates": 1257,
+          "vacantSamples": 45,
+          "centralVacantSamples": 45,
+          "eligiblePromotions": 0,
+          "maxVacancySampleSpanMonths": 39
+        },
+        "one-city": {
+          "samples": 6521,
+          "candidates": 82016,
+          "vacantSamples": 0,
+          "centralVacantSamples": 0,
+          "eligiblePromotions": 3,
+          "maxVacancySampleSpanMonths": 0
+        },
+        "two-four-cities": {
+          "samples": 19201,
+          "candidates": 345172,
+          "vacantSamples": 1289,
+          "centralVacantSamples": 0,
+          "eligiblePromotions": 57,
+          "maxVacancySampleSpanMonths": 107
+        }
+      }
+    },
+    "LOW": {
+      "people": 124,
+      "appointments": 202,
+      "promotions": 74,
+      "assessments": 316,
+      "recoveryReceipts": 284,
+      "retired": 60,
+      "diedInOffice": 26,
+      "longUnpromotedCountyPeople": 16,
+      "civilPeerages": 2,
+      "promotionSteps": {
+        "JUNSHOU": 71,
+        "YUSHI_DAFU": 3,
+        "CHENGXIANG": 0
+      },
+      "countrySamples": {
+        "five-eight-cities": {
+          "samples": 1380,
+          "candidates": 28904,
+          "vacantSamples": 376,
+          "centralVacantSamples": 1324,
+          "eligiblePromotions": 44,
+          "maxVacancySampleSpanMonths": 77
+        },
+        "nine-plus-cities": {
+          "samples": 120,
+          "candidates": 3215,
+          "vacantSamples": 60,
+          "centralVacantSamples": 48,
+          "eligiblePromotions": 3,
+          "maxVacancySampleSpanMonths": 29
+        },
+        "one-city": {
+          "samples": 6891,
+          "candidates": 82780,
+          "vacantSamples": 0,
+          "centralVacantSamples": 0,
+          "eligiblePromotions": 4,
+          "maxVacancySampleSpanMonths": 0
+        },
+        "two-four-cities": {
+          "samples": 21641,
+          "candidates": 369413,
+          "vacantSamples": 1868,
+          "centralVacantSamples": 0,
+          "eligiblePromotions": 194,
+          "maxVacancySampleSpanMonths": 107
+        }
+      }
+    },
+    "MEDIUM": {
+      "people": 121,
+      "appointments": 198,
+      "promotions": 73,
+      "assessments": 282,
+      "recoveryReceipts": 369,
+      "retired": 64,
+      "diedInOffice": 24,
+      "longUnpromotedCountyPeople": 16,
+      "civilPeerages": 4,
+      "promotionSteps": {
+        "JUNSHOU": 72,
+        "YUSHI_DAFU": 1,
+        "CHENGXIANG": 0
+      },
+      "countrySamples": {
+        "five-eight-cities": {
+          "samples": 1595,
+          "candidates": 31999,
+          "vacantSamples": 416,
+          "centralVacantSamples": 1529,
+          "eligiblePromotions": 68,
+          "maxVacancySampleSpanMonths": 77
+        },
+        "nine-plus-cities": {
+          "samples": 153,
+          "candidates": 3669,
+          "vacantSamples": 141,
+          "centralVacantSamples": 123,
+          "eligiblePromotions": 5,
+          "maxVacancySampleSpanMonths": 136
+        },
+        "one-city": {
+          "samples": 6870,
+          "candidates": 83336,
+          "vacantSamples": 0,
+          "centralVacantSamples": 0,
+          "eligiblePromotions": 4,
+          "maxVacancySampleSpanMonths": 0
+        },
+        "two-four-cities": {
+          "samples": 21474,
+          "candidates": 365846,
+          "vacantSamples": 1914,
+          "centralVacantSamples": 0,
+          "eligiblePromotions": 244,
+          "maxVacancySampleSpanMonths": 107
+        }
+      }
+    },
+    "seeds": [
+      "regional-1",
+      "regional-2",
+      "regional-3",
+      "regional-4"
+    ]
+  },
+  "directed": {
+    "civil-administration": {
+      "checks": 149,
+      "categories": null
+    },
+    "military-secession": {
+      "checks": 135,
+      "categories": null
+    },
+    "military-local-secession": {
+      "checks": 162,
+      "categories": null
+    },
+    "family-navigation": {
+      "checks": 33,
+      "categories": [
+        "MILITARY/DEAD/ORIGINAL",
+        "TITLED_NO_OFFICE/DEAD/ORIGINAL",
+        "CIVIL/LIVING/ORIGINAL",
+        "TITLED_NO_OFFICE/LIVING/ORIGINAL",
+        "CIVIL/DEAD/ORIGINAL",
+        "FAMILY_ONLY/DEAD/ORIGINAL",
+        "ROYAL/DEAD/CROSS_COUNTRY",
+        "FAMILY_ONLY/LIVING/ORIGINAL",
+        "MILITARY/LIVING/ORIGINAL"
+      ]
+    },
+    "military-archive": {
+      "checks": 21,
+      "categories": null
+    }
+  },
+  "extraStrictSnapshots": 17,
+  "publicDeathAudit": {
+    "regional-1-100.json": {
+      "raw": 32,
+      "readable": 0
+    },
+    "regional-1-200.json": {
+      "raw": 63,
+      "readable": 0
+    },
+    "regional-2-100.json": {
+      "raw": 25,
+      "readable": 0
+    },
+    "regional-2-200.json": {
+      "raw": 47,
+      "readable": 0
+    },
+    "regional-3-100.json": {
+      "raw": 26,
+      "readable": 0
+    },
+    "regional-3-200.json": {
+      "raw": 55,
+      "readable": 0
+    },
+    "regional-4-100.json": {
+      "raw": 19,
+      "readable": 0
+    },
+    "regional-4-200.json": {
+      "raw": 34,
+      "readable": 0
+    },
+    "regional-5-100.json": {
+      "raw": 26,
+      "readable": 0
+    },
+    "regional-6-100.json": {
+      "raw": 20,
+      "readable": 0
+    },
+    "regional-7-100.json": {
+      "raw": 29,
+      "readable": 0
+    },
+    "regional-8-100.json": {
+      "raw": 28,
+      "readable": 0
+    },
+    "regional-1-300.json": {
+      "raw": 82,
+      "readable": 0
+    },
+    "regional-1-400.json": {
+      "raw": 104,
+      "readable": 0
+    },
+    "regional-1-500.json": {
+      "raw": 135,
+      "readable": 0
+    }
+  },
+  "naturalStewardshipPromotion": {
+    "person": "牛致卿",
+    "city": "郴县",
+    "startMonth": 168,
+    "promotionMonth": 252,
+    "assessmentMonths": [
+      204,
+      240
+    ],
+    "realRecoveryReceipts": 0
+  },
+  "performance": {
+    "phase-before": {
+      "rows": [
+        {
+          "monthlyP50Ms": 3.0999999940395355,
+          "hydrationMs": 2248.7999999821186,
+          "exportMs": 2462.800000011921,
+          "clockMismatches": 0,
+          "uniqueMonths": 300,
+          "comparableAuthoritySha256": "088acd49abffef6c9c013e3d8326a75ff1fd57919f3281debd8956977b94dbd5",
+          "phases": {
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 0.3363333332538605,
+              "p95Ms": 1.800000011920929,
+              "p99Ms": 2.5,
+              "maxMs": 16.900000005960464
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 2.0766666659712794,
+              "p95Ms": 9.099999994039536,
+              "p99Ms": 20.799999982118607,
+              "maxMs": 26.200000017881393
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 0.7623333337903023,
+              "p95Ms": 3.4000000059604645,
+              "p99Ms": 18.299999982118607,
+              "maxMs": 24.69999998807907
+            },
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 7.155000001192093,
+              "p95Ms": 26.099999994039536,
+              "p99Ms": 35.599999994039536,
+              "maxMs": 43.30000001192093
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 25.548000001907347,
+              "p95Ms": 35.599999994039536,
+              "p99Ms": 43.30000001192093,
+              "maxMs": 43.30000001192093
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 5.48290909203616,
+              "p95Ms": 19.80000001192093,
+              "p99Ms": 28.69999998807907,
+              "maxMs": 41.29999998211861
+            }
+          }
+        },
+        {
+          "monthlyP50Ms": 3.5999999940395355,
+          "hydrationMs": 2309.9000000059605,
+          "exportMs": 2634.4000000059605,
+          "clockMismatches": 0,
+          "uniqueMonths": 300,
+          "comparableAuthoritySha256": "088acd49abffef6c9c013e3d8326a75ff1fd57919f3281debd8956977b94dbd5",
+          "phases": {
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 0.3713333334525426,
+              "p95Ms": 1.800000011920929,
+              "p99Ms": 2.300000011920929,
+              "maxMs": 17.80000001192093
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 2.124666666388512,
+              "p95Ms": 9.300000011920929,
+              "p99Ms": 21.900000005960464,
+              "maxMs": 23
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 0.7353333334128062,
+              "p95Ms": 3.300000011920929,
+              "p99Ms": 19.599999994039536,
+              "maxMs": 24.900000005960464
+            },
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 7.654333332777023,
+              "p95Ms": 25.19999998807907,
+              "p99Ms": 40.599999994039536,
+              "maxMs": 44.400000005960464
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 26.503999996185303,
+              "p95Ms": 40.70000001788139,
+              "p99Ms": 44.400000005960464,
+              "maxMs": 44.400000005960464
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 5.940727272467179,
+              "p95Ms": 20.299999982118607,
+              "p99Ms": 28.19999998807907,
+              "maxMs": 44.400000005960464
+            }
+          }
+        },
+        {
+          "monthlyP50Ms": 3.5,
+          "hydrationMs": 2256.5,
+          "exportMs": 2737.5,
+          "clockMismatches": 0,
+          "uniqueMonths": 300,
+          "comparableAuthoritySha256": "088acd49abffef6c9c013e3d8326a75ff1fd57919f3281debd8956977b94dbd5",
+          "phases": {
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 0.38233333190282187,
+              "p95Ms": 1.899999976158142,
+              "p99Ms": 2.0999999940395355,
+              "maxMs": 18.700000017881393
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 2.1853333341081935,
+              "p95Ms": 9.700000017881393,
+              "p99Ms": 22.200000017881393,
+              "maxMs": 23.599999994039536
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 0.7596666657924652,
+              "p95Ms": 3.5,
+              "p99Ms": 20.900000005960464,
+              "maxMs": 24.799999982118607
+            },
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 7.787999998927116,
+              "p95Ms": 26,
+              "p99Ms": 40.599999994039536,
+              "maxMs": 46.70000001788139
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 26.6,
+              "p95Ms": 40.599999994039536,
+              "p99Ms": 43.599999994039536,
+              "maxMs": 43.599999994039536
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 6.077818180647763,
+              "p95Ms": 21.80000001192093,
+              "p99Ms": 29.900000005960464,
+              "maxMs": 46.70000001788139
+            }
+          }
+        }
+      ],
+      "scope": "Manual authoritative fixed steps with real Arcade physics; render loop stopped. Separate from live Electron frame measurement and human acceptance."
+    },
+    "phase-after": {
+      "rows": [
+        {
+          "monthlyP50Ms": 16.700000017881393,
+          "hydrationMs": 5679.699999988079,
+          "exportMs": 6612,
+          "clockMismatches": 0,
+          "uniqueMonths": 300,
+          "comparableAuthoritySha256": "a3fb3633fb9e37312c0291da672446a0bf49f553153a5cc0d9fc873af7b313e4",
+          "phases": {
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 14.456333333750566,
+              "p95Ms": 47.30000001192093,
+              "p99Ms": 77,
+              "maxMs": 105.5
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 5.020000000794728,
+              "p95Ms": 21.5,
+              "p99Ms": 45.400000005960464,
+              "maxMs": 63.5
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 3.4163333330551784,
+              "p95Ms": 23.30000001192093,
+              "p99Ms": 54.900000005960464,
+              "maxMs": 78.59999999403954
+            },
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 33.95166666676601,
+              "p95Ms": 133.30000001192093,
+              "p99Ms": 206.19999998807907,
+              "maxMs": 272.10000002384186
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 155.8920000040531,
+              "p95Ms": 252.90000000596046,
+              "p99Ms": 272.10000002384186,
+              "maxMs": 272.10000002384186
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 22.866181817921724,
+              "p95Ms": 67.19999998807907,
+              "p99Ms": 99.09999999403954,
+              "maxMs": 122.40000000596046
+            }
+          }
+        },
+        {
+          "monthlyP50Ms": 17,
+          "hydrationMs": 6010.199999988079,
+          "exportMs": 7082,
+          "clockMismatches": 0,
+          "uniqueMonths": 300,
+          "comparableAuthoritySha256": "a3fb3633fb9e37312c0291da672446a0bf49f553153a5cc0d9fc873af7b313e4",
+          "phases": {
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 14.353999999066193,
+              "p95Ms": 46.400000005960464,
+              "p99Ms": 75.90000000596046,
+              "maxMs": 96.90000000596046
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 4.9803333338101705,
+              "p95Ms": 22.69999998807907,
+              "p99Ms": 45.400000005960464,
+              "maxMs": 63.400000005960464
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 3.278666667143504,
+              "p95Ms": 22.69999998807907,
+              "p99Ms": 50.69999998807907,
+              "maxMs": 72.80000001192093
+            },
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 33.58666666716337,
+              "p95Ms": 133.59999999403954,
+              "p99Ms": 202.59999999403954,
+              "maxMs": 275.5
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 153.12800000190734,
+              "p95Ms": 251,
+              "p99Ms": 275.5,
+              "maxMs": 275.5
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 22.719272727641194,
+              "p95Ms": 68.40000000596046,
+              "p99Ms": 98.7999999821186,
+              "maxMs": 111.69999998807907
+            }
+          }
+        },
+        {
+          "monthlyP50Ms": 18.19999998807907,
+          "hydrationMs": 7236.800000011921,
+          "exportMs": 7587.199999988079,
+          "clockMismatches": 0,
+          "uniqueMonths": 300,
+          "comparableAuthoritySha256": "a3fb3633fb9e37312c0291da672446a0bf49f553153a5cc0d9fc873af7b313e4",
+          "phases": {
+            "MilitaryCommandRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 14.804333334664504,
+              "p95Ms": 47.900000005960464,
+              "p99Ms": 77.80000001192093,
+              "maxMs": 98.5
+            },
+            "DynastyRegistry.update": {
+              "sampleCount": 300,
+              "averageMs": 5.353000000317891,
+              "p95Ms": 24.900000005960464,
+              "p99Ms": 46.599999994039536,
+              "maxMs": 68.19999998807907
+            },
+            "Civil administration": {
+              "sampleCount": 300,
+              "averageMs": 3.3910000011324883,
+              "p95Ms": 24.5,
+              "p99Ms": 51,
+              "maxMs": 75.5
+            },
+            "total fixed/month step": {
+              "sampleCount": 300,
+              "averageMs": 35.8273333337903,
+              "p95Ms": 141.69999998807907,
+              "p99Ms": 206.30000001192093,
+              "maxMs": 286.90000000596046
+            },
+            "total fixed/month step/January": {
+              "sampleCount": 25,
+              "averageMs": 163.8799999988079,
+              "p95Ms": 274.09999999403954,
+              "p99Ms": 286.90000000596046,
+              "maxMs": 286.90000000596046
+            },
+            "total fixed/month step/ordinary": {
+              "sampleCount": 275,
+              "averageMs": 24.1861818187887,
+              "p95Ms": 71.7000000178814,
+              "p99Ms": 102,
+              "maxMs": 113.80000001192093
+            }
+          }
+        }
+      ],
+      "scope": "Manual authoritative fixed steps with real Arcade physics; render loop stopped. Separate from live Electron frame measurement and human acceptance."
+    },
+    "save300-before": {
+      "month": 3600,
+      "saveVersion": 65,
+      "scope": "Same native DTO, actual complete strict validation, hydration and exporter; no header upgrade, history mutation, RNG or screenshots",
+      "rows": [
+        {
+          "repeat": 0,
+          "validationMs": 880.3999999761581,
+          "stringifyMs": 8,
+          "parseMs": 12.600000023841858,
+          "hydrationMs": 998.0999999940395,
+          "exportMs": 960.5999999940395,
+          "bytes": 6037961,
+          "heapBytes": 162931082,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 1,
+          "validationMs": 848.2999999821186,
+          "stringifyMs": 7.5,
+          "parseMs": 12.200000017881393,
+          "hydrationMs": 907.7999999821186,
+          "exportMs": 896.7000000178814,
+          "bytes": 6037961,
+          "heapBytes": 198732513,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 2,
+          "validationMs": 799.5,
+          "stringifyMs": 11.200000017881393,
+          "parseMs": 12.799999982118607,
+          "hydrationMs": 929.7000000178814,
+          "exportMs": 916.0999999940395,
+          "bytes": 6037961,
+          "heapBytes": 151241174,
+          "canonicalUnchanged": true
+        }
+      ]
+    },
+    "save300-after": {
+      "month": 3600,
+      "saveVersion": 66,
+      "scope": "Same native DTO, actual complete strict validation, hydration and exporter; no header upgrade, history mutation, RNG or screenshots",
+      "rows": [
+        {
+          "repeat": 0,
+          "validationMs": 1556.5999999940395,
+          "stringifyMs": 16.400000005960464,
+          "parseMs": 21.5,
+          "hydrationMs": 1716.0999999940395,
+          "exportMs": 1709.2000000178814,
+          "bytes": 10392705,
+          "heapBytes": 221407777,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 1,
+          "validationMs": 1564.699999988079,
+          "stringifyMs": 14.400000005960464,
+          "parseMs": 20.599999994039536,
+          "hydrationMs": 1657.300000011921,
+          "exportMs": 1696.5,
+          "bytes": 10392705,
+          "heapBytes": 198736732,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 2,
+          "validationMs": 1565.300000011921,
+          "stringifyMs": 15.699999988079071,
+          "parseMs": 19.80000001192093,
+          "hydrationMs": 1691.9000000059605,
+          "exportMs": 1742.199999988079,
+          "bytes": 10392705,
+          "heapBytes": 283173002,
+          "canonicalUnchanged": true
+        }
+      ]
+    },
+    "save500-before": {
+      "month": 6000,
+      "saveVersion": 65,
+      "scope": "Same native DTO, actual complete strict validation, hydration and exporter; no header upgrade, history mutation, RNG or screenshots",
+      "rows": [
+        {
+          "repeat": 0,
+          "validationMs": 1980.5,
+          "stringifyMs": 15.599999994039536,
+          "parseMs": 20.599999994039536,
+          "hydrationMs": 2123.9000000059605,
+          "exportMs": 2166.2000000178814,
+          "bytes": 9510820,
+          "heapBytes": 189545642,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 1,
+          "validationMs": 1986,
+          "stringifyMs": 13.5,
+          "parseMs": 20.200000017881393,
+          "hydrationMs": 2126.399999976158,
+          "exportMs": 2126.7000000178814,
+          "bytes": 9510820,
+          "heapBytes": 184650195,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 2,
+          "validationMs": 1937.5,
+          "stringifyMs": 12.5,
+          "parseMs": 20,
+          "hydrationMs": 2111.9000000059605,
+          "exportMs": 2168.9000000059605,
+          "bytes": 9510820,
+          "heapBytes": 295525374,
+          "canonicalUnchanged": true
+        }
+      ]
+    },
+    "save500-after": {
+      "month": 6000,
+      "saveVersion": 66,
+      "scope": "Same native DTO, actual complete strict validation, hydration and exporter; no header upgrade, history mutation, RNG or screenshots",
+      "rows": [
+        {
+          "repeat": 0,
+          "validationMs": 5052.5999999940395,
+          "stringifyMs": 29.69999998807907,
+          "parseMs": 36.30000001192093,
+          "hydrationMs": 5609.4000000059605,
+          "exportMs": 6039,
+          "bytes": 17874543,
+          "heapBytes": 374098787,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 1,
+          "validationMs": 5542.799999982119,
+          "stringifyMs": 34.20000001788139,
+          "parseMs": 35.79999998211861,
+          "hydrationMs": 5906,
+          "exportMs": 5883.200000017881,
+          "bytes": 17874543,
+          "heapBytes": 420941625,
+          "canonicalUnchanged": true
+        },
+        {
+          "repeat": 2,
+          "validationMs": 5395.800000011921,
+          "stringifyMs": 28,
+          "parseMs": 35,
+          "hydrationMs": 5849.199999988079,
+          "exportMs": 5831.699999988079,
+          "bytes": 17874543,
+          "heapBytes": 459426045,
+          "canonicalUnchanged": true
+        }
+      ]
+    },
+    "panel-before": {
+      "seed": "regional-1",
+      "years": 500,
+      "settlement": {
+        "months": 12,
+        "annualHonorMs": [
+          0.20000001788139343
+        ],
+        "canonicalExcludingVersionAndAppanages": "c384052209745f8bd8ebc092caf35fa2bde37534bb24e0f1dc9714410f072ded",
+        "worldRandomPosition": 31402
+      },
+      "fixtureSchema": 65,
+      "benchmarkSchema": 65,
+      "factsUnchangedOnHydration": true,
+      "factionId": "秦",
+      "worldMonth": 6000,
+      "population": 129,
+      "worldPeople": 196,
+      "localPeople": 27,
+      "worldEvents": 11920,
+      "enterMs": 24.200000017881393,
+      "firstExpandMs": 25,
+      "collapsedChronicleCalls": 0,
+      "eventReads": 26,
+      "initialDom": 55,
+      "frame": [
+        {
+          "sidebar": true,
+          "averageFPS": 55.32549279443432,
+          "p95FrameMs": 38.599999994039536
+        },
+        {
+          "sidebar": false,
+          "averageFPS": 59.58523351431549,
+          "p95FrameMs": 30.5
+        }
+      ],
+      "react": {
+        "commits": 59,
+        "totalMs": 506.2000000178814
+      },
+      "scope": "Offscreen Electron, each version used its own 500-year native snapshot; the renderer measurement is structural."
+    },
+    "panel-after": {
+      "seed": "regional-1",
+      "years": 500,
+      "settlement": {
+        "months": 12,
+        "annualHonorMs": [
+          0
+        ],
+        "canonicalExcludingVersionAndAppanages": "6ed28d917d6fefd069878db69e15aa541c4e8c117dc9e547c5cf66dbb3751565",
+        "worldRandomPosition": 35540
+      },
+      "fixtureSchema": 66,
+      "benchmarkSchema": 66,
+      "factsUnchangedOnHydration": true,
+      "factionId": "魏",
+      "worldMonth": 6000,
+      "population": 130,
+      "worldPeople": 294,
+      "localPeople": 27,
+      "worldEvents": 17281,
+      "enterMs": 53.20000001788139,
+      "firstExpandMs": 34.599999994039536,
+      "collapsedChronicleCalls": 0,
+      "eventReads": 22,
+      "initialDom": 26,
+      "frame": [
+        {
+          "sidebar": true,
+          "averageFPS": 49.31162298129928,
+          "p95FrameMs": 49.099999994039536
+        },
+        {
+          "sidebar": false,
+          "averageFPS": 53.045121506271805,
+          "p95FrameMs": 34.30000001192093
+        }
+      ],
+      "react": {
+        "commits": 55,
+        "totalMs": 352.50000017881393
+      },
+      "scope": "Offscreen Electron, each version used its own 500-year native snapshot; the renderer measurement is structural."
+    }
+  },
+  "naturalChancellors": [
+    {
+      "personalName": "聂世远",
+      "factionId": "魏",
+      "startMonth": 1824,
+      "appointEventId": "civil-governor-魏-70-appointed"
+    }
+  ],
+  "automatedChecks": {
+    "vitestFiles": 373,
+    "vitestTests": 2747,
+    "typescript": true,
+    "webBuild": true,
+    "desktopBuild": true,
+    "desktopDebugBuild": true
+  },
+  "performanceConditions": "Re-measured sequentially after the other Electron Debug instance was paused. Both versions use their native regional-1 saves. Different world histories limit attribution; offscreen diagnostics do not measure visual acceptance."
+}

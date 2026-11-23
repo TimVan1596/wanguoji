@@ -1,3 +1,4 @@
+import CivilAdministration from '../../Politics/CivilAdministration';
 import {militaryAbilities,rulerAbilities} from '../../Politics/PersonAbilities';
 import {rulerFamilyOrigin} from '../../Politics/RulerFamilyOrigin';
 import {RulerServicePanel} from '../../UI/Components/FactionDetails/PersonServicePanel';
@@ -36,7 +37,9 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
  const {core,game}=await createNaturalCore(seed),checks:string[]=[];
  const check=(yes:unknown,label:string)=>{if(!yes)throw new Error(label);checks.push(label);if(checks.length%5===0)console.info(`[CoreTest] ${checks.length}: ${label}`);};
  const step=()=>{const before=core.simulator!.year;for(let n=0;n<30;n++)(core as any).advanceLogicalStep(SIMULATION_FIXED_STEP_MS);core.scene.sys.events.emit("postupdate");if(core.simulator!.year===before)throw new Error(`Core clock stopped at ${before}; last check: ${checks[checks.length-1]}`);};
- const strict=()=>{const s=exportWorldSave(core),v=validateWorldSave(s);if(!v.valid)throw new Error(v.errors.join("; "));return s;};
+ // This directed harness calls capture/split out of the normal monthly loop.
+ // Run its administrative reconciliation before taking a completed-month checkpoint.
+ const strict=()=>{CivilAdministration['reconcile'](core.simulator!.year,core.teams,Dynasty.getAll());const s=exportWorldSave(core),v=validateWorldSave(s);if(!v.valid)throw new Error(v.errors.join("; "));return s;};
  try{
   let chosen:ReturnType<typeof Military.getPoliticalInfluence>["candidates"][number]|undefined,parent:typeof core.teams[number]|undefined;
   for(let month=0;month<600&&!chosen;month++){step();for(const t of core.teams.filter(t=>t.cities.length>=2&&t.cities.some(c=>!c.isCapital&&!c.isInCaptureGrace(core.simulator!.year)))){const p=Military.getPoliticalInfluence(t,core.simulator!.year,core.logicalUnitRegistry,false,false,true).candidates.find(c=>c.unitCount>=2&&c.serviceMonths>=60&&core.simulator!.year%12===0&&(Dynasty.getCurrentRuler(t.name)?.naturalDeathYear??0)>core.simulator!.year+24&&deriveMilitaryLifeSchedule(Military.getPerson(c.personId)!).retirementMonth>core.simulator!.year+24);if(p){chosen=p;parent=t;break;}}}
@@ -168,8 +171,8 @@ export async function runMilitarySecessionCore(seed="military-secession-z7",loca
   const save=strict();
   if(siege)check(ruler.residentIdentity!.military!.localCrisis?.reason==='MILITARY_SIEGE_CRISIS','active siege founding retains its pre-transaction source even after the transfer closes the battle');
   check(ruler.residentIdentity!.military!.entryKind===(local?'LOCAL_CRISIS':'EMPIRE_SPLIT'),'founding retains its actual political entry, separate from the military source');
-  if(local)for(const mutate of [(e:any)=>e.localCrisis.facts.underSiege='fake',(e:any)=>delete e.localCareerEventIds,(e:any)=>e.localCrisis.roll=.99,(e:any)=>e.localCrisis.facts.loyalty=100,(e:any)=>e.localCrisis.supporter.unitId=e.originalMemberUnitIds[0],(e:any)=>e.localCrisis.crisisSourceEventIds=['unrelated-city-event'],(e:any)=>e.localCrisis.historyBoundaryEventId='future-or-missing-boundary',(e:any)=>delete e.localCrisis]){
-   const bad=structuredClone(save),r=bad.dynasties.flatMap(d=>d.rulers).find((r:any)=>r.rulerId===ruler.id)! as any;mutate(r.residentIdentity.military);check(!validateWorldSave(bad).valid,'strict V32 refuses forged local crisis, draw or supporter evidence');
+  if(local)for(const mutate of [(e:any)=>e.localCrisis.facts.underSiege='fake',(e:any)=>delete e.localCareerEventIds,(e:any)=>e.localCrisis.roll=.99,(e:any)=>e.localCrisis.facts.loyalty=100,(e:any)=>e.localCrisis.supporter.unitId=e.participants[0].unitId,(e:any)=>e.localCrisis.crisisSourceEventIds=['unrelated-city-event'],(e:any)=>e.localCrisis.historyBoundaryEventId='future-or-missing-boundary',(e:any)=>delete e.localCrisis]){
+   const bad=structuredClone(save),r=bad.dynasties.flatMap(d=>d.rulers).find((r:any)=>r.rulerId===ruler.id)! as any;mutate(r.residentIdentity.military);check(!validateWorldSave(bad).valid,`strict save refuses forged local crisis: ${mutate.toString()}`);
   }
 
   for(const mutate of [(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).politicalRulerId="wrong",(s:any)=>{const r=s.dynasties.find((d:any)=>d.factionId===split.team.name).rulers.find((r:any)=>r.residentIdentity?.personId===personId);r.naturalDeathMonth++;},(s:any)=>s.registries.militaryCommandRegistry.people.find((p:any)=>p.personId===personId).status="ACTIVE"]){const bad=structuredClone(save);mutate(bad);check(!validateWorldSave(bad).valid,"V21 refuses incompatible political/military life or simultaneous military authority");}
