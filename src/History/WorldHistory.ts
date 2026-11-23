@@ -270,6 +270,14 @@ export class WorldHistoryStore {
   /** Transaction order, including same-month facts; distinct from the display-sorted archive. */
   getRecordedEvents() { return this.events.slice(); }
 
+  /** Check the current append order without copying the entire archive. */
+  hasRecordedEventSince(index: number, predicate: (event: WorldEvent) => boolean) {
+    for (let i = index; i < this.events.length; i++) {
+      if (predicate(this.events[i])) return true;
+    }
+    return false;
+  }
+
   /** Copies only the requested window. Complete months and explicit narrative groups keep
    * capture/collapse chains intact at page boundaries, including retrospective records. */
   getEventWindow(options: { startMonth?: number; endMonth?: number; factionId?: string;

@@ -1,3 +1,4 @@
+import type {MilitaryEvidenceIndex} from './MilitaryEvidenceIndex';
 import {insurgentChronicle,insurgentChronicleOrder} from './InsurgentChronicle';
 import {militaryReignRelation} from "./RulerMilitaryBoundary";
 import {militaryDeathWording} from './MilitaryLifePresentation';
@@ -65,14 +66,14 @@ export function formatRulerMilitaryEvent(event: WorldEvent, ruler: { id?:string;
 }
 
 /** One projection of the existing events. No new history facts or military score. */
-export function deriveMilitaryChronicle(person: MilitaryPerson, formations: MilitaryFormation[], events: WorldEvent[], worldMonth: number, factionId?: string) {
-  const career=deriveMilitaryCareer(person,formations,events,worldMonth),captures=new Set(career.capturedEventIds),activities=new Map(career.activities.map(a=>[a.eventId,a.kind]));
-  const defenseIds=new Set(deriveMilitaryActivities(person,formations,events,worldMonth,career.capturedEventIds,true).filter(a=>a.kind==='DEFENSE').map(a=>a.eventId));
-  const byId = new Map(events.map(e => [e.id, e]));
+export function deriveMilitaryChronicle(person: MilitaryPerson, formations: MilitaryFormation[], events: WorldEvent[], worldMonth: number, factionId?: string,index?:MilitaryEvidenceIndex) {
+  const career=deriveMilitaryCareer(person,formations,events,worldMonth,index),captures=new Set(career.capturedEventIds),activities=new Map(career.activities.map(a=>[a.eventId,a.kind]));
+  const defenseIds=new Set(deriveMilitaryActivities(person,formations,events,worldMonth,career.capturedEventIds,true,index).filter(a=>a.kind==='DEFENSE').map(a=>a.eventId));
+  const byId = index?.byId??new Map(events.map(e => [e.id, e]));
   const groups = new Set<string>();
   const entries: MilitaryChronicleEntry[] = [];
   const name = getMilitaryPersonDisplayName(person);
-  for (const e of [...byId.values()].sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year))) {
+  for (const e of index?.chronological??[...byId.values()].sort((a, b) => (a.monthIndex ?? a.year) - (b.monthIndex ?? b.year))) {
     const month = e.monthIndex ?? e.year;
     const secession=e.type==="empire-split"&&e.metadata?.militaryPersonId===person.personId&&person.politicalRulerId===e.metadata?.foundingRulerId;
     if (month > worldMonth || person.deathMonth !== undefined && month > person.deathMonth && !person.honorHistory?.some(h=>h.eventId===e.id) || factionId && e.actorFactionId !== factionId&&!(secession&&e.targetFactionId===factionId)) continue;

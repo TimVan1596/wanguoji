@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.100.0-beta.70** / package **0.100.0-beta.70** / WorldSave **V66**。beta.69已获最终人工Gate PASS。新增文官守成考课和有限致仕，统一文武人物史传及证据入口。V65及更早槽位保留并拒读、拒绝覆盖，须新建世界。退出旧Electron实例后运行 `pnpm desktop:start:debug`，等待beta.70人工Gate。
+- 当前 APP **v0.100.0-beta.71** / package **0.100.0-beta.71** / WorldSave **V66**。新增城市历任地方官，归并人物守成考绩，优化军令事务和严格验证。V66存档可续玩；V65及更早槽位保留。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。

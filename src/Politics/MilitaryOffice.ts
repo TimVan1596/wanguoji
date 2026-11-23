@@ -7,7 +7,7 @@ export const MILITARY_OFFICE_NAMES:Record<MilitaryOffice,string>={XIAOWEI:"æ ¡å°
 export const MILITARY_FORMATION_CAPACITY:Record<MilitaryOffice,number>={XIAOWEI:1,PIJIANG:2,JIANGJUN:3,SHANGJIANGJUN:4};
 export const MILITARY_OFFICE_RULES={PIJIANG:{serviceMonths:36,captures:0,intervalMonths:0},JIANGJUN:{serviceMonths:72,captures:1,intervalMonths:24},SHANGJIANGJUN:{serviceMonths:120,captures:2,intervalMonths:36}};
 /** Only the current country's current appointment is eligible; the same victory is never spent twice. */
-export function getOfficePromotion(appointment:MilitaryAppointment,entries:MilitaryChronicleEntry[],month:number){
+export function getOfficePromotion(appointment:MilitaryAppointment,entries:MilitaryChronicleEntry[]|(()=>MilitaryChronicleEntry[]),month:number){
   const grants=appointment.officeHistory??[],previous=grants.at(-1);
   if(!previous||appointment.endMonth!==undefined)return undefined;
   const next=MILITARY_OFFICES[MILITARY_OFFICES.indexOf(previous.office)+1];
@@ -15,7 +15,7 @@ export function getOfficePromotion(appointment:MilitaryAppointment,entries:Milit
   const rule=MILITARY_OFFICE_RULES[next],serviceMonths=month-appointment.startMonth;
   if(serviceMonths<rule.serviceMonths||month-previous.month<rule.intervalMonths)return undefined;
   const used=new Set(grants.flatMap(g=>[...g.captureEventIds,...(g.activityEventIds??[])]));
-  const eligible=[...new Map(entries.filter(e=>e.commandId===appointment.commandId&&e.factionId===appointment.factionId&&e.worldMonth<=month&&e.worldMonth>=appointment.startMonth&&!used.has(e.eventId)).map(e=>[e.eventId,e])).values()];
+  const eligible=[...new Map((typeof entries==='function'?entries():entries).filter(e=>e.commandId===appointment.commandId&&e.factionId===appointment.factionId&&e.worldMonth<=month&&e.worldMonth>=appointment.startMonth&&!used.has(e.eventId)).map(e=>[e.eventId,e])).values()];
   if(next==='PIJIANG'){
     const activity=eligible.find(e=>e.victory||e.activityKind);
     if(activity)return {office:next,month,serviceMonths,captureEventIds:activity.victory?[activity.eventId]:[],activityEventIds:activity.victory?[]:[activity.eventId],promotionBasis:'ACTIVITY' as const};

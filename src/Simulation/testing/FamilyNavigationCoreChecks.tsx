@@ -1,3 +1,4 @@
+import {checkCityCivilOffices} from './CityCivilOfficeCoreChecks';
 import {resolvePersonArchiveTarget} from '../../UI/Components/FactionDetails/PersonArchiveTarget';
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
@@ -36,5 +37,5 @@ export async function checkFamilyNavigation(core:any,check:(v:unknown,label:stri
 /** Natural stored people are used without forging a career for UI coverage. */
 export async function runFamilyNavigation(seed:string,snapshot:import('../../Persistence/WorldSaveSchema').WorldSaveV1){
  const {createNaturalCore}=await import('./NaturalCoreHarness'),{hydrateWorldSave}=await import('../../Persistence/WorldSaveHydrator'),{core,game}=await createNaturalCore(seed),checks:string[]=[];
- try{core.setWorldRunning(false);game.loop.stop();hydrateWorldSave(core,structuredClone(snapshot));const categories=await checkFamilyNavigation(core,(v,label)=>{if(!v)throw Error(label);checks.push(label);});return {seed,categories,checks};}finally{game.destroy(true);}
+ try{core.setWorldRunning(false);game.loop.stop();hydrateWorldSave(core,structuredClone(snapshot));const check=(v:unknown,label:string)=>{if(!v)throw Error(label);checks.push(label);};const categories=await checkFamilyNavigation(core,check);const city=checkCityCivilOffices(core,check);return {seed,categories,checks,city};}finally{game.destroy(true);}
 }

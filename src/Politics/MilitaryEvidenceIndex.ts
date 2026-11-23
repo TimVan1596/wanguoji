@@ -9,7 +9,7 @@ export function createMilitaryEvidenceIndex(events:readonly WorldEvent[],formati
  for(const e of sorted)add(byCommand,String(e.metadata?.commandId??''),e);
  for(const f of formations)add(formsByPerson,f.commanderPersonId,f);
  const commandEvents=(p:MilitaryPerson)=>[...new Set(p.appointments.map(a=>a.commandId))].flatMap(id=>byCommand.get(id)??[]).sort((a,b)=>order.get(a)!-order.get(b)!);
- return {byId,allById,byPerson,starts,ends,formsByPerson,commandEvents,dependencies(p:MilitaryPerson){
+ return {byId,allById,byPerson,chronological:sorted,starts,ends,formsByPerson,commandEvents,dependencies(p:MilitaryPerson){
   const refs=new Set<WorldEvent>([...commandEvents(p),...(byPerson.get(p.personId)??[]),...p.capturedEventIds.flatMap(id=>allById.get(id)??[])]);
   for(const e of [...refs]){const id=e.metadata?.battleId;if(typeof id==='string'){for(const x of starts.get(id)??[])refs.add(x);for(const x of ends.get(id)??[])refs.add(x);}}
   return [...refs].sort((a,b)=>order.get(a)!-order.get(b)!);

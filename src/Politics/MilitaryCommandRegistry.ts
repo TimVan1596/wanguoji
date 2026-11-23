@@ -841,7 +841,7 @@ export class MilitaryCommandRegistryStore {
       const appointment=person.appointments.find(a=>a.factionId===person.factionId&&a.endMonth===undefined);
       const formation=appointment&&this.formations.get(appointment.commandId);
       if(!user?.matchesMilitaryLife?.(person)||!appointment||!formation||formation.status!=="ACTIVE"||formation.commanderPersonId!==person.personId||formation.factionId!==person.factionId||formation.memberUnitIds.length<1||!formation.memberUnitIds.includes(user.player.logicalUnitId??""))continue;
-      const grant=getOfficePromotion(appointment,this.getChronicle(person,month,person.factionId),month);
+      const grant=getOfficePromotion(appointment,()=>this.getChronicle(person,month,person.factionId),month);
       if(grant)this.grantOffice(person,appointment,grant,team?.displayName??appointment.factionId);
       // Annual opportunities also allow a previously unfilled promotion to recruit
       // when a real resident later reaches the commander's assembly area.
@@ -893,23 +893,27 @@ export class MilitaryCommandRegistryStore {
   withdrawFromCity(factionId:string,cityId:string,month:number){
     for(const f of this.formations.values())if(f.status==="ACTIVE"&&f.factionId===factionId&&f.targetCityId===cityId){f.retreatUntilMonth=month+12;f.targetCityId=undefined;f.orderStartMonth=undefined;}
   }
-  private refreshOrders(worldMonth: number, teams: Team[], cities: City[],onlyCommandId?:string,insideDuty=false) {
+  private refreshOrders(worldMonth: number, teams: Team[], cities: City[]) {
     for (const formation of this.formations.values()) {
-      if(onlyCommandId&&formation.commandId!==onlyCommandId)continue;
       if (formation.status !== "ACTIVE") continue;
-      if(formation.leaderDuty&&!insideDuty){const team=teams.find(t=>t.name===formation.factionId);if(team)try{this.familyTransaction(team,()=>this.refreshOrders(worldMonth,teams,cities,formation.commandId,true));}catch(error){console.warn('[InsurgentCommand] order rolled back',error);}continue;}
+
       if((formation.retreatUntilMonth??-1)>worldMonth)continue;
-      delete formation.retreatUntilMonth;
       const current = cities.find(city => city.id === formation.targetCityId);
-      if(current&&current.ownerFactionId!==formation.factionId&&!Diplomacy.canAttack(formation.factionId,current.ownerFactionId,worldMonth)){this.withdrawFromCity(formation.factionId,current.id,worldMonth);continue;}
-      if (current && !current.destroyed && current.ownerFactionId !== formation.factionId && current.ownerTeam?.status === "ACTIVE" &&
-        Diplomacy.canAttack(formation.factionId, current.ownerFactionId, worldMonth)) continue;
-      if (formation.targetCityId) {
-        this.diagnostics.invalidatedTargets++;
-        this.lastArrivalTargetByCommand.delete(formation.commandId);
-        this.longRangeOrderSamples.delete(formation.commandId);
-      }
+      const canAttack = current && current.ownerFactionId !== formation.factionId &&
+        Diplomacy.canAttack(formation.factionId, current.ownerFactionId, worldMonth);
+      const keepTarget = canAttack && !current.destroyed && current.ownerTeam?.status === "ACTIVE";
+      if (keepTarget && formation.retreatUntilMonth === undefined) continue;
       const team = teams.find(candidate => candidate.name === formation.factionId);
+      if(formation.leaderDuty&&!team)continue;
+      if (current && current.ownerFactionId !== formation.factionId && !canAttack) {
+        delete formation.retreatUntilMonth;
+        this.withdrawFromCity(formation.factionId,current.id,worldMonth);
+        continue;
+      }
+      if (keepTarget) {
+        delete formation.retreatUntilMonth;
+        continue;
+      }
       const members = team ? [...team.users].filter(user => formation.memberUnitIds.includes(user.player.logicalUnitId ?? "") && user.player.active) : [];
       const center = members.length ? members.reduce((sum, user) => ({ x: sum.x + user.player.x / members.length, y: sum.y + user.player.y / members.length }), { x: 0, y: 0 }) : undefined;
       const options = cities.filter(city => !city.destroyed && city.ownerFactionId !== formation.factionId && city.ownerTeam?.status === "ACTIVE" &&
@@ -925,22 +929,39 @@ export class MilitaryCommandRegistryStore {
       const nearbyCapital = center && nearest ? options.find(city => city.isCapital && city.ownerTeam?.capitalCity === city &&
         distance(city) <= distance(nearest) * 1.15 && distance(city) - distance(nearest) <= 32) : undefined;
       const next = nearbyCapital && nearbyCapital !== nearest && person && this.getCareer(person, worldMonth).verifiedCaptures > 0 ? nearbyCapital : nearest;
-      if (next) {
-        if (formation.targetCityId !== next.id) {
+      const apply = () => {
+        delete formation.retreatUntilMonth;
+        if (formation.targetCityId) {
+          this.diagnostics.invalidatedTargets++;
           this.lastArrivalTargetByCommand.delete(formation.commandId);
           this.longRangeOrderSamples.delete(formation.commandId);
         }
-        formation.targetCityId = next.id;
-        formation.orderStartMonth = worldMonth;
-        this.diagnostics.orders++;
-        this.eventWriter?.({ id: `military-order-${formation.commandId}-${worldMonth}-${next.id}`, year: worldMonth, monthIndex: worldMonth,
-          type: formation.leaderDuty?"leader-command-order":"military-order-issued", category: "war", title: "军事编组确定目标", importance: "normal",
-          factionIds: [formation.factionId, next.ownerFactionId], actorFactionId: formation.factionId, targetFactionId: next.ownerFactionId,
-          cityId: next.id, cityName: next.name, metadata: { commandId: formation.commandId, personId: formation.commanderPersonId, personalName: formation.leaderDuty?undefined:person?.personalName,
-            meritInfluenced: next !== nearest ? 1 : 0, nearestCityId: nearest?.id, nearestDistance: center && nearest ? distance(nearest) : undefined,
-            targetWasCapital: next.isCapital && next.ownerTeam?.capitalCity === next ? 1 : 0,
-            targetDistance: center ? distance(next) : undefined } });
-      } else { formation.targetCityId = undefined; formation.orderStartMonth = undefined; }
+        if (next) {
+          if (formation.targetCityId !== next.id) {
+            this.lastArrivalTargetByCommand.delete(formation.commandId);
+            this.longRangeOrderSamples.delete(formation.commandId);
+          }
+          formation.targetCityId = next.id;
+          formation.orderStartMonth = worldMonth;
+          this.diagnostics.orders++;
+          this.eventWriter?.({ id: `military-order-${formation.commandId}-${worldMonth}-${next.id}`, year: worldMonth, monthIndex: worldMonth,
+            type: formation.leaderDuty?"leader-command-order":"military-order-issued", category: "war", title: "军事编组确定目标", importance: "normal",
+            factionIds: [formation.factionId, next.ownerFactionId], actorFactionId: formation.factionId, targetFactionId: next.ownerFactionId,
+            cityId: next.id, cityName: next.name, metadata: { commandId: formation.commandId, personId: formation.commanderPersonId, personalName: formation.leaderDuty?undefined:person?.personalName,
+              meritInfluenced: next !== nearest ? 1 : 0, nearestCityId: nearest?.id, nearestDistance: center && nearest ? distance(nearest) : undefined,
+              targetWasCapital: next.isCapital && next.ownerTeam?.capitalCity === next ? 1 : 0,
+              targetDistance: center ? distance(next) : undefined } });
+        } else {
+          formation.targetCityId = undefined;
+          formation.orderStartMonth = undefined;
+        }
+      };
+      // Only emitting an insurgent order can fail here. Holding, withdrawing, and
+      // clearing a target touch plain fields and never call a writer.
+      if (next && formation.leaderDuty && team) {
+        try { this.familyTransaction(team,apply); }
+        catch(error) { console.warn('[InsurgentCommand] order rolled back',error); }
+      } else apply();
     }
   }
 

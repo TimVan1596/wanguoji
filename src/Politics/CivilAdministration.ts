@@ -45,6 +45,7 @@ class CivilAdministrationStore {
  getCurrentByCity(cityId:string,month:number){const term=this.state.terms.filter(term=>term.cityId===cityId&&active(term,month)).at(-1);return term?{...term}:undefined;}
  getByPopulation(sourceUserId:number,bornMonth:number){return this.state.terms.find(t=>t.sourceUserId===sourceUserId&&t.bornMonth===bornMonth);}
  getByPerson(personId:string){return this.state.terms.filter(term=>term.personId===personId).map(term=>({...term}));}
+ getByCity(cityId:string){return this.state.terms.filter(term=>term.cityId===cityId).map(term=>({...term}));}
  getCandidateDiagnostics(month:number,teams:readonly Team[],dynasties:readonly Dynasty[]){return teams.map(team=>{
   const dynasty=dynasties.find(d=>d.factionId===team.name),ruler=dynasty?.rulers.find(r=>r.id===dynasty.currentRulerId),epoch=(dynasty?.houseEpochs??[]).find(e=>e.startMonth<=month&&(e.endMonth??Infinity)>month),cities=eligibleCivilCities(month,team,this.state.terms),current=this.state.terms.filter(t=>t.factionId===team.name&&active(t,month)).length;
   const pool=epoch&&ruler?.status==='ruling'?civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,born)=>Military.getFamilyMember(id,born),Military.getFormations(),DynastyRegistry.getAll()):[];
@@ -191,12 +192,12 @@ class CivilAdministrationStore {
  private observeStewardship(month:number,teams:Team[]){
   const policy=this.state.careerPolicy??CIVIL_CAREER_POLICY;if(policy==='BASELINE')return;
   for(const term of this.state.terms.filter(t=>active(t,month)&&month>t.startMonth)){
-   const current=this.state.terms.find(t=>t.assignmentId===term.assignmentId)!,old=current.stewardshipWindow;
+   const current=term,old=current.stewardshipWindow;
    if(old?.samples.at(-1)?.month===month||(current.stewardshipAssessments?.at(-1)?.month??-1)>=month)continue;
    const team=teams.find(t=>t.name===term.factionId),stable=(c:City)=>!c.destroyed&&c.ownerFactionId===term.factionId&&!c.underSiege&&!c.isInCaptureGrace(month)&&c.loyalty>=75&&c.devastation<=5;
    const city=isLocalCivilOffice(term.office)?team?.cities.find(c=>c.id===term.cityId):team?.cities.filter(stable).sort((a,b)=>a.id.localeCompare(b.id))[0];
    if(!team||team.status!=='ACTIVE'||team.identityStage!=='STATE'||!city||!stable(city)){delete current.stewardshipWindow;continue;}
-   const disrupted=old&&WorldHistory.getRecordedEvents().slice(old.samples.at(-1)!.historyIndex).some(e=>e.cityId===city.id&&['siege-started','city-captured','capital-fallen','city-recovered','city-destroyed'].includes(e.type));
+   const disrupted=old&&WorldHistory.hasRecordedEventSince(old.samples.at(-1)!.historyIndex,e=>e.cityId===city.id&&['siege-started','city-captured','capital-fallen','city-recovered','city-destroyed'].includes(e.type));
    const controlledSince=civilControlledSince(city,team,month),continuous=!disrupted&&old?.cityId===city.id&&old.controlledSince===controlledSince&&old.samples.at(-1)!.month===month-1;
    const window:CivilStewardshipWindow={cityId:city.id,cityName:city.name,controlledSince,samples:[...(continuous?old!.samples:[]),{month,loyalty:city.loyalty,devastation:city.devastation,historyIndex:WorldHistory.getEventCount()}]};
    if(window.samples.length<stewardshipInterval){current.stewardshipWindow=window;continue;}

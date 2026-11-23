@@ -1,3 +1,4 @@
+import CityCivilOffices from './CityCivilOffices';
 import CityChroniclePanel from './CityChroniclePanel';
 import MilitaryArchiveWindow from '../FactionDetails/MilitaryArchiveWindow';
 import {CityAppanageSection} from './CityAppanages';
@@ -44,6 +45,7 @@ function CityProfile({city,archived,teams,month}:{city?:City;archived?:ArchivedC
    {city&&<Typography fontSize='.78rem' color='var(--gg-text-muted)'>{city.isCapital?'首都':'普通城市'} · 防御区{city.fortifiedCells.length}格</Typography>}
    {city?.siegeBattle&&<Typography fontSize='.82rem' fontWeight='bold'>{attacker?.displayName??city.siegeBattle.attackerId}正在围攻 · 攻方{city.siegeBattle.attackers}人／守方{city.siegeBattle.defenders}人</Typography>}
    {city&&<CivilGovernorSummary cityId={city.id} month={month}/>}
+   <CityCivilOffices cityId={id} month={month}/>
    <CityAppanageSection key={id} cityId={id}/>
   </Box>}
   {tab==='defense'&&<Box role='tabpanel' aria-label='城史'>
