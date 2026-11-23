@@ -21,12 +21,15 @@ export function personHistoryReading(events:readonly WorldEvent[]){
     if(end&&(order.get(end.id)??Infinity)<order.get(e.id)!){hidden.add(end.id);sources.set(e.id,[end.id,e.id]);}
    }catch{/* Invalid technical payload remains visible; strict persistence rejects it. */}
   }
+  if(e.type==='civil-governor-ended'&&e.metadata?.endReason==='DEATH'&&e.title.includes('卒，离任')){
+   projected.set(e.id,{...e,title:e.title.replace('卒，离任','卒于').replace(/。$/,'任内。')});
+  }
   if(e.type==='military-person-died'&&typeof e.metadata?.personId==='string'){
    const commandEnds=commandEndByPersonMonth.get(JSON.stringify([e.metadata.personId,e.monthIndex??e.year]))??[];
    for(const end of commandEnds)hidden.add(end.id);
    if(commandEnds.length)sources.set(e.id,[...commandEnds.map(x=>x.id),e.id].sort((a,b)=>order.get(a)!-order.get(b)!));
    const ends=civilEndByPersonMonth.get(JSON.stringify([e.metadata.personId,e.monthIndex??e.year]))?.filter(old=>old.metadata?.endReason==='DEATH')??[];
-   if(ends.length===1){const end=ends[0];hidden.add(e.id);sources.set(end.id,[...commandEnds.map(x=>x.id),e.id,end.id].sort((a,b)=>order.get(a)!-order.get(b)!));projected.set(end.id,{...end,title:end.title.replace('卒，离任','卒于') .replace(/。$/,'任内。')});}
+   if(ends.length===1){const end=ends[0];hidden.add(e.id);sources.set(end.id,[...commandEnds.map(x=>x.id),e.id,end.id].sort((a,b)=>order.get(a)!-order.get(b)!));}
   }
   if(e.type==='military-office-granted'){
    const initial=typeof e.metadata?.personId==='string'&&typeof e.metadata?.commandId==='string'?initialAppointments.get(appointmentKey(e)):undefined;
