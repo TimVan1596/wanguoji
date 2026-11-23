@@ -360,6 +360,7 @@ class FactionRegistryStore {
       const support=localMilitarySupporter(candidates,military.users,military.evidence.originalMemberUnitIds);if(!support)return undefined;const {supporter,supporterKind}=support;
       const p=supporter.player,s=core.logicalUnitRegistry.getEntry(p.logicalUnitId!)!.state;
       military.evidence.entryKind='LOCAL_CRISIS';
+      military.evidence.historyBoundaryEventId=WorldHistory.getRecordedEvents().at(-1)?.id;
       const facts=popularCrisisFacts(coreCity,year,core.totalCells);
       military.evidence.localCrisis={...localOpportunity,historyBoundaryEventId:WorldHistory.getRecordedEvents().at(-1)?.id,crisisSourceEventIds:militaryCrisisSourceIds(WorldHistory.getRecordedEvents(),coreCity.id,previousOwner.name,facts),reason:militaryLocalCrisis(popularCrisisFacts(coreCity,year,core.totalCells)).reason,supporterKind,
         facts,

@@ -15,6 +15,7 @@ export interface LocalMilitaryOpportunity {
 }
 export interface MilitarySecessionEvidence {
  disposition?:MilitaryDisposition;
+ historyBoundaryEventId?:string;
  entryKind:'EMPIRE_SPLIT'|'LOCAL_CRISIS';
  localCrisis?:{facts:import('./MilitaryLocalRules').MilitaryLocalCrisisFacts;historyBoundaryEventId?:string;crisisSourceEventIds:string[];reason:string;chance:number;roll:number;lastRebellionMonth?:number;sourceCityCount:number;activeFactionCount:number;supporterKind?:"RESIDENT"|"COMMAND_FOLLOWER";supporter:{userId:number;bornMonth:number;unitId:string;x:number;y:number;loyalty:number;positionSource:"PHASER"|"LOGICAL";districtCityId:string;ownedFactionId:string}};
  personId:string; commandId:string; sourceFactionId:string; sourceFactionName:string; personalName:string;
@@ -56,7 +57,7 @@ export function assessMilitarySecession(city:City,month:number, observe?:(reason
   if(!followers.length){observe?.("NO_LOCAL_FOLLOWERS");continue;}
   observe?.("QUALIFIED_LOCAL_PARTY");
   const users=[commander,...followers];
-  return {users,evidence:{disposition,entryKind:'EMPIRE_SPLIT',personId:person.personId,commandId:formation.commandId,sourceFactionId:owner.name,sourceFactionName:owner.displayName,
+  return {users,evidence:{disposition,entryKind:'EMPIRE_SPLIT',historyBoundaryEventId:History.getRecordedEvents().at(-1)?.id,personId:person.personId,commandId:formation.commandId,sourceFactionId:owner.name,sourceFactionName:owner.displayName,
    personalName:person.personalName,office,serviceMonths:candidate.serviceMonths,localCareerEventIds:deriveMilitaryCareer(person,Military.getFormations(),History.getEventsForFaction(owner.name),month).activities.filter(a=>a.factionId===owner.name).map(a=>a.eventId).sort(),...(candidate.defenseEventIds?{defenseEventIds:candidate.defenseEventIds}:{}),capturedEventIds:[...candidate.capturedEventIds],worldMonth:month,cityId:city.id,originalMemberUnitIds:[...candidate.memberUnitIds],
    participants:users.map(u=>{const s=core.logicalUnitRegistry.getEntry(u.player.logicalUnitId!)!.state;return {userId:u.id,name:u.name,bornMonth:u.bornMonth,loyalty:u.loyalty,unitId:u.player.logicalUnitId!,
      x:core.logicalGameplayAuthority?s.logicalX:u.player.x,y:core.logicalGameplayAuthority?s.logicalY:u.player.y,positionSource:core.logicalGameplayAuthority?"LOGICAL":"PHASER",districtCityId:city.id,ownedFactionId:owner.name};})}};

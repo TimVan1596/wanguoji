@@ -8,7 +8,7 @@ export function checkNaturalSecessionBoundaries(snapshot:WorldSaveV1){
  const events=snapshot.worldHistory.events as WorldEvent[],state=snapshot.registries.militaryCommandRegistry;
  let cases=0,rejectedForgeries=0;
  for(const ruler of snapshot.dynasties.flatMap(d=>d.rulers as any[])){
-  const e=ruler.residentIdentity?.military;if(e?.entryKind!=='LOCAL_CRISIS')continue;
+  const e=ruler.residentIdentity?.military;if(!e||!['LOCAL_CRISIS','EMPIRE_SPLIT'].includes(e.entryKind))continue;
   const p=state.people.find(p=>p.personId===e.personId);if(!p)throw Error('Natural secession missing original person');
   const prefix=militarySecessionEvidenceHistory(events,e),known=new Set(deriveMilitaryCareer(p,state.formations,prefix,e.worldMonth).activities.map(a=>a.eventId)),late=deriveMilitaryCareer(p,state.formations,events,e.worldMonth).activities.filter(a=>!known.has(a.eventId));
   if(!late.length)continue;cases++;

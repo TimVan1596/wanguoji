@@ -12,9 +12,10 @@ import {militaryPoliticalStrength} from "../Politics/MilitaryPoliticalInfluence"
 import {MILITARY_OFFICE_NAMES} from "../Politics/MilitaryOffice";
 const object=(v:any)=>v&&typeof v==="object"&&!Array.isArray(v);
 /** The stored local-crisis checkpoint predates transfer and any later same-month battle result. */
-export function militarySecessionEvidenceHistory(events:WorldEvent[],evidence:{entryKind?:string;localCrisis?:{historyBoundaryEventId?:string}}){
- if(evidence.entryKind!=='LOCAL_CRISIS')return events;
- const index=events.findIndex(e=>e.id===evidence.localCrisis?.historyBoundaryEventId);
+export function militarySecessionEvidenceHistory(events:WorldEvent[],evidence:{entryKind?:string;personId?:string;historyBoundaryEventId?:string;localCrisis?:{historyBoundaryEventId?:string}}){
+ if(evidence.entryKind!=='LOCAL_CRISIS'&&!evidence.personId&&!evidence.historyBoundaryEventId)return events;
+ const boundary=evidence.historyBoundaryEventId??evidence.localCrisis?.historyBoundaryEventId;
+ const index=events.findIndex(e=>e.id===boundary);
  return index<0?[]:events.slice(0,index+1);
 }
 export function validateMilitarySecessions(save:WorldSaveV1){
@@ -44,6 +45,8 @@ export function validateMilitarySecessions(save:WorldSaveV1){
    e.participants.length>=2&&e.participants.length<=1+Math.max(1,Math.floor((e.originalMemberUnitIds.length-1)/2)));
   if(valid){
    if(!['EMPIRE_SPLIT','LOCAL_CRISIS'].includes(e.entryKind))valid=false;
+   const checkpoint=events.findIndex(x=>x.id===e.historyBoundaryEventId),foundingIndex=events.findIndex(x=>x.type==='empire-split'&&x.metadata?.foundingRulerId===r.rulerId);
+   if(typeof e.historyBoundaryEventId!=='string'||checkpoint<0||checkpoint>=foundingIndex||(events[checkpoint].monthIndex??events[checkpoint].year)>i.foundedMonth||e.entryKind==='LOCAL_CRISIS'&&e.localCrisis?.historyBoundaryEventId!==e.historyBoundaryEventId)valid=false;
    if(e.entryKind==='EMPIRE_SPLIT'&&e.localCrisis!==undefined)valid=false;
    if(e.entryKind==='LOCAL_CRISIS'){
     const c=e.localCrisis,facts=c?.facts,u=c?.supporter;
