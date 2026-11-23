@@ -192,7 +192,7 @@ class CivilAdministrationStore {
   const policy=this.state.careerPolicy??CIVIL_CAREER_POLICY;if(policy==='BASELINE')return;
   for(const term of this.state.terms.filter(t=>active(t,month)&&month>t.startMonth)){
    const current=this.state.terms.find(t=>t.assignmentId===term.assignmentId)!,old=current.stewardshipWindow;
-   if(old?.samples.at(-1)?.month===month)continue;
+   if(old?.samples.at(-1)?.month===month||(current.stewardshipAssessments?.at(-1)?.month??-1)>=month)continue;
    const team=teams.find(t=>t.name===term.factionId),stable=(c:City)=>!c.destroyed&&c.ownerFactionId===term.factionId&&!c.underSiege&&!c.isInCaptureGrace(month)&&c.loyalty>=75&&c.devastation<=5;
    const city=isLocalCivilOffice(term.office)?team?.cities.find(c=>c.id===term.cityId):team?.cities.filter(stable).sort((a,b)=>a.id.localeCompare(b.id))[0];
    if(!team||team.status!=='ACTIVE'||team.identityStage!=='STATE'||!city||!stable(city)){delete current.stewardshipWindow;continue;}
