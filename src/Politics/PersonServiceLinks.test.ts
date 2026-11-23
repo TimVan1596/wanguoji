@@ -42,3 +42,11 @@ it("projects 庄德恭's appointment, office, orders and verified capture throug
  expect(projected.representative.map(e=>e.text).join("")).not.toMatch(/0个月|军令|编组|审计|亲征/);
  expect(JSON.stringify({p,events,formation,ruler})).toBe(before);
 });
+
+it('one shared civilian/military service projection excludes exile and joins only truly continuous service',async()=>{
+ const {unifiedPersonServiceLinks}=await import('./PersonServiceLinks');
+ const term:any={personId:'p',office:'JUNSHOU',factionId:'old',cityName:'城',startMonth:40,endMonth:80,rulerId:'b',appointEventId:'civil'};
+ const events:any[]=[grant,{id:'exile',type:'faction-exiled',year:25,targetFactionId:'old'},{id:'restore',type:'faction-restored',year:30,actorFactionId:'old'},{id:'civil',year:40,type:'civil-governor-appointed',rulerId:'b',actorFactionId:'old'}];
+ const before=JSON.stringify({term,person,rulers,events}),rows=unifiedPersonServiceLinks('p',[term],[person],[{factionId:'old',rulers} as any],events,90);
+ expect(rows.map(r=>[r.rulerId,r.startMonth,r.endMonth])).toEqual([['a',10,19],['b',20,24],['b',30,79]]);expect(rows.at(-1)!.offices).toContain('城郡守');expect(rows.at(-1)!.offices).toContain('将军');expect(rows.some(r=>r.startMonth<30&&r.endMonth>=25)).toBe(false);expect(JSON.stringify({term,person,rulers,events})).toBe(before);
+});
