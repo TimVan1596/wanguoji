@@ -16,7 +16,7 @@ export function validateFamilyNobility(save:WorldSaveV1){
    const period=act.period??1;
    if(!Number.isSafeInteger(period)||period<1)throw Error('invalid hereditary period');
    if(act.kind==='STARTED'){
-    if(act.version!==2||period!==periodSources.size+2||periodSources.has(act.sourceGrantEventId)||!state.people.some(p=>p.nobilityHistory?.some(g=>g.eventId===act.sourceGrantEventId)))throw Error('period requires a unique real grant');
+    if(act.version!==2||period!==periodSources.size+(f.preparatory?1:2)||periodSources.has(act.sourceGrantEventId)||!state.people.some(p=>p.nobilityHistory?.some(g=>g.eventId===act.sourceGrantEventId)))throw Error('period requires a unique real grant');
     periodSources.add(act.sourceGrantEventId);
    }else{
     const count=(periodResolutions.get(period)??0)+1;

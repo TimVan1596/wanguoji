@@ -6,7 +6,7 @@ import {calibrationOrBaseline,isPoliticalCalibration} from '../Politics/Politica
 import {splitEstablishedPersonalName} from '../Politics/NameCulture';
 import type {WorldSaveV1} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
-import {familyMemberId,familyFounderSource,familyAppointmentWeight,familyExpansionOpen} from '../Politics/MilitaryFamily';
+import {familyMemberId,familyFounderSource,preparatoryFamilySource,familyAppointmentWeight,familyExpansionOpen} from '../Politics/MilitaryFamily';
 export function validateMilitaryFamilies(save:WorldSaveV1){
  const errors:string[]=[],state=save.registries.militaryCommandRegistry,events=save.worldHistory.events as WorldEvent[],seen=new Set<string>(),residentIds=new Set<number>(),families=state.families;
  if(families!==undefined&&!Array.isArray(families))return ['invalid military families'];
@@ -17,7 +17,11 @@ export function validateMilitaryFamilies(save:WorldSaveV1){
   if(foundation.metadata?.familyFoundationPolicy!==undefined&&!isFamilyFoundationPolicy(foundation.metadata.familyFoundationPolicy))throw Error('invalid charter policy');
   // Replay eligibility at foundation, not the founder's later death or defection.
   const charterBefore=events.slice(0,events.indexOf(foundation)).filter(e=>(e.monthIndex??e.year)>=(epochs?.find(ep=>ep.foundingRulerId===f.epochFounderId)?.startMonth??0));
-  if(familyFounderSource({...p,deathMonth:undefined,factionId:f.factionId,politicalRulerId:undefined},charterBefore,f.factionId,f.epochFounderId,f.foundedMonth,isFamilyFoundationPolicy(foundation.metadata?.familyFoundationPolicy)?foundation.metadata.familyFoundationPolicy:'Z48')?.id!==source.id)throw Error('family lacks real merit');
+  if(f.preparatory!==undefined&&f.preparatory!==true||foundation.metadata?.preparatoryFamily!==(f.preparatory?1:undefined))throw Error('invalid preparatory kinship marker');
+  const historicalFounder={...p,deathMonth:undefined,factionId:f.factionId,politicalRulerId:undefined,appointments:p.appointments.map(a=>({...a,endMonth:a.endMonth===f.foundedMonth&&!charterBefore.some(e=>e.id===`military-command-ended-${a.commandId}`)?undefined:a.endMonth}))};
+  const merit=familyFounderSource(historicalFounder,charterBefore,f.factionId,f.epochFounderId,f.foundedMonth,isFamilyFoundationPolicy(foundation.metadata?.familyFoundationPolicy)?foundation.metadata.familyFoundationPolicy:'Z48');
+  const legal=f.preparatory?!merit&&preparatoryFamilySource(historicalFounder,charterBefore,f.factionId,f.foundedMonth)?.id===source.id:merit?.id===source.id;
+  if(!legal)throw Error('family lacks real merit or preparatory service');
   seen.add(f.familyId);
   const members=new Map(f.members.map(m=>[m.memberId,m]));if(members.size!==f.members.length)throw Error('duplicate family member');
   for(const m of f.members){

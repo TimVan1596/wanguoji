@@ -4,7 +4,7 @@ import type {MilitaryFamily,MilitaryFamilyMember} from './MilitaryFamily';
 import type {MilitaryPerson} from './MilitaryCommandRegistry';
 import type {Dynasty} from './Dynasty';
 import type {WorldEvent} from '../History/WorldHistory';
-import {FAMILY_NOBLE_RANKS,createFamilyNobleContext,familyAtEvidenceBoundary,familyResidenceAt,familyMemberPresent,eligibleFamilyNobleHeirs,type FamilyNobleAct} from './FamilyNobleSuccession';
+import {FAMILY_NOBLE_RANKS,createFamilyNobleContext,familyAtEvidenceBoundary,familyResidenceAt,familyMemberPresent,eligibleFamilyNobleHeirs,familyNobleText,type FamilyNobleAct} from './FamilyNobleSuccession';
 import {formatWorldDate} from '../Simulation/WorldTime';
 import {currentNobleGrant,NOBLE_RANKS} from './MilitaryNobility';
 import {verifiedPoliticalOffice} from './MilitaryPoliticalInfluence';
@@ -84,9 +84,11 @@ export function explainFamilyTitleEnd(f:MilitaryFamily,a:FamilyNobleAct,s:Family
  else if(a.reason==='FOREIGN')text=`${previous?.name??'原持爵者'}当时已转属他国，原国承袭资格终止；后代与旧爵历史仍然保留。`;
  else if(a.reason==='POLITICAL_ACCESSION')text=`${previous?.name??'原持爵者'}已正式登位，不再接续原爵。`;
  else if(a.reason==='ENTITY_ENDED')text='原持爵者的实际在籍身份已经终止；没有据此推断其死亡。';
+ else if(a.kinship?.relation&&a.kinship.relation!=='CHILD')text=familyNobleText(f,a);
  else text=`${previous?.name??'原持爵者'}实际死亡后，按出生顺序从符合资格的直接子嗣中择一，完成一次世降。`;
  if(a.reason==='NO_HEIR'&&eligible.size)return {text:'史料资格与断袭结果存在不一致，需核验原始事务；不据此推断家族无后。',children,grandchildren,laterChildren,sourceEventIds:a.sourceEventIds};
- if(a.reason==='NO_HEIR')text+=grandchildren?`另有${grandchildren}名在世在籍的孙辈或更远后代；现行制度不允许代袭，故爵位终止，血脉仍可延续。`:'没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。';
+ if(a.reason==='NO_HEIR'&&a.kinship)text+=a.kinship.rejected.length?`当时近亲阻断：${a.kinship.rejected.map(r=>`${f.members.find(m=>m.memberId===r.memberId)?.name??r.memberId}（${{DEAD:'已故',EXITED:'已出籍',FOREIGN:'已属外国',FORFEITED:'政治处分',ACCEDED:'已经登位',UNREGISTERED:'尚未登记'}[r.reason]}）`).join('、')}。不据此判定家族绝嗣。`:'当时无符合范围的已登记近亲，不据此判定家族绝嗣。';
+ else if(a.reason==='NO_HEIR')text+=grandchildren?`另有${grandchildren}名在世在籍的孙辈或更远后代；现行制度不允许代袭，故爵位终止，血脉仍可延续。`:'没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。';
  return {text,children,grandchildren,laterChildren,sourceEventIds:a.sourceEventIds};
 }
 /** Research only: does not append to the sealed V44 chain or invent a new hereditary period. */

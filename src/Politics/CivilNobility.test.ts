@@ -9,3 +9,16 @@ it('requires actual unconsumed governance and never upgrades a higher legitimate
 it('does not ennoble the dead, a monarch, a county novice or a former official without an active political office',()=>{for(const person of [{...p,deathMonth:100},{...p,politicalRulerId:'king'}])expect(civilNobleMerit(person,[t],120,100)).toBeUndefined();expect(civilNobleMerit(p,[{...t,office:'XIANLING'}],120,100)).toBeUndefined();expect(civilNobleMerit(p,[{...t,endMonth:100}],120,100)).toBeUndefined();});
 
 it('labels civil, military and political grants by their true source',()=>{expect(nobleMeritSourceLabel({basis:'CIVIL'})).toBe('文治');expect(nobleMeritSourceLabel({})).toBe('军功');expect(nobleMeritSourceLabel({basis:'COURT'})).toBe('从龙');expect(nobleChronicle({basis:'CIVIL',rulerTitle:'秦王',personalName:'张甲',previousRank:'NONE',rank:'NAN'} as any)).not.toContain('军功');});
+
+it('requires higher offices and multiple real sources for advanced civil titles and one-time retirement awards',()=>{
+ const local={...t,receipts:Array.from({length:12},(_,i)=>({eventId:'advanced-'+i,month:i*12,cityId:i<6?'A':'B',loyalty:1,devastation:1})),endMonth:144};
+ const central={...t,office:'CHENGXIANG',assignmentId:'central',startMonth:144,receipts:[],stewardshipAssessments:[180,216,252,288].map(month=>({month,eventId:'appraisal-'+month}))};
+ expect(civilNobleMerit(p,[local,central],300,90,'ZI')?.rank).toBe('BO');
+ expect(civilNobleMerit(p,[local,central],300,90,'BO')?.rank).toBe('HOU');
+ expect(civilNobleMerit(p,[local,{...central,office:'YUSHI_DAFU'}],300,90,'BO')).toBeUndefined();
+ const retired={...central,endReason:'RETIREMENT',endMonth:300,endEventId:'retires'};
+ const award=civilNobleMerit(p,[local,retired],300,90,'BO','retires');
+ expect(award).toMatchObject({rank:'HOU',civilRetirementEventId:'retires'});
+ expect(civilNobleMerit({...p,nobilityHistory:[{...award,basis:'CIVIL'}]},[local,retired],300,90,'BO','retires')).toBeUndefined();
+ expect(civilNobleMerit(p,[local,{...retired,endReason:'POLITICAL_SANCTION'}],300,90,'BO','retires')).toBeUndefined();
+});

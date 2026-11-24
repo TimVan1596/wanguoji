@@ -16,3 +16,22 @@ describe('one sourced hereditary title chain, independent of military grants',()
  it('respects the real intra-month source of a normal new house, without anticipating a later accession',()=>{const {f,p}=fixture(),grant={id:'grant',year:0,type:'military-ennobled'} as any,dy={factionId:'home',rulers:[],houseEpochs:[{foundingRulerId:'king',startMonth:0,endMonth:100},{foundingRulerId:'new-house',startMonth:100}]} as any;const before=createFamilyNobleContext(100,[f],[p],[grant],[dy]);expect(planFamilyNobleTransition(f,before)?.kind).toBe('SUCCEEDED');const accession={id:'accession',year:100,type:'ruler-succession',actorFactionId:'home',rulerId:'new-house'} as any;const after=createFamilyNobleContext(100,[f],[p],[grant,accession],[dy]);expect(planFamilyNobleTransition(f,after)?.reason).toBe('REGIME_ENDED');});
  it('does not read later same-month death or transfer into an earlier transaction',()=>{const {f}=fixture();f.members[1].deathMonth=100;f.members[1].deathHistoryIndex=12;f.members[1].exitMonth=100;f.members[1].exitHistoryIndex=12;f.members[1].factionHistory=[{month:100,factionId:'foreign',eventIndex:15}];const old=familyAtEvidenceBoundary(f,100,10);expect(old.members[1].deathMonth).toBeUndefined();expect(old.members[1].factionHistory).toEqual([]);expect(f.members[1].deathMonth).toBe(100);});
 });
+
+it('limits high-peerage descent to real registered children, grandchildren of deceased sons, brothers, and nephews',()=>{
+ const {f,c}=fixture();
+ f.members[0].parentMemberId='ancestor';
+ f.members.push({...founder,memberId:'ancestor',parentMemberId:undefined,deathMonth:90},
+  {...son,memberId:'brother',parentMemberId:'ancestor'},
+  {...son,memberId:'nephew',parentMemberId:'brother'},
+  {...son,memberId:'grandson',parentMemberId:'son'});
+ expect(planFamilyNobleTransition(f,c)?.kinship).toMatchObject({relation:'CHILD',path:['father','son']});
+ f.members[1].deathMonth=99;
+ expect(planFamilyNobleTransition(f,c)?.kinship).toMatchObject({relation:'GRANDCHILD',path:['father','son','grandson'],rejected:[{memberId:'son',reason:'DEAD'}]});
+ delete f.members[1].deathMonth;
+ f.members[1].factionHistory=[{month:100,factionId:'abroad',eventIndex:1}];
+ expect(planFamilyNobleTransition(f,c)?.kinship).toMatchObject({relation:'BROTHER',path:['father','ancestor','brother']});
+ f.members.find(m=>m.memberId==='brother')!.deathMonth=99;
+ expect(planFamilyNobleTransition(f,c)).toMatchObject({rank:'HOU',kinship:{relation:'NEPHEW',path:['father','ancestor','brother','nephew']}});
+ f.members[0].parentMemberId='missing';
+ expect(planFamilyNobleTransition(f,c)?.reason).toBe('NO_HEIR');
+});

@@ -16,15 +16,27 @@ export interface MilitaryFamilyMember {
 }
 export interface MilitaryFamily {
  familyId:string; surname:string; founderPersonId:string; factionId:string; epochFounderId:string;
- foundedMonth:number; sourceEventId:string; nobleSuccession?:FamilyNobleAct[]; renewals?:Array<{memberId:string;month:number;sourceEventId:string}>; members:MilitaryFamilyMember[];
+ foundedMonth:number; sourceEventId:string; preparatory?:true; nobleSuccession?:FamilyNobleAct[]; renewals?:Array<{memberId:string;month:number;sourceEventId:string}>; members:MilitaryFamilyMember[];
 }
 export const familyMemberId=(userId:number,bornMonth:number)=>`family-member-${userId}-${bornMonth}`;
 export function familyFounderSource(p:MilitaryPerson,events:readonly WorldEvent[],factionId:string,epoch:string,month:number,policy:FamilyFoundationPolicy='FOUNDING'){
  if(p.royalIdentity||p.politicalRulerId||p.deathMonth!==undefined||p.factionId!==factionId)return;
- return [...events].sort((a,b)=>(a.monthIndex??a.year)-(b.monthIndex??b.year)||a.id.localeCompare(b.id)).find(e=>(e.monthIndex??e.year)<=month&&e.actorFactionId===factionId&&e.metadata?.personId===p.personId&&
+ const compare=(a:WorldEvent,b:WorldEvent)=>(a.monthIndex??a.year)-(b.monthIndex??b.year)||a.id.localeCompare(b.id);
+ const eligible=(e:WorldEvent)=>(e.monthIndex??e.year)<=month&&e.actorFactionId===factionId&&e.metadata?.personId===p.personId&&
   (['military-ennobled','civil-ennobled'].includes(e.type)&&p.nobilityHistory?.some(g=>g.eventId===e.id&&g.epochFounderId===epoch&&(policy==='Z48'?['HOU','GONG']:policy==='FOUNDING'?['NAN','ZI','BO','HOU','GONG']:['BO','HOU','GONG']).includes(g.rank)&&!(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.factionId===factionId&&h.epochFounderId===epoch&&h.month<=month&&events.some(e=>e.id===h.eventId)))||
    policy==='FOUNDING'&&e.type==='founding-peerage-granted'&&p.nobilityHistory?.some(g=>g.eventId===e.id&&g.basis==='FOUNDING'&&g.epochFounderId===epoch)||
-   e.type==='court-service-granted'&&e.rulerId&&e.metadata?.issuerRulerId===e.rulerId));
+   e.type==='court-service-granted'&&e.rulerId&&e.metadata?.issuerRulerId===e.rulerId);
+ let earliest:WorldEvent|undefined;
+ for(const event of events)if((!earliest||compare(event,earliest)<0)&&eligible(event))earliest=event;
+ return earliest;
+}
+/** A modest service gate gives some officers time to register a real birth prospectively. */
+export function preparatoryFamilySource(p:MilitaryPerson,events:readonly WorldEvent[],factionId:string,month:number){
+ if(p.royalIdentity||p.politicalRulerId||p.deathMonth!==undefined||p.factionId!==factionId||month%12!==0||month-p.bornMonth<240||month-p.bornMonth>48*12)return;
+ const term=p.appointments.find(a=>a.factionId===factionId&&a.startMonth+36<=month&&(a.endMonth??Infinity)>month);
+ if(!term)return;
+ const grant=term.officeHistory?.find(g=>g.office==='PIJIANG'&&g.month<=month);
+ return grant&&events.find(e=>e.id===grant.eventId&&e.type==='military-office-granted'&&e.actorFactionId===factionId&&e.metadata?.personId===p.personId&&e.metadata?.office==='PIJIANG');
 }
 export function makeMilitaryFamily(p:MilitaryPerson,factionId:string,epoch:string,month:number,source:WorldEvent):MilitaryFamily|undefined{
  const split=splitEstablishedPersonalName(p.personalName??p.name);if(!split)return;
@@ -34,7 +46,8 @@ export function makeMilitaryFamily(p:MilitaryPerson,factionId:string,epoch:strin
 /** A closed period cannot sponsor new special kin or inherited recruitment.
  * Existing people and already-born children remain canonical and can earn a new period. */
 export function familyExpansionOpen(f:MilitaryFamily,month:number){
- return f.nobleSuccession?.filter(a=>a.month<=month).at(-1)?.kind!=='ENDED';
+ const act=f.nobleSuccession?.filter(a=>a.month<=month).at(-1);
+ return (!f.preparatory||!!act)&&act?.kind!=='ENDED';
 }
 function hash(s:string){let n=2166136261;for(const c of s)n=Math.imul(n^c.charCodeAt(0),16777619);return n>>>0;}
 /** Called only before first population entry. Birth is derived from the original population label, never re-aged. */

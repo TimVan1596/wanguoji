@@ -1,6 +1,6 @@
 import {CIVIL_CAREER_POLICY,civilRetirementEvidence,civilPromotionChance,validStewardshipWindow,stewardshipContribution,stewardshipInterval,type CivilCareerPolicy,type CivilStewardshipWindow} from './CivilCareerRules';
 import {civilCrossCareerEvidence,civilPromotionCompetitionWeight} from './CrossCareerCompetition';
-import {civilNobleMerit} from './CivilNobility';
+import {civilNobleMerit,civilPeerageDraw} from './CivilNobility';
 import {currentNobleGrant,NOBLE_RANKS} from './MilitaryNobility';
 import {familyNobleRankAt,familyNobleAuthorityAt} from './FamilyNobleSuccession';
 import {civilPromotionEvidence,civilPromotionFacts} from './CivilPromotion';
@@ -61,7 +61,7 @@ class CivilAdministrationStore {
   for(const team of teams.filter(team=>team.status==='ACTIVE'&&team.identityStage==='STATE')){
    const dynasty=dynasties.find(d=>d.factionId===team.name),ruler=dynasty?.rulers.find(r=>r.id===dynasty.currentRulerId),epoch=ruler&&(dynasty?.houseEpochs??[]).find(e=>e.startMonth<=month&&(e.endMonth??Infinity)>=month);
    if(!dynasty||!ruler||!epoch||ruler.status!=='ruling'||ruler.accessionYear===undefined||ruler.accessionYear>month||ruler.endYear!==undefined||ruler.deathMonth!==undefined)continue;
-   this.retireCandidates(month,team);
+   this.retireCandidates(month,team,teams,dynasties);
    this.promoteCandidates(month,team,dynasty);
    this.rewardMerit(month,team,dynasty,teams,dynasties);
    this.transferCandidates(month,team,dynasty);
@@ -93,14 +93,28 @@ class CivilAdministrationStore {
    this.state.sequence=sequence;this.state.terms.push(term);Military.registerCivilPerson(user,term);return {...term};
   }));
  }
+ private prepareCivilAward(month:number,term:CivilGovernorTerm,team:Team,dynasty:Dynasty,retiring=false){
+  const ruler=dynasty.rulers.find(r=>r.id===dynasty.currentRulerId);
+  if(!ruler||ruler.status!=='ruling'||ruler.deathMonth!==undefined||!['KING','EMPEROR'].includes(team.sovereigntyRank)||!dynasty.houseEpochs?.some(e=>e.foundingRulerId===term.epochFounderId&&e.startMonth<=month&&(e.endMonth??Infinity)>month))return;
+  const p=Military.getPerson(term.personId),user=team.getUserById(term.sourceUserId);
+  if(!p||!user||user.bornMonth!==term.bornMonth||user.isDestroyed||unresolvedCourtBans(p,team.name,month,term.epochFounderId).length||
+   (p.nobilityHistory??[]).some(g=>g.month===month)||(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.factionId===team.name&&h.epochFounderId===term.epochFounderId))return;
+  const personal=currentNobleGrant(p,team.name,month,term.epochFounderId)?.rank,link=Military.getFamilyMember(p.sourceUserId,p.bornMonth);
+  const authority=link&&familyNobleAuthorityAt(link.family,month);
+  const inherited=link&&authority?.factionId===team.name&&authority.epochFounderId===term.epochFounderId?familyNobleRankAt(link.family,link.member,month):undefined;
+  const previous=personal&&inherited?(NOBLE_RANKS.indexOf(personal)>NOBLE_RANKS.indexOf(inherited)?personal:inherited):personal??inherited;
+  const endEventId=retiring?`${term.assignmentId}-ended-${month}`:undefined;
+  const local=this.state.terms.filter(t=>t.personId===p.personId&&t.factionId===team.name&&t.epochFounderId===term.epochFounderId)
+   .map(t=>retiring&&t.assignmentId===term.assignmentId?{...t,endMonth:month,endReason:'RETIREMENT' as const,endEventId}:t);
+  const merit=civilNobleMerit(p,local,month,user.loyalty,previous,endEventId);
+  if(!merit||!civilPeerageDraw(worldRandom.exportState().seed,p.personId,team.name,month,merit.rank,retiring))return;
+  const grant:import('./MilitaryNobility').NobleGrant={...merit,basis:'CIVIL',eventId:`civil-noble-${p.personId}-${term.epochFounderId}-${merit.rank}`,personId:p.personId,sourceUserId:p.sourceUserId,bornMonth:p.bornMonth,personalName:p.personalName,factionId:team.name,countryName:team.displayName??team.name,epochFounderId:term.epochFounderId,rulerId:ruler.id,rulerTitle:DynastyRegistry.getRulerHistoricalTitle(ruler.id,team.name,month)??ruler.givenName,month,previousRank:previous??'NONE',commandId:'',captureEventIds:[],cityIds:[],importantCityIds:[],importantEventIds:[]};
+  return {p,grant};
+ }
  private rewardMerit(month:number,team:Team,dynasty:Dynasty,teams:Team[],dynasties:Dynasty[]){
-  const ruler=dynasty.rulers.find(r=>r.id===dynasty.currentRulerId);if(!ruler||ruler.status!=='ruling'||ruler.deathMonth!==undefined||!['KING','EMPEROR'].includes(team.sovereigntyRank))return;
   for(const term of this.state.terms.filter(t=>t.factionId===team.name&&active(t,month))){
-   const p=Military.getPerson(term.personId),user=[...team.users].find(u=>u.id===term.sourceUserId&&u.bornMonth===term.bornMonth);if(!p||!user||user.isDestroyed||unresolvedCourtBans(p,team.name,month,term.epochFounderId).length||(p.nobilityHistory??[]).some(g=>g.month===month)||(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.factionId===team.name&&h.epochFounderId===term.epochFounderId))continue;
-   const personal=currentNobleGrant(p,team.name,month,term.epochFounderId)?.rank,link=Military.getFamilyMember(p.sourceUserId,p.bornMonth),inherited=link&&familyNobleAuthorityAt(link.family,month).factionId===team.name&&familyNobleAuthorityAt(link.family,month).epochFounderId===term.epochFounderId?familyNobleRankAt(link.family,link.member,month):undefined,previous=personal&&inherited?(NOBLE_RANKS.indexOf(personal)>NOBLE_RANKS.indexOf(inherited)?personal:inherited):personal??inherited;
-   const merit=civilNobleMerit(p,this.state.terms.filter(t=>t.factionId===team.name&&t.epochFounderId===term.epochFounderId),month,user.loyalty,previous);if(!merit)continue;
-   const rng=new WorldRandom();rng.initialize(`civil-peerage-v1:${worldRandom.exportState().seed}:${p.personId}:${team.name}:${month}`);if(rng.next()>=.08)continue;
-   Military.civilTransaction(team,()=>Military.recordCivilNoble(p,{...merit,basis:'CIVIL',eventId:`civil-noble-${p.personId}-${term.epochFounderId}-${merit.rank}`,personId:p.personId,sourceUserId:p.sourceUserId,bornMonth:p.bornMonth,personalName:p.personalName,factionId:team.name,countryName:team.displayName??team.name,epochFounderId:term.epochFounderId,rulerId:ruler.id,rulerTitle:DynastyRegistry.getRulerHistoricalTitle(ruler.id,team.name,month)??ruler.givenName,month,previousRank:previous??'NONE',commandId:'',captureEventIds:[],cityIds:[],importantCityIds:[],importantEventIds:[]},{teams,dynasties}));
+   const award=this.prepareCivilAward(month,term,team,dynasty);
+   if(award)Military.civilTransaction(team,()=>Military.recordCivilNoble(award.p,award.grant,{teams,dynasties}));
   }
  }
  private promoteCandidates(month:number,team:Team,dynasty:Dynasty){
@@ -180,13 +194,15 @@ class CivilAdministrationStore {
    if(reason)this.end(month,term,reason);
   }
  }
- private retireCandidates(month:number,team:Team){
+ private retireCandidates(month:number,team:Team,teams:Team[]=[team],dynasties:Dynasty[]=DynastyRegistry.getAll()){
   for(const term of this.state.terms.filter(t=>t.factionId===team.name&&active(t,month))){
    const proof=civilRetirementEvidence(term,month,worldRandom.exportState().seed,this.state.careerPolicy??CIVIL_CAREER_POLICY);if(!proof||proof.roll>=proof.chance)continue;
    // A younger elderly official is retained when no other eligible resident can compete.
-   const candidates=civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,term.epochFounderId,(id,born)=>Military.getFamilyMember(id,born),Military.getFormations(),DynastyRegistry.getAll());
-   if(proof.ageMonths<75*12&&!candidates.length)continue;
-   transaction(()=>{const current=this.state.terms.find(t=>t.assignmentId===term.assignmentId)!;current.retirement=proof;this.end(month,current,'RETIREMENT');});
+   if(proof.ageMonths<75*12&&!civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,term.epochFounderId,(id,born)=>Military.getFamilyMember(id,born),Military.getFormations(),DynastyRegistry.getAll()).length)continue;
+   const dynasty=dynasties.find(d=>d.factionId===team.name),award=dynasty&&this.prepareCivilAward(month,term,team,dynasty,true);
+   const retire=()=>{const current=this.state.terms.find(t=>t.assignmentId===term.assignmentId)!;current.retirement=proof;this.end(month,current,'RETIREMENT');};
+   if(award)Military.civilTransaction(team,()=>{retire();Military.recordCivilNoble(award.p,award.grant,{teams,dynasties});});
+   else transaction(retire);
   }
  }
  private observeStewardship(month:number,teams:Team[]){

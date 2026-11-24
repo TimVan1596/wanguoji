@@ -10,7 +10,7 @@ import {hereditaryAppointmentWeight,hereditaryVacancyChance,type HereditaryRecru
 import {insurgentLeaderIdentity,type InsurgentDuty} from './InsurgentCommand';
 import {createFamilyNobleContext,planFamilyNobleTransition,familyNobleText,familyNobleRankAt,familyResidenceAt,eligibleFamilyNobleHeirs,familyNobleAuthorityAt} from './FamilyNobleSuccession';
 import {emptyFamilyRecruitmentDiagnostics,familyRecruitmentExposure} from './FamilyRecruitmentDiagnostics';
-import {familyFounderSource,makeMilitaryFamily,familyAppointmentWeight,familyExpansionOpen,type MilitaryFamily} from './MilitaryFamily';
+import {familyFounderSource,preparatoryFamilySource,makeMilitaryFamily,familyAppointmentWeight,familyExpansionOpen,type MilitaryFamily} from './MilitaryFamily';
 import {politicalMutationActive,beginPoliticalMutation} from '../Simulation/PoliticalMutationScope';
 import {isCourtPunishmentPolicy,type CourtPunishmentPolicy,unresolvedCourtBans,planCourtBan,militaryCourtText,type MilitaryCourtAct} from './MilitaryCourtStanding';
 import {residentNaturalDeathMonth,ordinaryLifeEligible} from "../Simulation/ResidentLife";
@@ -593,7 +593,7 @@ export class MilitaryCommandRegistryStore {
     if(!this.nobleServiceBinding(person,month,team))return;
     const link=this.getFamilyMember(person.sourceUserId,person.bornMonth),epoch=nobleEpochForRuler(dy,dy.currentRulerId)?.foundingRulerId;
     const hereditaryRank=link&&epoch&&familyNobleAuthorityAt(link.family,month).factionId===team.name&&familyNobleAuthorityAt(link.family,month).epochFounderId===epoch?familyNobleRankAt(link.family,link.member,month):undefined;
-    return nextNobleGrant(person,this.getFormations(),this.eventReader(team.name),month,team,dy,this.nobleMeritPolicy,hereditaryRank);
+    return nextNobleGrant(person,this.getFormations(),()=>this.eventReader(team.name),month,team,dy,this.nobleMeritPolicy,hereditaryRank);
   }
   recordCivilNoble(person:MilitaryPerson,grant:NobleGrant,context:{teams:Team[];dynasties:Dynasty[]}){
     if(grant.basis!=='CIVIL'||this.people.get(person.personId)!==person||grant.personId!==person.personId||person.nobilityHistory?.some(g=>g.eventId===grant.eventId||g.month===grant.month))throw Error('Invalid or duplicate civil peerage source');
@@ -669,7 +669,7 @@ export class MilitaryCommandRegistryStore {
     const year=Math.floor(month/12)*12,counts=new Map<string,number>();for(const f of this.families)for(const m of f.members)if(m.birth?.opportunityMonth===year)counts.set(m.birth.factionId,(counts.get(m.birth.factionId)??0)+1);
     // Cheap current-life gate before any full historical context/index is built.
     const liveTeams=new Set(teams.filter(t=>t.status==='ACTIVE'&&t.identityStage==='STATE').map(t=>t.name));
-    const candidates=this.families.filter(f=>familyExpansionOpen(f,month)&&liveTeams.has(familyNobleAuthorityAt(f,month).factionId)&&f.members.some(m=>m.enteredMonth<=month&&(m.deathMonth??Infinity)>month&&(m.exitMonth??Infinity)>month&&m.bornMonth+240<=month&&m.bornMonth+660>=month&&(m.militaryPersonId&&this.people.has(m.militaryPersonId)||f.nobleSuccession?.at(-1)?.kind==='SUCCEEDED'&&f.nobleSuccession.at(-1)?.holderMemberId===m.memberId)));
+    const candidates=this.families.filter(f=>(familyExpansionOpen(f,month)||f.preparatory&&!f.nobleSuccession?.length)&&liveTeams.has(familyNobleAuthorityAt(f,month).factionId)&&f.members.some(m=>m.enteredMonth<=month&&(m.deathMonth??Infinity)>month&&(m.exitMonth??Infinity)>month&&m.bornMonth+240<=month&&m.bornMonth+660>=month&&(m.militaryPersonId&&this.people.has(m.militaryPersonId)||f.nobleSuccession?.at(-1)?.kind==='SUCCEEDED'&&f.nobleSuccession.at(-1)?.holderMemberId===m.memberId)));
     const birthSeed=String(worldRandom.exportState().seed),dueCandidates=candidates.filter(f=>f.members.some(m=>hasFamilyBirthOpportunity(f,{...m,basisEventId:''},month,birthSeed,this.familyBirthPolicy)&&familyBirthSource(f,m,month,m.militaryPersonId?this.people.get(m.militaryPersonId):undefined))); 
     if(!dueCandidates.length)return;
     const events=WorldHistory.getRecordedEvents(),context=createFamilyNobleContext(month,this.families,this.getPeople(),events,dynasties),eventIds=new Set(events.map(e=>e.id));
@@ -690,12 +690,13 @@ export class MilitaryCommandRegistryStore {
     for(const original of this.families.filter(f=>!onlyFamilyId||f.familyId===onlyFamilyId)){
       const f=familyById(original.familyId);
       const last=f.nobleSuccession?.at(-1);if(last?.kind==='ENDED'&&this.familyNoblePolicy==='SINGLE')continue;
+      if(f.preparatory&&!last&&!f.members.some(m=>m.militaryPersonId&&m.enteredMonth<=month&&(m.deathMonth??Infinity)>month&&(m.exitMonth??Infinity)>month&&this.people.get(m.militaryPersonId)?.nobilityHistory?.some(g=>g.month<=month)))continue;
       const authority=familyNobleAuthorityAt(f,month);
       const holder=f.members.find(m=>m.memberId===(last?.holderMemberId??last?.previousMemberId??f.members[0].memberId))!,p=holder.militaryPersonId?this.people.get(holder.militaryPersonId):undefined,t=teams.find(t=>t.name===authority.factionId),dy=dynasties.find(d=>d.factionId===authority.factionId),epoch=dy?.houseEpochs?.find(e=>e.foundingRulerId===authority.epochFounderId);
       const used=new Set(f.nobleSuccession?.map(a=>a.sourceGrantEventId)),canRenew=this.familyNoblePolicy==='RENEWAL'&&!!last&&f.members.some(m=>m.militaryPersonId&&m.deathMonth===undefined&&this.people.get(m.militaryPersonId)?.nobilityHistory?.some(g=>!used.has(g.eventId)&&g.month<=month&&g.factionId===familyResidenceAt(f,m,month)&&teams.some(t=>t.name===g.factionId&&t.status==='ACTIVE')&&dynasties.some(d=>d.factionId===g.factionId&&d.houseEpochs?.some(e=>e.foundingRulerId===g.epochFounderId&&e.startMonth<=month&&(e.endMonth??Infinity)>=month))));
       if(f.members.some(m=>m.birth&&m.deathMonth===undefined&&m.exitMonth===undefined&&m.birth.naturalDeathMonth<=month&&!dynasties.some(d=>d.rulers.some(r=>m.sourceUserId!==undefined&&r.residentIdentity?.sourceUserId===m.sourceUserId&&r.bornYear===m.bornMonth&&r.reignOrdinal!==undefined))))continue;
       if(last?.kind==='ENDED'&&!canRenew)continue;
-      const needsReview=canRenew||(holder.deathMonth??Infinity)<=month||(holder.exitMonth??Infinity)<=month||familyResidenceAt(f,holder,month)!==authority.factionId||p?.politicalRulerId||p?.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&['FORFEITURE','EXECUTION'].includes(a.severity)&&a.month<=month)||(!last||last.kind==='STARTED')&&p?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month<=month)||t?.status!=='ACTIVE'||(epoch?.endMonth??Infinity)<=month;
+      const needsReview=canRenew||f.preparatory&&!last||(holder.deathMonth??Infinity)<=month||(holder.exitMonth??Infinity)<=month||familyResidenceAt(f,holder,month)!==authority.factionId||p?.politicalRulerId||p?.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&['FORFEITURE','EXECUTION'].includes(a.severity)&&a.month<=month)||(!last||last.kind==='STARTED')&&p?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.month<=month)||t?.status!=='ACTIVE'||(epoch?.endMonth??Infinity)<=month;
       if(!needsReview)continue;
       const context={...createFamilyNobleContext(month,[f],this.getPeople(),WorldHistory.getRecordedEvents(),dynasties),renewable:this.familyNoblePolicy==='RENEWAL'};
       const act=planFamilyNobleTransition(f,context);if(!act)continue;
@@ -729,6 +730,7 @@ export class MilitaryCommandRegistryStore {
     if(month%12!==0||!this.eventWriter)return;
     // Stable lookup for this one annual boundary; entries below only append new houses/renewals.
     const linkedByPerson=new Map(this.families.flatMap(f=>f.members.filter(m=>m.militaryPersonId).map(m=>[m.militaryPersonId!,{family:f,member:m}] as const)));
+    const sourcesByEpoch=new Map<string,{count:number;events:WorldEvent[]}>();
     for(const p of this.people.values()){
       // These people could never supply a new charter/renewal in the original planner.
       if(p.royalIdentity||p.politicalRulerId||p.deathMonth!==undefined)continue;
@@ -738,7 +740,13 @@ export class MilitaryCommandRegistryStore {
       if(!team||!dy||!epoch)continue;
       if(link&&(link.family.factionId!==p.factionId||link.family.epochFounderId!==epoch))continue;
       const epochStart=dy.houseEpochs?.find(e=>e.foundingRulerId===epoch)?.startMonth??Infinity;
-      const source=familyFounderSource(p,this.eventReader(p.factionId).filter(e=>(e.monthIndex??e.year)>=epochStart),p.factionId,epoch,month,this.familyFoundationPolicy);
+      const key=JSON.stringify([p.factionId,epoch]),count=WorldHistory.getEventCount();
+      let sources=sourcesByEpoch.get(key);
+      if(!sources||sources.count!==count){
+        sources={count,events:this.eventReader(p.factionId).filter(e=>(e.monthIndex??e.year)>=epochStart)};
+        sourcesByEpoch.set(key,sources);
+      }
+      const source=familyFounderSource(p,sources.events,p.factionId,epoch,month,this.familyFoundationPolicy);
       const linked=link&&this.families.find(f=>f.familyId===link.family.familyId);
       if(linked){
         const member=linked.members.find(m=>m.militaryPersonId===p.personId)!;
@@ -747,8 +755,11 @@ export class MilitaryCommandRegistryStore {
         }
         continue;
       }
-      const f=source&&makeMilitaryFamily(p,p.factionId,epoch,month,source);if(!f)continue;
-      this.commitFamilyHistory({id:`${f.familyId}-founded`,year:month,type:'military-family-founded',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:`${p.personalName}以功立家，${f.surname}氏功臣世家始见于记载。`,metadata:{familyId:f.familyId,personId:p.personId,sourceEventId:f.sourceEventId,familyFoundationPolicy:this.familyFoundationPolicy}},()=>{this.families.push(f);});
+      const prospective=!source&&this.familyBirthPolicy!=='BASELINE'?preparatoryFamilySource(p,sources.events,p.factionId,month):undefined;
+      const authority=source??prospective;
+      const f=authority&&makeMilitaryFamily(p,p.factionId,epoch,month,authority);if(!f)continue;
+      if(prospective)f.preparatory=true;
+      this.commitFamilyHistory({id:`${f.familyId}-founded`,year:month,type:'military-family-founded',category:'politics',importance:'normal',actorFactionId:team.name,factionIds:[team.name],title:prospective?`${p.personalName}从军有年，始登记家属。`:`${p.personalName}以功立家，${f.surname}氏功臣世家始见于记载。`,metadata:{familyId:f.familyId,personId:p.personId,sourceEventId:f.sourceEventId,familyFoundationPolicy:this.familyFoundationPolicy,...(prospective?{preparatoryFamily:1}:{})}},()=>{this.families.push(f);});
     }
   }
   rewardCourtService(person:MilitaryPerson,team:Team,dy:Dynasty,service:WorldEvent,month:number){

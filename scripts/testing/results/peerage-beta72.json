@@ -1,0 +1,2017 @@
+{
+  "appVersion": "v0.100.0-beta.72",
+  "worldSave": 67,
+  "baseline": "66644bab2e2f1b85f6e86df6ad5e731b7fb59088",
+  "scope": "Production checks use actual fixed-seed Core. Pure optimization comparison uses identical V66 checkpoint with beta.72 rules disabled. Native benchmark starts from V67 snapshot and has a different canonical world. Controlled policy trials change only the temporary named birth threshold. All latency measurements are offscreen.",
+  "performance": {
+    "v66Baseline": {
+      "worldMonth": 6000,
+      "sampleMonths": 300,
+      "sourceWorldSave": 66,
+      "sha256": "36cf42cdafd7b5b6d3fb441d634d40ff3bc0810455862967b6d9014061864066",
+      "p50Ms": 5.3,
+      "phases": {
+        "total fixed/month step": {
+          "averageMs": 23.02,
+          "p95Ms": 120.6,
+          "p99Ms": 201.5,
+          "maxMs": 271.3
+        },
+        "total fixed/month step/January": {
+          "averageMs": 141.02,
+          "p95Ms": 249.2,
+          "p99Ms": 271.3,
+          "maxMs": 271.3
+        },
+        "total fixed/month step/ordinary": {
+          "averageMs": 12.25,
+          "p95Ms": 39.9,
+          "p99Ms": 80.7,
+          "maxMs": 89.1
+        },
+        "Civil administration/January": {
+          "averageMs": 34.42,
+          "p95Ms": 59.6,
+          "p99Ms": 75.2,
+          "maxMs": 75.2
+        },
+        "Military families/January": {
+          "averageMs": 16.53,
+          "p95Ms": 21.2,
+          "p99Ms": 30.8,
+          "maxMs": 30.8
+        },
+        "Military nobility/January": {
+          "averageMs": 10.27,
+          "p95Ms": 22.9,
+          "p99Ms": 28.2,
+          "maxMs": 28.2
+        },
+        "Military/promotions/January": {
+          "averageMs": 6.29,
+          "p95Ms": 13.7,
+          "p99Ms": 21.8,
+          "maxMs": 21.8
+        },
+        "MilitaryCommandRegistry.update/January": {
+          "averageMs": 16.64,
+          "p95Ms": 65.8,
+          "p99Ms": 66.5,
+          "maxMs": 66.5
+        },
+        "DynastyRegistry.update/January": {
+          "averageMs": 22.87,
+          "p95Ms": 51.5,
+          "p99Ms": 67.1,
+          "maxMs": 67.1
+        },
+        "Royal noble succession/January": {
+          "averageMs": 2.76,
+          "p95Ms": 14.6,
+          "p99Ms": 15.4,
+          "maxMs": 15.4
+        },
+        "WorldEventSystem.update/January": {
+          "averageMs": 21.39,
+          "p95Ms": 78.6,
+          "p99Ms": 82.8,
+          "maxMs": 82.8
+        }
+      }
+    },
+    "v66OptimizationOnly": {
+      "worldMonth": 6000,
+      "sampleMonths": 300,
+      "sourceWorldSave": 66,
+      "sha256": "36cf42cdafd7b5b6d3fb441d634d40ff3bc0810455862967b6d9014061864066",
+      "p50Ms": 5.4,
+      "phases": {
+        "total fixed/month step": {
+          "averageMs": 21.48,
+          "p95Ms": 107.5,
+          "p99Ms": 156.6,
+          "maxMs": 243
+        },
+        "total fixed/month step/January": {
+          "averageMs": 123.32,
+          "p95Ms": 231.2,
+          "p99Ms": 243,
+          "maxMs": 243
+        },
+        "total fixed/month step/ordinary": {
+          "averageMs": 12.25,
+          "p95Ms": 39.1,
+          "p99Ms": 81.1,
+          "maxMs": 92.3
+        },
+        "Civil administration/January": {
+          "averageMs": 33.8,
+          "p95Ms": 60.1,
+          "p99Ms": 72.4,
+          "maxMs": 72.4
+        },
+        "Military families/January": {
+          "averageMs": 4.07,
+          "p95Ms": 5.4,
+          "p99Ms": 20.8,
+          "maxMs": 20.8
+        },
+        "Military nobility/January": {
+          "averageMs": 3.91,
+          "p95Ms": 18.2,
+          "p99Ms": 19.9,
+          "maxMs": 19.9
+        },
+        "Military/promotions/January": {
+          "averageMs": 6.59,
+          "p95Ms": 14,
+          "p99Ms": 23.2,
+          "maxMs": 23.2
+        },
+        "MilitaryCommandRegistry.update/January": {
+          "averageMs": 17.11,
+          "p95Ms": 63.4,
+          "p99Ms": 71.2,
+          "maxMs": 71.2
+        },
+        "DynastyRegistry.update/January": {
+          "averageMs": 23.86,
+          "p95Ms": 49.2,
+          "p99Ms": 63.8,
+          "maxMs": 63.8
+        },
+        "Royal noble succession/January": {
+          "averageMs": 2.8,
+          "p95Ms": 15.1,
+          "p99Ms": 15.4,
+          "maxMs": 15.4
+        },
+        "WorldEventSystem.update/January": {
+          "averageMs": 22.12,
+          "p95Ms": 81.5,
+          "p99Ms": 82.9,
+          "maxMs": 82.9
+        }
+      }
+    },
+    "nativeV67": {
+      "worldMonth": 6000,
+      "sampleMonths": 300,
+      "sourceWorldSave": 67,
+      "sha256": "6ef8311aae8891300d048bb46bff2cb6dc508acfcfc7905597e3cf007aa4e839",
+      "p50Ms": 5.6,
+      "phases": {
+        "total fixed/month step": {
+          "averageMs": 22.24,
+          "p95Ms": 102.4,
+          "p99Ms": 187,
+          "maxMs": 259.4
+        },
+        "total fixed/month step/January": {
+          "averageMs": 127.45,
+          "p95Ms": 241.2,
+          "p99Ms": 259.4,
+          "maxMs": 259.4
+        },
+        "total fixed/month step/ordinary": {
+          "averageMs": 12.67,
+          "p95Ms": 41.8,
+          "p99Ms": 83.4,
+          "maxMs": 97.5
+        },
+        "Civil administration/January": {
+          "averageMs": 33.79,
+          "p95Ms": 59.5,
+          "p99Ms": 65.5,
+          "maxMs": 65.5
+        },
+        "Military families/January": {
+          "averageMs": 3.88,
+          "p95Ms": 5.6,
+          "p99Ms": 15.9,
+          "maxMs": 15.9
+        },
+        "Military nobility/January": {
+          "averageMs": 3.98,
+          "p95Ms": 18.4,
+          "p99Ms": 19.3,
+          "maxMs": 19.3
+        },
+        "Military/promotions/January": {
+          "averageMs": 6.51,
+          "p95Ms": 14,
+          "p99Ms": 22.6,
+          "maxMs": 22.6
+        },
+        "MilitaryCommandRegistry.update/January": {
+          "averageMs": 17.07,
+          "p95Ms": 69.2,
+          "p99Ms": 71.8,
+          "maxMs": 71.8
+        },
+        "DynastyRegistry.update/January": {
+          "averageMs": 22.93,
+          "p95Ms": 49.3,
+          "p99Ms": 64.6,
+          "maxMs": 64.6
+        },
+        "Royal noble succession/January": {
+          "averageMs": 2.75,
+          "p95Ms": 14.9,
+          "p99Ms": 15.5,
+          "maxMs": 15.5
+        },
+        "WorldEventSystem.update/January": {
+          "averageMs": 21.64,
+          "p95Ms": 79.8,
+          "p99Ms": 86.6,
+          "maxMs": 86.6
+        }
+      }
+    },
+    "nativeV67Save": {
+      "validationMs": 2355,
+      "hydrationMs": 2710.6,
+      "exportMs": 2696,
+      "bytes": 17899851,
+      "heapBytes": 311326899
+    },
+    "loadObservation": [
+      "0.0% CPU",
+      "40.6% CPU"
+    ]
+  },
+  "production": [
+    {
+      "seed": "regional-1",
+      "years": 100,
+      "strictSave": true,
+      "continuation": null,
+      "baseline": {
+        "history": 3179,
+        "preparatory": 0,
+        "families": 4,
+        "familyMembers": 14,
+        "livingFamilyMembers": 5,
+        "foundingAgeMonths": {
+          "samples": 4,
+          "min": 494,
+          "median": 626.0,
+          "max": 765
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 1,
+            "min": 626,
+            "median": 626,
+            "max": 626
+          },
+          "GONG": {
+            "samples": 0
+          }
+        },
+        "births": 1,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 1,
+          "min": 566,
+          "median": 566,
+          "max": 566
+        },
+        "settledHighTitleDeaths": 0,
+        "deathsWithRegisteredChild": 0,
+        "deathsWithDirectSuccessor": 0,
+        "inheritance": {
+          "CHILD": 4
+        },
+        "termination": {
+          "REGIME_ENDED": 1,
+          "RANK_EXHAUSTED": 2
+        },
+        "civilPeerages": {
+          "NAN": 1
+        },
+        "retirementPeerages": {},
+        "livingUsers": 138,
+        "activeCommands": 1,
+        "activeCivilTerms": 6,
+        "worldRngPosition": 7261
+      },
+      "candidate": {
+        "history": 3184,
+        "preparatory": 3,
+        "families": 7,
+        "familyMembers": 18,
+        "livingFamilyMembers": 5,
+        "foundingAgeMonths": {
+          "samples": 7,
+          "min": 379,
+          "median": 535,
+          "max": 765
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 1,
+            "min": 626,
+            "median": 626,
+            "max": 626
+          },
+          "GONG": {
+            "samples": 0
+          }
+        },
+        "births": 2,
+        "birthsBeforeFounderGrant": 1,
+        "fatherAgeMonths": {
+          "samples": 2,
+          "min": 449,
+          "median": 507.5,
+          "max": 566
+        },
+        "settledHighTitleDeaths": 0,
+        "deathsWithRegisteredChild": 0,
+        "deathsWithDirectSuccessor": 0,
+        "inheritance": {
+          "CHILD": 4
+        },
+        "termination": {
+          "REGIME_ENDED": 1,
+          "RANK_EXHAUSTED": 2
+        },
+        "civilPeerages": {
+          "NAN": 1
+        },
+        "retirementPeerages": {},
+        "livingUsers": 138,
+        "activeCommands": 1,
+        "activeCivilTerms": 6,
+        "worldRngPosition": 7261
+      },
+      "wallMs": 54786.1,
+      "heapBytes": 110360407,
+      "snapshotBytes": 3370291
+    },
+    {
+      "seed": "regional-2",
+      "years": 100,
+      "strictSave": true,
+      "continuation": null,
+      "baseline": {
+        "history": 2654,
+        "preparatory": 0,
+        "families": 3,
+        "familyMembers": 5,
+        "livingFamilyMembers": 3,
+        "foundingAgeMonths": {
+          "samples": 3,
+          "min": 384,
+          "median": 537,
+          "max": 760
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 0
+          },
+          "GONG": {
+            "samples": 0
+          }
+        },
+        "births": 0,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 0
+        },
+        "settledHighTitleDeaths": 0,
+        "deathsWithRegisteredChild": 0,
+        "deathsWithDirectSuccessor": 0,
+        "inheritance": {
+          "CHILD": 1
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 1
+        },
+        "civilPeerages": {},
+        "retirementPeerages": {},
+        "livingUsers": 135,
+        "activeCommands": 2,
+        "activeCivilTerms": 5,
+        "worldRngPosition": 7288
+      },
+      "candidate": {
+        "history": 2656,
+        "preparatory": 2,
+        "families": 4,
+        "familyMembers": 6,
+        "livingFamilyMembers": 4,
+        "foundingAgeMonths": {
+          "samples": 4,
+          "min": 384,
+          "median": 418.5,
+          "max": 760
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 0
+          },
+          "GONG": {
+            "samples": 0
+          }
+        },
+        "births": 0,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 0
+        },
+        "settledHighTitleDeaths": 0,
+        "deathsWithRegisteredChild": 0,
+        "deathsWithDirectSuccessor": 0,
+        "inheritance": {
+          "CHILD": 1
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 1
+        },
+        "civilPeerages": {},
+        "retirementPeerages": {},
+        "livingUsers": 135,
+        "activeCommands": 2,
+        "activeCivilTerms": 5,
+        "worldRngPosition": 7288
+      },
+      "wallMs": 41201.9,
+      "heapBytes": 130301047,
+      "snapshotBytes": 2944805
+    },
+    {
+      "seed": "regional-3",
+      "years": 100,
+      "strictSave": true,
+      "continuation": null,
+      "baseline": {
+        "history": 3220,
+        "preparatory": 0,
+        "families": 7,
+        "familyMembers": 14,
+        "livingFamilyMembers": 5,
+        "foundingAgeMonths": {
+          "samples": 7,
+          "min": 498,
+          "median": 546,
+          "max": 740
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 1,
+            "min": 633,
+            "median": 633,
+            "max": 633
+          },
+          "GONG": {
+            "samples": 1,
+            "min": 705,
+            "median": 705,
+            "max": 705
+          }
+        },
+        "births": 4,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 4,
+          "min": 548,
+          "median": 577.5,
+          "max": 641
+        },
+        "settledHighTitleDeaths": 0,
+        "deathsWithRegisteredChild": 0,
+        "deathsWithDirectSuccessor": 0,
+        "inheritance": {
+          "CHILD": 1
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 3,
+          "NO_HEIR": 2,
+          "FOREIGN": 1
+        },
+        "civilPeerages": {},
+        "retirementPeerages": {},
+        "livingUsers": 140,
+        "activeCommands": 1,
+        "activeCivilTerms": 4,
+        "worldRngPosition": 7561
+      },
+      "candidate": {
+        "history": 3226,
+        "preparatory": 2,
+        "families": 7,
+        "familyMembers": 14,
+        "livingFamilyMembers": 5,
+        "foundingAgeMonths": {
+          "samples": 7,
+          "min": 450,
+          "median": 546,
+          "max": 740
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 1,
+            "min": 633,
+            "median": 633,
+            "max": 633
+          },
+          "GONG": {
+            "samples": 1,
+            "min": 705,
+            "median": 705,
+            "max": 705
+          }
+        },
+        "births": 4,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 4,
+          "min": 548,
+          "median": 577.5,
+          "max": 641
+        },
+        "settledHighTitleDeaths": 0,
+        "deathsWithRegisteredChild": 0,
+        "deathsWithDirectSuccessor": 0,
+        "inheritance": {
+          "CHILD": 1
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 3,
+          "NO_HEIR": 2,
+          "FOREIGN": 1
+        },
+        "civilPeerages": {},
+        "retirementPeerages": {},
+        "livingUsers": 140,
+        "activeCommands": 1,
+        "activeCivilTerms": 4,
+        "worldRngPosition": 7561
+      },
+      "wallMs": 29061.5,
+      "heapBytes": 112055041,
+      "snapshotBytes": 3360941
+    },
+    {
+      "seed": "regional-4",
+      "years": 100,
+      "strictSave": true,
+      "continuation": null,
+      "baseline": {
+        "history": 3346,
+        "preparatory": 0,
+        "families": 4,
+        "familyMembers": 13,
+        "livingFamilyMembers": 9,
+        "foundingAgeMonths": {
+          "samples": 4,
+          "min": 612,
+          "median": 773.0,
+          "max": 847
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 1,
+            "min": 732,
+            "median": 732,
+            "max": 732
+          },
+          "GONG": {
+            "samples": 1,
+            "min": 828,
+            "median": 828,
+            "max": 828
+          }
+        },
+        "births": 1,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 1,
+          "min": 617,
+          "median": 617,
+          "max": 617
+        },
+        "settledHighTitleDeaths": 0,
+        "deathsWithRegisteredChild": 0,
+        "deathsWithDirectSuccessor": 0,
+        "inheritance": {
+          "CHILD": 1
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 2
+        },
+        "civilPeerages": {
+          "NAN": 1
+        },
+        "retirementPeerages": {},
+        "livingUsers": 140,
+        "activeCommands": 1,
+        "activeCivilTerms": 5,
+        "worldRngPosition": 7102
+      },
+      "candidate": {
+        "history": 3351,
+        "preparatory": 2,
+        "families": 5,
+        "familyMembers": 14,
+        "livingFamilyMembers": 9,
+        "foundingAgeMonths": {
+          "samples": 5,
+          "min": 405,
+          "median": 722,
+          "max": 847
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 1,
+            "min": 732,
+            "median": 732,
+            "max": 732
+          },
+          "GONG": {
+            "samples": 1,
+            "min": 828,
+            "median": 828,
+            "max": 828
+          }
+        },
+        "births": 1,
+        "birthsBeforeFounderGrant": 1,
+        "fatherAgeMonths": {
+          "samples": 1,
+          "min": 580,
+          "median": 580,
+          "max": 580
+        },
+        "settledHighTitleDeaths": 0,
+        "deathsWithRegisteredChild": 0,
+        "deathsWithDirectSuccessor": 0,
+        "inheritance": {
+          "CHILD": 1
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 2
+        },
+        "civilPeerages": {
+          "NAN": 1
+        },
+        "retirementPeerages": {},
+        "livingUsers": 140,
+        "activeCommands": 1,
+        "activeCivilTerms": 5,
+        "worldRngPosition": 7102
+      },
+      "wallMs": 31164,
+      "heapBytes": 123390086,
+      "snapshotBytes": 3314615
+    },
+    {
+      "seed": "regional-5",
+      "years": 100,
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "baseline": {
+        "history": 3067,
+        "preparatory": 0,
+        "families": 7,
+        "familyMembers": 18,
+        "livingFamilyMembers": 7,
+        "foundingAgeMonths": {
+          "samples": 7,
+          "min": 506,
+          "median": 605,
+          "max": 697
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 2,
+            "min": 714,
+            "median": 755.5,
+            "max": 797
+          },
+          "GONG": {
+            "samples": 1,
+            "min": 774,
+            "median": 774,
+            "max": 774
+          }
+        },
+        "births": 1,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 1,
+          "min": 612,
+          "median": 612,
+          "max": 612
+        },
+        "settledHighTitleDeaths": 2,
+        "deathsWithRegisteredChild": 2,
+        "deathsWithDirectSuccessor": 2,
+        "inheritance": {
+          "CHILD": 3
+        },
+        "termination": {
+          "NO_HEIR": 2,
+          "RANK_EXHAUSTED": 3
+        },
+        "civilPeerages": {
+          "NAN": 2
+        },
+        "retirementPeerages": {},
+        "livingUsers": 129,
+        "activeCommands": 1,
+        "activeCivilTerms": 4,
+        "worldRngPosition": 7159
+      },
+      "candidate": {
+        "history": 3079,
+        "preparatory": 5,
+        "families": 10,
+        "familyMembers": 23,
+        "livingFamilyMembers": 9,
+        "foundingAgeMonths": {
+          "samples": 10,
+          "min": 353,
+          "median": 544.5,
+          "max": 697
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 2,
+            "min": 714,
+            "median": 755.5,
+            "max": 797
+          },
+          "GONG": {
+            "samples": 1,
+            "min": 774,
+            "median": 774,
+            "max": 774
+          }
+        },
+        "births": 3,
+        "birthsBeforeFounderGrant": 2,
+        "fatherAgeMonths": {
+          "samples": 3,
+          "min": 414,
+          "median": 548,
+          "max": 612
+        },
+        "settledHighTitleDeaths": 2,
+        "deathsWithRegisteredChild": 2,
+        "deathsWithDirectSuccessor": 2,
+        "inheritance": {
+          "CHILD": 3
+        },
+        "termination": {
+          "NO_HEIR": 2,
+          "RANK_EXHAUSTED": 3
+        },
+        "civilPeerages": {
+          "NAN": 2
+        },
+        "retirementPeerages": {},
+        "livingUsers": 129,
+        "activeCommands": 1,
+        "activeCivilTerms": 4,
+        "worldRngPosition": 7159
+      },
+      "wallMs": 26041,
+      "heapBytes": 121406010,
+      "snapshotBytes": 3218298
+    },
+    {
+      "seed": "regional-6",
+      "years": 100,
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "baseline": {
+        "history": 3660,
+        "preparatory": 0,
+        "families": 10,
+        "familyMembers": 20,
+        "livingFamilyMembers": 10,
+        "foundingAgeMonths": {
+          "samples": 10,
+          "min": 408,
+          "median": 736.0,
+          "max": 861
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 1,
+            "min": 678,
+            "median": 678,
+            "max": 678
+          },
+          "GONG": {
+            "samples": 0
+          }
+        },
+        "births": 1,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 1,
+          "min": 626,
+          "median": 626,
+          "max": 626
+        },
+        "settledHighTitleDeaths": 0,
+        "deathsWithRegisteredChild": 0,
+        "deathsWithDirectSuccessor": 0,
+        "inheritance": {
+          "CHILD": 1
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 5,
+          "FORFEITED": 1,
+          "NO_HEIR": 1
+        },
+        "civilPeerages": {
+          "NAN": 3
+        },
+        "retirementPeerages": {},
+        "livingUsers": 139,
+        "activeCommands": 1,
+        "activeCivilTerms": 6,
+        "worldRngPosition": 7116
+      },
+      "candidate": {
+        "history": 3666,
+        "preparatory": 2,
+        "families": 11,
+        "familyMembers": 23,
+        "livingFamilyMembers": 12,
+        "foundingAgeMonths": {
+          "samples": 11,
+          "min": 360,
+          "median": 721,
+          "max": 861
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 1,
+            "min": 678,
+            "median": 678,
+            "max": 678
+          },
+          "GONG": {
+            "samples": 0
+          }
+        },
+        "births": 3,
+        "birthsBeforeFounderGrant": 2,
+        "fatherAgeMonths": {
+          "samples": 3,
+          "min": 547,
+          "median": 604,
+          "max": 626
+        },
+        "settledHighTitleDeaths": 0,
+        "deathsWithRegisteredChild": 0,
+        "deathsWithDirectSuccessor": 0,
+        "inheritance": {
+          "CHILD": 1
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 5,
+          "FORFEITED": 1,
+          "NO_HEIR": 1
+        },
+        "civilPeerages": {
+          "NAN": 3
+        },
+        "retirementPeerages": {},
+        "livingUsers": 139,
+        "activeCommands": 1,
+        "activeCivilTerms": 6,
+        "worldRngPosition": 7116
+      },
+      "wallMs": 28642.4,
+      "heapBytes": 111313371,
+      "snapshotBytes": 3434002
+    },
+    {
+      "seed": "regional-7",
+      "years": 100,
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "baseline": {
+        "history": 3152,
+        "preparatory": 0,
+        "families": 6,
+        "familyMembers": 12,
+        "livingFamilyMembers": 7,
+        "foundingAgeMonths": {
+          "samples": 6,
+          "min": 462,
+          "median": 676.0,
+          "max": 844
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 3,
+            "min": 468,
+            "median": 704,
+            "max": 765
+          },
+          "GONG": {
+            "samples": 2,
+            "min": 504,
+            "median": 640.0,
+            "max": 776
+          }
+        },
+        "births": 1,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 1,
+          "min": 646,
+          "median": 646,
+          "max": 646
+        },
+        "settledHighTitleDeaths": 1,
+        "deathsWithRegisteredChild": 1,
+        "deathsWithDirectSuccessor": 1,
+        "inheritance": {
+          "CHILD": 2
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 2
+        },
+        "civilPeerages": {
+          "NAN": 1
+        },
+        "retirementPeerages": {},
+        "livingUsers": 117,
+        "activeCommands": 3,
+        "activeCivilTerms": 5,
+        "worldRngPosition": 7223
+      },
+      "candidate": {
+        "history": 3158,
+        "preparatory": 3,
+        "families": 7,
+        "familyMembers": 13,
+        "livingFamilyMembers": 7,
+        "foundingAgeMonths": {
+          "samples": 7,
+          "min": 450,
+          "median": 647,
+          "max": 844
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 3,
+            "min": 468,
+            "median": 704,
+            "max": 765
+          },
+          "GONG": {
+            "samples": 2,
+            "min": 504,
+            "median": 640.0,
+            "max": 776
+          }
+        },
+        "births": 1,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 1,
+          "min": 646,
+          "median": 646,
+          "max": 646
+        },
+        "settledHighTitleDeaths": 1,
+        "deathsWithRegisteredChild": 1,
+        "deathsWithDirectSuccessor": 1,
+        "inheritance": {
+          "CHILD": 2
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 2
+        },
+        "civilPeerages": {
+          "NAN": 1
+        },
+        "retirementPeerages": {},
+        "livingUsers": 117,
+        "activeCommands": 3,
+        "activeCivilTerms": 5,
+        "worldRngPosition": 7223
+      },
+      "wallMs": 31156.4,
+      "heapBytes": 79643234,
+      "snapshotBytes": 3236341
+    },
+    {
+      "seed": "regional-8",
+      "years": 100,
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "baseline": {
+        "history": 3374,
+        "preparatory": 0,
+        "families": 5,
+        "familyMembers": 14,
+        "livingFamilyMembers": 4,
+        "foundingAgeMonths": {
+          "samples": 5,
+          "min": 514,
+          "median": 686,
+          "max": 815
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 3,
+            "min": 599,
+            "median": 634,
+            "max": 830
+          },
+          "GONG": {
+            "samples": 3,
+            "min": 623,
+            "median": 682,
+            "max": 866
+          }
+        },
+        "births": 0,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 0
+        },
+        "settledHighTitleDeaths": 3,
+        "deathsWithRegisteredChild": 3,
+        "deathsWithDirectSuccessor": 3,
+        "inheritance": {
+          "CHILD": 3
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 3,
+          "NO_HEIR": 1
+        },
+        "civilPeerages": {
+          "NAN": 1
+        },
+        "retirementPeerages": {},
+        "livingUsers": 138,
+        "activeCommands": 2,
+        "activeCivilTerms": 6,
+        "worldRngPosition": 7640
+      },
+      "candidate": {
+        "history": 3378,
+        "preparatory": 1,
+        "families": 5,
+        "familyMembers": 14,
+        "livingFamilyMembers": 4,
+        "foundingAgeMonths": {
+          "samples": 5,
+          "min": 502,
+          "median": 686,
+          "max": 815
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 3,
+            "min": 599,
+            "median": 634,
+            "max": 830
+          },
+          "GONG": {
+            "samples": 3,
+            "min": 623,
+            "median": 682,
+            "max": 866
+          }
+        },
+        "births": 0,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 0
+        },
+        "settledHighTitleDeaths": 3,
+        "deathsWithRegisteredChild": 3,
+        "deathsWithDirectSuccessor": 3,
+        "inheritance": {
+          "CHILD": 3
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 3,
+          "NO_HEIR": 1
+        },
+        "civilPeerages": {
+          "NAN": 1
+        },
+        "retirementPeerages": {},
+        "livingUsers": 138,
+        "activeCommands": 2,
+        "activeCivilTerms": 6,
+        "worldRngPosition": 7640
+      },
+      "wallMs": 30951.8,
+      "heapBytes": 103903378,
+      "snapshotBytes": 3516079
+    },
+    {
+      "seed": "regional-1",
+      "years": 200,
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "baseline": {
+        "history": 6529,
+        "preparatory": 0,
+        "families": 9,
+        "familyMembers": 26,
+        "livingFamilyMembers": 2,
+        "foundingAgeMonths": {
+          "samples": 9,
+          "min": 494,
+          "median": 717,
+          "max": 901
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 1,
+            "min": 626,
+            "median": 626,
+            "max": 626
+          },
+          "GONG": {
+            "samples": 0
+          }
+        },
+        "births": 1,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 1,
+          "min": 566,
+          "median": 566,
+          "max": 566
+        },
+        "settledHighTitleDeaths": 0,
+        "deathsWithRegisteredChild": 0,
+        "deathsWithDirectSuccessor": 0,
+        "inheritance": {
+          "CHILD": 6
+        },
+        "termination": {
+          "REGIME_ENDED": 1,
+          "RANK_EXHAUSTED": 6,
+          "NO_HEIR": 1
+        },
+        "civilPeerages": {
+          "NAN": 4
+        },
+        "retirementPeerages": {},
+        "livingUsers": 140,
+        "activeCommands": 1,
+        "activeCivilTerms": 7,
+        "worldRngPosition": 14356
+      },
+      "candidate": {
+        "history": 6534,
+        "preparatory": 3,
+        "families": 12,
+        "familyMembers": 30,
+        "livingFamilyMembers": 2,
+        "foundingAgeMonths": {
+          "samples": 12,
+          "min": 379,
+          "median": 679.0,
+          "max": 901
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 1,
+            "min": 626,
+            "median": 626,
+            "max": 626
+          },
+          "GONG": {
+            "samples": 0
+          }
+        },
+        "births": 2,
+        "birthsBeforeFounderGrant": 1,
+        "fatherAgeMonths": {
+          "samples": 2,
+          "min": 449,
+          "median": 507.5,
+          "max": 566
+        },
+        "settledHighTitleDeaths": 0,
+        "deathsWithRegisteredChild": 0,
+        "deathsWithDirectSuccessor": 0,
+        "inheritance": {
+          "CHILD": 6
+        },
+        "termination": {
+          "REGIME_ENDED": 1,
+          "RANK_EXHAUSTED": 6,
+          "NO_HEIR": 1
+        },
+        "civilPeerages": {
+          "NAN": 4
+        },
+        "retirementPeerages": {},
+        "livingUsers": 140,
+        "activeCommands": 1,
+        "activeCivilTerms": 7,
+        "worldRngPosition": 14356
+      },
+      "wallMs": 117508.1,
+      "heapBytes": 128824257,
+      "snapshotBytes": 6979424
+    },
+    {
+      "seed": "regional-2",
+      "years": 200,
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "baseline": {
+        "history": 7142,
+        "preparatory": 0,
+        "families": 9,
+        "familyMembers": 26,
+        "livingFamilyMembers": 3,
+        "foundingAgeMonths": {
+          "samples": 9,
+          "min": 384,
+          "median": 662,
+          "max": 916
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 5,
+            "min": 467,
+            "median": 571,
+            "max": 790
+          },
+          "GONG": {
+            "samples": 4,
+            "min": 515,
+            "median": 645.5,
+            "max": 827
+          }
+        },
+        "births": 1,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 1,
+          "min": 583,
+          "median": 583,
+          "max": 583
+        },
+        "settledHighTitleDeaths": 2,
+        "deathsWithRegisteredChild": 0,
+        "deathsWithDirectSuccessor": 0,
+        "inheritance": {
+          "CHILD": 3
+        },
+        "termination": {
+          "NO_HEIR": 3,
+          "RANK_EXHAUSTED": 2,
+          "REGIME_ENDED": 1,
+          "FOREIGN": 1
+        },
+        "civilPeerages": {
+          "NAN": 4,
+          "ZI": 1
+        },
+        "retirementPeerages": {},
+        "livingUsers": 138,
+        "activeCommands": 5,
+        "activeCivilTerms": 6,
+        "worldRngPosition": 15096
+      },
+      "candidate": {
+        "history": 6315,
+        "preparatory": 2,
+        "families": 8,
+        "familyMembers": 24,
+        "livingFamilyMembers": 11,
+        "foundingAgeMonths": {
+          "samples": 8,
+          "min": 384,
+          "median": 534.0,
+          "max": 932
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 2,
+            "min": 479,
+            "median": 503.5,
+            "max": 528
+          },
+          "GONG": {
+            "samples": 2,
+            "min": 600,
+            "median": 623.5,
+            "max": 647
+          }
+        },
+        "births": 5,
+        "birthsBeforeFounderGrant": 1,
+        "fatherAgeMonths": {
+          "samples": 5,
+          "min": 374,
+          "median": 583,
+          "max": 653
+        },
+        "settledHighTitleDeaths": 2,
+        "deathsWithRegisteredChild": 2,
+        "deathsWithDirectSuccessor": 2,
+        "inheritance": {
+          "CHILD": 4
+        },
+        "termination": {
+          "NO_HEIR": 3,
+          "RANK_EXHAUSTED": 3
+        },
+        "civilPeerages": {
+          "NAN": 4,
+          "ZI": 2
+        },
+        "retirementPeerages": {
+          "NAN": 1
+        },
+        "livingUsers": 130,
+        "activeCommands": 2,
+        "activeCivilTerms": 6,
+        "worldRngPosition": 14431
+      },
+      "wallMs": 94387.9,
+      "heapBytes": 157534820,
+      "snapshotBytes": 6321532
+    },
+    {
+      "seed": "regional-3",
+      "years": 200,
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "baseline": {
+        "history": 6961,
+        "preparatory": 0,
+        "families": 16,
+        "familyMembers": 49,
+        "livingFamilyMembers": 15,
+        "foundingAgeMonths": {
+          "samples": 16,
+          "min": 498,
+          "median": 620.0,
+          "max": 835
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 3,
+            "min": 633,
+            "median": 705,
+            "max": 716
+          },
+          "GONG": {
+            "samples": 3,
+            "min": 705,
+            "median": 741,
+            "max": 764
+          }
+        },
+        "births": 4,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 4,
+          "min": 548,
+          "median": 577.5,
+          "max": 641
+        },
+        "settledHighTitleDeaths": 5,
+        "deathsWithRegisteredChild": 4,
+        "deathsWithDirectSuccessor": 4,
+        "inheritance": {
+          "CHILD": 10
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 5,
+          "NO_HEIR": 4,
+          "FOREIGN": 1
+        },
+        "civilPeerages": {
+          "NAN": 4,
+          "ZI": 2
+        },
+        "retirementPeerages": {},
+        "livingUsers": 133,
+        "activeCommands": 4,
+        "activeCivilTerms": 4,
+        "worldRngPosition": 15422
+      },
+      "candidate": {
+        "history": 7651,
+        "preparatory": 5,
+        "families": 16,
+        "familyMembers": 34,
+        "livingFamilyMembers": 12,
+        "foundingAgeMonths": {
+          "samples": 16,
+          "min": 427,
+          "median": 549.5,
+          "max": 791
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 4,
+            "min": 396,
+            "median": 526.5,
+            "max": 721
+          },
+          "GONG": {
+            "samples": 2,
+            "min": 480,
+            "median": 592.5,
+            "max": 705
+          }
+        },
+        "births": 7,
+        "birthsBeforeFounderGrant": 2,
+        "fatherAgeMonths": {
+          "samples": 7,
+          "min": 548,
+          "median": 604,
+          "max": 658
+        },
+        "settledHighTitleDeaths": 2,
+        "deathsWithRegisteredChild": 1,
+        "deathsWithDirectSuccessor": 1,
+        "inheritance": {
+          "CHILD": 3,
+          "BROTHER": 1
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 4,
+          "NO_HEIR": 4,
+          "FOREIGN": 2,
+          "FORFEITED": 2,
+          "REGIME_ENDED": 1
+        },
+        "civilPeerages": {
+          "NAN": 3,
+          "ZI": 2
+        },
+        "retirementPeerages": {},
+        "livingUsers": 126,
+        "activeCommands": 3,
+        "activeCivilTerms": 6,
+        "worldRngPosition": 15631
+      },
+      "wallMs": 73808.3,
+      "heapBytes": 150529401,
+      "snapshotBytes": 7588933
+    },
+    {
+      "seed": "regional-4",
+      "years": 200,
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "baseline": {
+        "history": 6871,
+        "preparatory": 0,
+        "families": 10,
+        "familyMembers": 26,
+        "livingFamilyMembers": 3,
+        "foundingAgeMonths": {
+          "samples": 10,
+          "min": 467,
+          "median": 600.5,
+          "max": 847
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 2,
+            "min": 536,
+            "median": 634.0,
+            "max": 732
+          },
+          "GONG": {
+            "samples": 2,
+            "min": 596,
+            "median": 712.0,
+            "max": 828
+          }
+        },
+        "births": 2,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 2,
+          "min": 539,
+          "median": 578.0,
+          "max": 617
+        },
+        "settledHighTitleDeaths": 2,
+        "deathsWithRegisteredChild": 2,
+        "deathsWithDirectSuccessor": 2,
+        "inheritance": {
+          "CHILD": 4
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 6,
+          "NO_HEIR": 1,
+          "FOREIGN": 2
+        },
+        "civilPeerages": {
+          "NAN": 2
+        },
+        "retirementPeerages": {},
+        "livingUsers": 127,
+        "activeCommands": 4,
+        "activeCivilTerms": 6,
+        "worldRngPosition": 14765
+      },
+      "candidate": {
+        "history": 6335,
+        "preparatory": 4,
+        "families": 10,
+        "familyMembers": 34,
+        "livingFamilyMembers": 9,
+        "foundingAgeMonths": {
+          "samples": 10,
+          "min": 384,
+          "median": 637.0,
+          "max": 847
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 1,
+            "min": 732,
+            "median": 732,
+            "max": 732
+          },
+          "GONG": {
+            "samples": 1,
+            "min": 828,
+            "median": 828,
+            "max": 828
+          }
+        },
+        "births": 1,
+        "birthsBeforeFounderGrant": 1,
+        "fatherAgeMonths": {
+          "samples": 1,
+          "min": 580,
+          "median": 580,
+          "max": 580
+        },
+        "settledHighTitleDeaths": 2,
+        "deathsWithRegisteredChild": 2,
+        "deathsWithDirectSuccessor": 2,
+        "inheritance": {
+          "CHILD": 4
+        },
+        "termination": {
+          "RANK_EXHAUSTED": 6,
+          "NO_HEIR": 1
+        },
+        "civilPeerages": {
+          "NAN": 3
+        },
+        "retirementPeerages": {},
+        "livingUsers": 143,
+        "activeCommands": 0,
+        "activeCivilTerms": 4,
+        "worldRngPosition": 14245
+      },
+      "wallMs": 64951.4,
+      "heapBytes": 129195851,
+      "snapshotBytes": 6476454
+    },
+    {
+      "seed": "regional-1",
+      "years": 300,
+      "strictSave": true,
+      "continuation": null,
+      "baseline": {
+        "history": 9712,
+        "preparatory": 0,
+        "families": 14,
+        "familyMembers": 41,
+        "livingFamilyMembers": 7,
+        "foundingAgeMonths": {
+          "samples": 14,
+          "min": 475,
+          "median": 725.0,
+          "max": 901
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 2,
+            "min": 626,
+            "median": 727.5,
+            "max": 829
+          },
+          "GONG": {
+            "samples": 0
+          }
+        },
+        "births": 3,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 3,
+          "min": 389,
+          "median": 566,
+          "max": 614
+        },
+        "settledHighTitleDeaths": 1,
+        "deathsWithRegisteredChild": 1,
+        "deathsWithDirectSuccessor": 1,
+        "inheritance": {
+          "CHILD": 8
+        },
+        "termination": {
+          "REGIME_ENDED": 1,
+          "RANK_EXHAUSTED": 9,
+          "NO_HEIR": 1
+        },
+        "civilPeerages": {
+          "NAN": 5
+        },
+        "retirementPeerages": {},
+        "livingUsers": 142,
+        "activeCommands": 2,
+        "activeCivilTerms": 5,
+        "worldRngPosition": 21244
+      },
+      "candidate": {
+        "history": 9721,
+        "preparatory": 6,
+        "families": 18,
+        "familyMembers": 46,
+        "livingFamilyMembers": 7,
+        "foundingAgeMonths": {
+          "samples": 18,
+          "min": 379,
+          "median": 679.0,
+          "max": 901
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 2,
+            "min": 626,
+            "median": 727.5,
+            "max": 829
+          },
+          "GONG": {
+            "samples": 0
+          }
+        },
+        "births": 4,
+        "birthsBeforeFounderGrant": 1,
+        "fatherAgeMonths": {
+          "samples": 4,
+          "min": 389,
+          "median": 507.5,
+          "max": 614
+        },
+        "settledHighTitleDeaths": 1,
+        "deathsWithRegisteredChild": 1,
+        "deathsWithDirectSuccessor": 1,
+        "inheritance": {
+          "CHILD": 8
+        },
+        "termination": {
+          "REGIME_ENDED": 1,
+          "RANK_EXHAUSTED": 9,
+          "NO_HEIR": 1
+        },
+        "civilPeerages": {
+          "NAN": 5
+        },
+        "retirementPeerages": {},
+        "livingUsers": 142,
+        "activeCommands": 2,
+        "activeCivilTerms": 5,
+        "worldRngPosition": 21244
+      },
+      "wallMs": 202674.8,
+      "heapBytes": 208665783,
+      "snapshotBytes": 10406253
+    },
+    {
+      "seed": "regional-1",
+      "years": 500,
+      "strictSave": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "baseline": {
+        "history": 17281,
+        "preparatory": 0,
+        "families": 33,
+        "familyMembers": 103,
+        "livingFamilyMembers": 9,
+        "foundingAgeMonths": {
+          "samples": 33,
+          "min": 475,
+          "median": 717,
+          "max": 970
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 5,
+            "min": 586,
+            "median": 673,
+            "max": 829
+          },
+          "GONG": {
+            "samples": 1,
+            "min": 814,
+            "median": 814,
+            "max": 814
+          }
+        },
+        "births": 5,
+        "birthsBeforeFounderGrant": 0,
+        "fatherAgeMonths": {
+          "samples": 5,
+          "min": 248,
+          "median": 566,
+          "max": 643
+        },
+        "settledHighTitleDeaths": 4,
+        "deathsWithRegisteredChild": 4,
+        "deathsWithDirectSuccessor": 4,
+        "inheritance": {
+          "CHILD": 18
+        },
+        "termination": {
+          "REGIME_ENDED": 1,
+          "RANK_EXHAUSTED": 25,
+          "NO_HEIR": 4,
+          "FOREIGN": 1
+        },
+        "civilPeerages": {
+          "NAN": 14
+        },
+        "retirementPeerages": {},
+        "livingUsers": 130,
+        "activeCommands": 3,
+        "activeCivilTerms": 5,
+        "worldRngPosition": 35454
+      },
+      "candidate": {
+        "history": 17296,
+        "preparatory": 8,
+        "families": 39,
+        "familyMembers": 111,
+        "livingFamilyMembers": 10,
+        "foundingAgeMonths": {
+          "samples": 39,
+          "min": 379,
+          "median": 698,
+          "max": 970
+        },
+        "firstHighGrantAgeMonths": {
+          "HOU": {
+            "samples": 5,
+            "min": 586,
+            "median": 673,
+            "max": 829
+          },
+          "GONG": {
+            "samples": 1,
+            "min": 814,
+            "median": 814,
+            "max": 814
+          }
+        },
+        "births": 7,
+        "birthsBeforeFounderGrant": 2,
+        "fatherAgeMonths": {
+          "samples": 7,
+          "min": 248,
+          "median": 485,
+          "max": 643
+        },
+        "settledHighTitleDeaths": 4,
+        "deathsWithRegisteredChild": 4,
+        "deathsWithDirectSuccessor": 4,
+        "inheritance": {
+          "CHILD": 18
+        },
+        "termination": {
+          "REGIME_ENDED": 1,
+          "RANK_EXHAUSTED": 26,
+          "NO_HEIR": 4,
+          "FOREIGN": 1
+        },
+        "civilPeerages": {
+          "NAN": 15
+        },
+        "retirementPeerages": {
+          "NAN": 1
+        },
+        "livingUsers": 130,
+        "activeCommands": 3,
+        "activeCivilTerms": 5,
+        "worldRngPosition": 35454
+      },
+      "wallMs": 469971.6,
+      "heapBytes": 266423698,
+      "snapshotBytes": 17899866
+    }
+  ],
+  "birthCalibration": [
+    {
+      "chance": 0.065,
+      "births": 2,
+      "seed": "regional-1",
+      "years": 100
+    },
+    {
+      "chance": 0.1,
+      "seed": "regional-1",
+      "years": 100,
+      "births": 3,
+      "families": 7,
+      "saveBytes": 3371838
+    },
+    {
+      "chance": 0.16,
+      "seed": "regional-1",
+      "years": 100,
+      "births": 3,
+      "families": 7,
+      "saveBytes": 3371832
+    }
+  ],
+  "automated": {
+    "vitestFiles": 375,
+    "vitestTests": 2752,
+    "typecheck": true,
+    "webBuild": true,
+    "desktopBuild": true,
+    "debugBuild": true,
+    "strictSnapshots": 17,
+    "directed": {
+      "civil-administration": 159,
+      "military-nobility-final": 1520,
+      "military-secession": 135,
+      "native-navigation": 44
+    },
+    "sourceForgery": [
+      "native 200-year V67 source loaded",
+      "forged retirement source rejected even with matching serialized grant",
+      "forged high-peerage kinship path rejected with matching historical record",
+      "actual military appointment alone cannot be presented as a political charter",
+      "old save header rejected"
+    ],
+    "retirementAwardRollback": {
+      "seed": "regional-1",
+      "month": 5472,
+      "personId": "resident-1306531596-4520",
+      "checks": [
+        "real 400-year native world resumes to the month before the observed retirement",
+        "production spell includes the observed retirement and its independent legitimate grant",
+        "failed award fully restores the retirement term, title, family, sources and RNG",
+        "one retry is strict and canonically identical to uninterrupted Core"
+      ]
+    }
+  },
+  "limits": [
+    "No natural grandchild/nephew succession or civil earldom/marquess in the fixed matrix. Those eligibility branches have directed planner tests; natural direct/brother inheritance and actual retirement grants use full Core.",
+    "Historical birth rejection totals by age, pedigree and yearly caps were not instrumented.",
+    "Performance measured with another active renderer. Native V67 uses a divergent world and frame pacing remains a manual gate."
+  ],
+  "deduplicatedLongestPrefixes": {
+    "baseline": {
+      "preparatory": 0,
+      "families": 96,
+      "familyMembers": 268,
+      "livingFamilyMembers": 58,
+      "births": 15,
+      "birthsBeforeFounderGrant": 0,
+      "settledHighTitleDeaths": 19,
+      "deathsWithRegisteredChild": 16,
+      "deathsWithDirectSuccessor": 16,
+      "inheritance": {
+        "CHILD": 44
+      },
+      "termination": {
+        "REGIME_ENDED": 2,
+        "RANK_EXHAUSTED": 51,
+        "NO_HEIR": 16,
+        "FOREIGN": 5,
+        "FORFEITED": 1
+      },
+      "civilPeerages": {
+        "NAN": 31,
+        "ZI": 3
+      },
+      "retirementPeerages": {},
+      "foundingAgeMonths": {
+        "samples": 96,
+        "min": 384,
+        "median": 669.0,
+        "max": 970
+      },
+      "firstHighGrantAgeMonths": {
+        "HOU": {
+          "samples": 24,
+          "min": 467,
+          "median": 686.5,
+          "max": 830
+        },
+        "GONG": {
+          "samples": 16,
+          "min": 504,
+          "median": 723.0,
+          "max": 866
+        }
+      }
+    },
+    "candidate": {
+      "preparatory": 30,
+      "families": 106,
+      "familyMembers": 276,
+      "livingFamilyMembers": 74,
+      "births": 27,
+      "birthsBeforeFounderGrant": 10,
+      "settledHighTitleDeaths": 16,
+      "deathsWithRegisteredChild": 15,
+      "deathsWithDirectSuccessor": 15,
+      "inheritance": {
+        "CHILD": 38,
+        "BROTHER": 1
+      },
+      "termination": {
+        "REGIME_ENDED": 2,
+        "RANK_EXHAUSTED": 52,
+        "NO_HEIR": 16,
+        "FOREIGN": 3,
+        "FORFEITED": 3
+      },
+      "civilPeerages": {
+        "NAN": 32,
+        "ZI": 4
+      },
+      "retirementPeerages": {
+        "NAN": 2
+      },
+      "foundingAgeMonths": {
+        "samples": 106,
+        "min": 353,
+        "median": 644.5,
+        "max": 970
+      },
+      "firstHighGrantAgeMonths": {
+        "HOU": {
+          "samples": 21,
+          "min": 396,
+          "median": 673,
+          "max": 830
+        },
+        "GONG": {
+          "samples": 12,
+          "min": 480,
+          "median": 693.5,
+          "max": 866
+        }
+      }
+    }
+  }
+}

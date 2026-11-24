@@ -2,9 +2,9 @@ import {describe,it,expect} from 'vitest';
 import {projectFamilyArchive,explainFamilyTitleEnd,familyRenewalCandidates,type FamilyArchiveSource} from './FamilyArchiveProjection';
 import {familyAtEvidenceBoundary,planFamilyNobleTransition,createFamilyNobleContext} from './FamilyNobleSuccession';
 import type {MilitaryFamily} from './MilitaryFamily';
-const fixture=()=>{
+const fixture=(rank='BO')=>{
  const f:MilitaryFamily={familyId:'f',surname:'甲',founderPersonId:'p',factionId:'home',epochFounderId:'king',foundedMonth:0,sourceEventId:'grant',members:[{memberId:'father',sourceUserId:1,name:'甲一',bornMonth:-650,generation:0,enteredMonth:0,source:'FOUNDER',militaryPersonId:'p',deathMonth:100,deathHistoryIndex:5},{memberId:'son',parentMemberId:'father',sourceUserId:2,name:'甲二',bornMonth:-390,generation:1,enteredMonth:20,source:'NATURAL_GROWTH',deathMonth:90,deathHistoryIndex:4},{memberId:'grandson',parentMemberId:'son',sourceUserId:3,name:'甲三',bornMonth:-150,generation:2,enteredMonth:80,source:'NATURAL_GROWTH'}]};
- const s:FamilyArchiveSource={month:101,people:[{personId:'p',appointments:[],nobilityHistory:[{eventId:'grant',rank:'GONG',month:0,factionId:'home',epochFounderId:'king'}]} as any],dynasties:[{factionId:'home',rulers:[],houseEpochs:[{foundingRulerId:'king',startMonth:0}]} as any],events:[{id:'grant',year:0,type:'military-ennobled'},{id:'f-founded',year:0},{id:'son-entered',year:20},{id:'grandson-entered',year:80},{id:'son-death',year:90},{id:'father-death',year:100}] as any};
+ const s:FamilyArchiveSource={month:101,people:[{personId:'p',appointments:[],nobilityHistory:[{eventId:'grant',rank,month:0,factionId:'home',epochFounderId:'king'}]} as any],dynasties:[{factionId:'home',rulers:[],houseEpochs:[{foundingRulerId:'king',startMonth:0}]} as any],events:[{id:'grant',year:0,type:'military-ennobled'},{id:'f-founded',year:0},{id:'son-entered',year:20},{id:'grandson-entered',year:80},{id:'son-death',year:90},{id:'father-death',year:100}] as any};
  const act=planFamilyNobleTransition(f,createFamilyNobleContext(100,[f],s.people,s.events,s.dynasties))!;f.nobleSuccession=[act];s.events=[...s.events,{id:act.eventId,year:100,type:'family-title-ended'} as any];return {f,s,act};
 };
 describe('one historical family reading source',()=>{
@@ -45,3 +45,5 @@ it('reads a posthumous epithet only after the exact sourced act and never derive
  expect(projectFamilyArchive(f,{...s,month:121,events:s.events.filter(e=>e.id!==h.eventId)}).rows.get('father')!.posthumous).toBeUndefined();
  s.events.at(-1)!.metadata!.personId='another';expect(projectFamilyArchive(f,{...s,month:121}).rows.get('father')!.posthumous).toBeUndefined();
 });
+
+it('describes a real high-peerage grandson succession by the correct relation',()=>{const {f,s,act}=fixture('GONG');expect(explainFamilyTitleEnd(f,act,s).text).toContain('其孙甲三袭侯爵');});
