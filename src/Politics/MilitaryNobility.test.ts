@@ -48,3 +48,22 @@ it('uses the higher valid inherited rank as the floor without turning it into pe
  x.capture('c',"c",60,true);expect(nextNobleGrant(x.p,x.f,x.events,72,x.team,x.d,'MEDIUM','ZI')).toMatchObject({rank:'BO',previousRank:'ZI'});
  expect(nextNobleGrant(x.p,x.f,x.events,84,x.team,x.d,'MEDIUM')).toMatchObject({rank:'BO',previousRank:'NONE'});
 });
+
+it('uses an immediate political ending once and does not count exile or another commander',()=>{
+ const x=fixture();x.capture('last','final-city',24,true);
+ Object.assign(x.events[0],{historyGroupId:'battle'});
+ const ending={id:'ended',type:'faction-extinct',year:24,targetFactionId:'wei',conquerorFactionId:'qin',historyGroupId:'battle',
+  metadata:{isFinalCityCapture:1,cityId:'final-city',terminalCaptureEventId:'last',defeatedIdentityStage:'STATE',defeatedSovereigntyRank:'KING'}};
+ x.events.push({...ending,type:'faction-exiled'});
+ expect(nextNobleGrant(x.p,x.f,x.events,60,x.team,x.d)).toBeUndefined();
+ x.events[1]={...ending,year:25};
+ expect(nextNobleGrant(x.p,x.f,x.events,60,x.team,x.d)).toBeUndefined();
+ x.events[1]=ending;
+ const grant=nextNobleGrant(x.p,x.f,x.events,60,x.team,x.d)!;
+ expect(grant).toMatchObject({rank:'NAN',terminalVictoryEventId:'ended'});
+ x.p.nobilityHistory=[grant];
+ expect(nextNobleGrant(x.p,x.f,x.events,72,x.team,x.d)).toBeUndefined();
+ x.p.nobilityHistory=[];
+ x.events[0].metadata.commanderPersonId='other';
+ expect(nextNobleGrant(x.p,x.f,x.events,72,x.team,x.d)).toBeUndefined();
+});

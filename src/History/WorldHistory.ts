@@ -910,7 +910,7 @@ export class WorldHistoryStore {
       category: "politics",
       type: "faction-extinct",
       title: title ?? `${teamName}国残部消散，${teamName}国彻底灭亡`,
-      factionIds: [teamName],
+      factionIds: [teamName,...typeof metadata?.defeatedIdentityStage==="string"&&typeof metadata?.conquerorFactionId==="string"?[metadata.conquerorFactionId]:[]],
       targetFactionId: teamName,
       conquerorFactionId:
         typeof metadata?.conquerorFactionId === "string"
@@ -938,7 +938,7 @@ export class WorldHistoryStore {
       type: "faction-dissolved",
       title: `${factionId}覆灭`,
       description: `${factionId}失去最后据点，残部解散。`,
-      factionIds: [factionId],
+      factionIds: [factionId,...typeof metadata?.defeatedIdentityStage==="string"&&typeof metadata?.conquerorFactionId==="string"?[metadata.conquerorFactionId]:[]],
       targetFactionId: factionId,
       conquerorFactionId:
         typeof metadata?.conquerorFactionId === "string"
@@ -1203,7 +1203,8 @@ export class WorldHistoryStore {
     stability?: number,
     path?: "HEGEMONY" | "DOMINANCE",
     leadShare?: number,
-    controlledCityCount?: number
+    controlledCityCount?: number,
+    qualifiedSince?: number,
   ) {
     return this.addEvent({
       id: `emperor-proclaimed-${year}-${factionId}-${this.sequence++}`,
@@ -1228,6 +1229,7 @@ export class WorldHistoryStore {
         path,
         leadShare,
         controlledCityCount,
+        qualifiedSince,
       },
       importance: "major",
     });

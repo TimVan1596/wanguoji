@@ -25,7 +25,8 @@ function familyRow(f:MilitaryFamily,m:MilitaryFamilyMember,s:FamilyArchiveSource
 
   const p=m.militaryPersonId?byPerson.get(m.militaryPersonId):undefined,political=index.byResident.get(`${m.sourceUserId}/${m.bornMonth}`)??(m.militaryPersonId?index.byMilitary.get(`${m.militaryPersonId}/${m.bornMonth}`):undefined);
   const civilTerms=index.civilByResident.get(`${m.sourceUserId}/${m.bornMonth}`)??[],activeCivil=civilTerms.find(t=>(t.endMonth??Infinity)>s.month);
-  const dead=Math.min(...civilTerms.filter(t=>t.endReason==='DEATH').map(t=>t.endMonth!),m.deathMonth??Infinity,political?.r.deathMonth??Infinity)<=s.month,life=dead?'DEAD' as const:political||familyMemberPresent(m,s.month)?'ALIVE' as const:'UNKNOWN' as const;
+  const deathMonth=Math.min(...civilTerms.filter(t=>t.endReason==='DEATH').map(t=>t.endMonth!),m.deathMonth??Infinity,political?.r.deathMonth??Infinity,p?.bornMonth===m.bornMonth&&p.sourceUserId===m.sourceUserId?p.deathMonth??Infinity:Infinity);
+  const life=deathMonth<=s.month?'DEAD' as const:political||familyMemberPresent(m,s.month)?'ALIVE' as const:'UNKNOWN' as const;
   const appointments=p?.appointments.filter(a=>a.startMonth<=s.month)??[],currentAppointment=appointments.find(a=>(a.endMonth??Infinity)>s.month),activeOffice=p&&currentAppointment&&life==='ALIVE'&&!political?verifiedPoliticalOffice(p,currentAppointment.commandId,currentAppointment.factionId,s.month,s.events,index.office):undefined;
   const personalHistory=p?.nobilityHistory?.filter(g=>g.month<=s.month)??[];
   const effectivePersonal=life==='ALIVE'&&!political&&p?personalHistory.filter(g=>c.activeEpochs.has(`${g.factionId}/${g.epochFounderId}`)&&familyResidenceAt(f,m,s.month)===g.factionId&&currentNobleGrant(p,g.factionId,s.month,g.epochFounderId)?.eventId===g.eventId).sort((a,b)=>NOBLE_RANKS.indexOf(b.rank)-NOBLE_RANKS.indexOf(a.rank))[0]:undefined;
@@ -34,7 +35,7 @@ function familyRow(f:MilitaryFamily,m:MilitaryFamilyMember,s:FamilyArchiveSource
   const posthumous=p?.honorHistory?.filter(h=>h.kind==='POSTHUMOUS'&&h.month<=s.month&&h.epithet&&eventsById.get(h.eventId)?.type==='military-posthumous'&&eventsById.get(h.eventId)?.actorFactionId===h.factionId&&(eventsById.get(h.eventId)?.monthIndex??eventsById.get(h.eventId)?.year)===h.month&&eventsById.get(h.eventId)?.metadata?.personId===p.personId&&eventsById.get(h.eventId)?.metadata?.honor===JSON.stringify(h)).at(-1);
   const renewed=f.renewals?.filter(r=>r.memberId===m.memberId&&r.month<=s.month&&eventsById.has(r.sourceEventId)&&eventsById.has(`${f.familyId}-${m.memberId}-merit`))??[];
   const sourceRanks=[effectivePersonal?.rank,inherited?.rank].filter((r):r is NonNullable<typeof r>=>!!r).sort((a,b)=>FAMILY_NOBLE_RANKS.indexOf(b)-FAMILY_NOBLE_RANKS.indexOf(a));
-  return {member:m,person:p,posthumous,life,political,civilTerms,activeCivil,appointments,activeOffice,personalHistory,effectivePersonal,inheritedHistory,inherited,renewed,primaryRank:sourceRanks[0],important:m.source==='FOUNDER'||civilTerms.length>0||appointments.length>0||personalHistory.length>0||inheritedHistory.length>0||!!political||renewed.length>0};
+  return {member:m,person:p,posthumous,life,deathMonth:deathMonth<=s.month?deathMonth:undefined,political,civilTerms,activeCivil,appointments,activeOffice,personalHistory,effectivePersonal,inheritedHistory,inherited,renewed,primaryRank:sourceRanks[0],important:m.source==='FOUNDER'||civilTerms.length>0||appointments.length>0||personalHistory.length>0||inheritedHistory.length>0||!!political||renewed.length>0};
 
 }
 /** Reuse the evidence already checked for a list row when opening its archive.

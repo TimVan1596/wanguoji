@@ -109,7 +109,8 @@ class CivilAdministrationStore {
   const endEventId=retiring?`${term.assignmentId}-ended-${month}`:undefined;
   const local=this.state.terms.filter(t=>t.personId===p.personId&&t.factionId===team.name&&t.epochFounderId===term.epochFounderId)
    .map(t=>retiring&&t.assignmentId===term.assignmentId?{...t,endMonth:month,endReason:'RETIREMENT' as const,endEventId}:t);
-  const merit=civilNobleMerit(p,local,month,user.loyalty,previous,endEventId);
+  const proclamations=previous==='ZI'||previous==='BO'?WorldHistory.getEventsForFaction(team.name).filter(e=>e.type==='emperor-proclaimed').reverse():[];
+  const merit=civilNobleMerit(p,local,month,user.loyalty,previous,endEventId,proclamations);
   if(!merit||!civilPeerageDraw(worldRandom.exportState().seed,p.personId,team.name,month,merit.rank,retiring))return;
   const grant:import('./MilitaryNobility').NobleGrant={...merit,basis:'CIVIL',eventId:`civil-noble-${p.personId}-${term.epochFounderId}-${merit.rank}`,personId:p.personId,sourceUserId:p.sourceUserId,bornMonth:p.bornMonth,personalName:p.personalName,factionId:team.name,countryName:team.displayName??team.name,epochFounderId:term.epochFounderId,rulerId:ruler.id,rulerTitle:DynastyRegistry.getRulerHistoricalTitle(ruler.id,team.name,month)??ruler.givenName,month,previousRank:previous??'NONE',commandId:'',captureEventIds:[],cityIds:[],importantCityIds:[],importantEventIds:[]};
   return {p,grant};
@@ -230,7 +231,7 @@ class CivilAdministrationStore {
  private applyGovernance(month:number,teams:Team[]){
   for(const term of this.state.terms.filter(t=>active(t,month))){
    if(term.lastEffectMonth!==undefined&&month-term.lastEffectMonth<12)continue;
-   const team=teams.find(t=>t.name===term.factionId),city=isLocalCivilOffice(term.office)?team?.cities.find(c=>c.id===term.cityId):team?.cities.filter(c=>!c.destroyed&&c.ownerFactionId===term.factionId&&(c.loyalty<80||c.devastation>0)).sort((a,b)=>{
+   const team=teams.find(t=>t.name===term.factionId),city=isLocalCivilOffice(term.office)?team?.cities.find(c=>c.id===term.cityId):team?.cities.filter(c=>!c.destroyed&&c.ownerFactionId===term.factionId&&(team.sovereigntyRank!=='EMPEROR'||!c.underSiege)&&(c.loyalty<80||c.devastation>0)).sort((a,b)=>{
     // An imperial central office can direct its existing recovery work to the most distressed city.
     const priority=team.sovereigntyRank==='EMPEROR'
      ? (b.devastation+Math.max(0,80-b.loyalty))-(a.devastation+Math.max(0,80-a.loyalty)) : 0;

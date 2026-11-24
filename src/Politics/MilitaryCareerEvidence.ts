@@ -20,7 +20,7 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
       f.captures.some(c => c.eventId === id && c.cityId === e.cityId && c.month === month) ? [e] : [];
   });
   const terminalByGroup=index?.terminalByGroup??new Map<string,WorldEvent[]>();
-  if(!index)for(const event of events){
+  if(!index&&captures.length)for(const event of events){
     if(!event.historyGroupId||!["faction-extinct","faction-dissolved"].includes(event.type))continue;
     const group=terminalByGroup.get(event.historyGroupId)??[];
     group.push(event);
@@ -30,7 +30,7 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
   for(const capture of captures){
     if(!capture.historyGroupId)continue;
     for(const event of terminalByGroup.get(capture.historyGroupId)??[]){
-      if(event.metadata?.isFinalCityCapture!==1||event.targetFactionId!==capture.targetFactionId||
+      if(event.metadata?.terminalCaptureEventId!==capture.id||event.metadata?.isFinalCityCapture!==1||event.targetFactionId!==capture.targetFactionId||
         event.conquerorFactionId!==capture.actorFactionId||event.metadata?.cityId!==capture.cityId||
         (event.monthIndex??event.year)!==(capture.monthIndex??capture.year))continue;
       const stage=event.metadata.defeatedIdentityStage,rank=event.metadata.defeatedSovereigntyRank;

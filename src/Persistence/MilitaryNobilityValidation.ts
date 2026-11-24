@@ -4,7 +4,7 @@ import {selectFoundingNobleGrant} from '../Politics/FoundingNobility';
 import type {WorldSaveV1} from './WorldSaveSchema';
 import type {WorldEvent} from '../History/WorldHistory';
 import {importRulerSave} from './RulerSaveProjection';
-import {deriveNobleMerits,nobleEpochForRuler,NOBLE_RANKS,militaryNobleRule,eligibleMilitaryNobleRank,nobleChronicle,currentNobleGrant,courtNobleGrant,type NobleGrant} from '../Politics/MilitaryNobility';
+import {deriveNobleMerits,nobleEpochForRuler,NOBLE_RANKS,militaryNobleRule,eligibleMilitaryNobleRank,nobleChronicle,currentNobleGrant,courtNobleGrant,terminalVictoryPeerage,type NobleGrant} from '../Politics/MilitaryNobility';
 import {familyAtEvidenceBoundary,familyNobleRankAt,familyNobleAuthorityAt} from '../Politics/FamilyNobleSuccession';
 import {formatRulerTitleAtMonth} from '../Politics/RulerTitleRules';
 import {getHistoricalFactionIdentity} from '../History/HistoricalFactionIdentity';
@@ -12,12 +12,27 @@ import {getSovereigntyRankAtMonth} from '../Simulation/FactionIdentity';
 /** Historical proofs are evaluated before each grant, never using today's living ruler or roster. */
 export function validateMilitaryNobility(save:WorldSaveV1){
  const errors:string[]=[],state=save.registries.militaryCommandRegistry,events=(save.worldHistory.events as WorldEvent[]).map(e=>({...e,year:e.monthIndex??e.year})),byId=new Map(events.map((e,i)=>[e.id,{e,i}])),used=new Set<string>();
+ for(const [i,event] of events.entries()){
+  const captureId=event.metadata?.terminalCaptureEventId;
+  if(captureId===undefined||!['faction-extinct','faction-dissolved'].includes(event.type))continue;
+  const capture=typeof captureId==='string'?byId.get(captureId):undefined;
+  const target=save.factions.find(f=>f.factionId===event.targetFactionId),month=event.monthIndex??event.year;
+  const stage=target?.stateFoundedMonth!==undefined&&target.stateFoundedMonth<=month?'STATE':'PROVISIONAL';
+  const ranks=target?.sovereigntyHistory?.filter(record=>typeof record.startMonth==='number'&&record.startMonth<=month&&(typeof record.endMonth==='number'?record.endMonth:Infinity)>=month).map(record=>record.rank)??[];
+  if(!capture||capture.i>=i||!event.historyGroupId||capture.e.historyGroupId!==event.historyGroupId||
+   !['capital-fallen','city-captured','city-recovered'].includes(capture.e.type)||
+   capture.e.year!==month||capture.e.cityId!==event.metadata?.cityId||capture.e.targetFactionId!==event.targetFactionId||
+   capture.e.actorFactionId!==event.conquerorFactionId||event.metadata?.isFinalCityCapture!==1||
+   !target||event.metadata?.defeatedIdentityStage!==stage||!ranks.includes(event.metadata?.defeatedSovereigntyRank as never)||
+   event.type!==(stage==='STATE'?'faction-extinct':'faction-dissolved'))errors.push('invalid terminal capture source: '+event.id);
+ }
  for(const p of state.people){
   if(p.nobilityHistory===undefined)continue;if(!Array.isArray(p.nobilityHistory)){errors.push('invalid noble history');continue;}
   let lastMonth=-1;const keys=new Set<string>(),months=new Set<number>(),previous=new Map<string,NobleGrant>();
   for(const g of p.nobilityHistory){
    try{
     if(!g||!NOBLE_RANKS.includes(g.rank)||!Number.isSafeInteger(g.month)||g.month<=lastMonth||g.month%12!==0||g.month>save.world.worldMonth||g.personId!==p.personId||g.sourceUserId!==p.sourceUserId||g.bornMonth!==p.bornMonth||g.personalName!==p.personalName||![g.captureEventIds,g.cityIds,g.importantCityIds,g.importantEventIds].every(a=>Array.isArray(a)&&a.every(x=>typeof x==='string')&&new Set(a).size===a.length))throw Error();
+    if(g.basis!==undefined&&g.terminalVictoryEventId!==undefined)throw Error();
     if(g.basis!==undefined&&!['COURT','FOUNDING','CIVIL'].includes(g.basis)||g.basis===undefined&&(g.courtServiceEventId!==undefined||g.courtCoupEventId!==undefined||g.foundingEventId!==undefined||g.foundingMeritEventIds!==undefined))throw Error();
     const ref=byId.get(g.eventId);if(!ref||used.has(g.eventId))throw Error();const {e,i}=ref,before=events.slice(0,i),f=save.factions.find(f=>f.factionId===g.factionId),d=save.dynasties.find(d=>d.factionId===g.factionId),rulers=(Array.isArray(d?.rulers)?d!.rulers:[]).map(x=>importRulerSave(x as any)),r=rulers.find(r=>r.id===g.rulerId),epoch=(Array.isArray(d?.houseEpochs)?d!.houseEpochs:[]).find(h=>h.foundingRulerId===g.epochFounderId),key=JSON.stringify([g.factionId,g.epochFounderId]),prev=currentNobleGrant({...p,nobilityHistory:p.nobilityHistory?.filter(x=>before.some(e=>e.id===x.eventId)),honorHistory:p.honorHistory?.filter(x=>before.some(e=>e.id===x.eventId))},g.factionId,g.month,g.epochFounderId),unique=key+g.rank;
     const family=state.families?.find(f=>f.members.some(m=>m.militaryPersonId===p.personId&&m.sourceUserId===p.sourceUserId&&m.bornMonth===p.bornMonth)),familyMember=family?.members.find(m=>m.militaryPersonId===p.personId&&m.sourceUserId===p.sourceUserId&&m.bornMonth===p.bornMonth),familyBefore=family?familyAtEvidenceBoundary(family,g.month,i,events):undefined,historicalHolder=familyBefore&&familyMember?familyBefore.members.find(m=>m.memberId===familyMember.memberId):undefined,hereditaryRank=familyBefore&&historicalHolder&&familyNobleAuthorityAt(familyBefore,g.month).factionId===g.factionId&&familyNobleAuthorityAt(familyBefore,g.month).epochFounderId===g.epochFounderId?familyNobleRankAt(familyBefore,historicalHolder,g.month):undefined,effectivePrevious=prev&&hereditaryRank?(NOBLE_RANKS.indexOf(prev.rank)>=NOBLE_RANKS.indexOf(hereditaryRank)?prev.rank:hereditaryRank):prev?.rank??hereditaryRank;
@@ -29,13 +44,13 @@ export function validateMilitaryNobility(save:WorldSaveV1){
      const beforeIds=new Set(before.map(e=>e.id));
      const historyPerson={...p,deathMonth:p.deathMonth!==undefined&&p.deathMonth<g.month?p.deathMonth:undefined,politicalRulerId:before.some(x=>p.politicalRulerId&&[x.rulerId,x.metadata?.nextRulerId,x.metadata?.foundingRulerId].includes(p.politicalRulerId)&&['ruler-acceded','ruler-deposed','ruler-succession','empire-split','dynasty-usurped'].includes(x.type))?p.politicalRulerId:undefined,nobilityHistory:p.nobilityHistory?.filter(x=>beforeIds.has(x.eventId)),politicalHistory:p.politicalHistory?.filter(x=>beforeIds.has(x.eventId))};
      const terms=save.registries.civilAdministration.terms.filter(t=>t.personId===p.personId&&t.factionId===g.factionId&&t.epochFounderId===g.epochFounderId&&beforeIds.has(t.appointEventId)).map(t=>({...t,endMonth:t.endMonth!==undefined&&(t.endMonth<g.month||beforeIds.has(t.endEventId!))?t.endMonth:undefined,receipts:t.receipts?.filter(x=>beforeIds.has(x.eventId)),stewardshipAssessments:t.stewardshipAssessments?.filter(x=>beforeIds.has(x.eventId))}));
-     const expected=civilNobleMerit(historyPerson,terms,g.month,g.civilLoyalty??-1,effectivePrevious,g.civilRetirementEventId);
-     if(p.deathMonth!==undefined&&p.deathMonth<g.month||before.some(e=>e.type==='military-person-died'&&e.metadata?.personId===p.personId&&(e.monthIndex??e.year)<=g.month)||!expected||g.civilRetirementEventId!==expected.civilRetirementEventId||JSON.stringify(g.civilStewardshipEventIds)!==JSON.stringify(expected.civilStewardshipEventIds)||
+     const expected=civilNobleMerit(historyPerson,terms,g.month,g.civilLoyalty??-1,effectivePrevious,g.civilRetirementEventId,before.filter(e=>e.type==='emperor-proclaimed'&&e.actorFactionId===g.factionId));
+     if(p.deathMonth!==undefined&&p.deathMonth<g.month||before.some(e=>e.type==='military-person-died'&&e.metadata?.personId===p.personId&&(e.monthIndex??e.year)<=g.month)||!expected||g.civilImperialEventId!==expected.civilImperialEventId||g.civilRetirementEventId!==expected.civilRetirementEventId||JSON.stringify(g.civilStewardshipEventIds)!==JSON.stringify(expected.civilStewardshipEventIds)||
       (g.civilRetirementEventId!==undefined||g.rank==='BO'||g.rank==='HOU')&&!civilPeerageDraw(save.worldRandom.seed,g.personId,g.factionId,g.month,g.rank,g.civilRetirementEventId!==undefined)||
       g.civilTermId!==expected.civilTermId||g.rank!==expected.rank||g.serviceMonths!==expected.serviceMonths||JSON.stringify(g.civilMeritEventIds)!==JSON.stringify(expected.civilMeritEventIds)||g.commandId!==''||g.office!==undefined||g.captureEventIds.length||g.cityIds.length||g.importantCityIds.length||g.importantEventIds.length||unresolvedCourtBans(historyPerson,g.factionId,g.month,g.epochFounderId).length||p.honorHistory?.some(h=>h.kind==='REVOKED'&&h.factionId===g.factionId&&h.epochFounderId===g.epochFounderId&&beforeIds.has(h.eventId))||g.courtCoupEventId!==undefined||g.courtServiceEventId!==undefined||g.foundingEventId!==undefined||g.foundingMeritEventIds!==undefined||e.type!=='civil-ennobled'||e.metadata?.nobility!==JSON.stringify(g)||e.metadata?.personId!==p.personId||e.title!==nobleChronicle(g)||e.rulerId!==r.id||e.actorFactionId!==g.factionId||(e.monthIndex??e.year)!==g.month)throw Error('Invalid civil peerage');
      keys.add(unique);months.add(g.month);used.add(g.eventId);lastMonth=g.month;previous.set(key,g);continue;
     }
-    if(g.civilRetirementEventId!==undefined||g.civilStewardshipEventIds!==undefined)throw Error('Unexpected civil authority');
+    if(g.civilImperialEventId!==undefined||g.civilRetirementEventId!==undefined||g.civilStewardshipEventIds!==undefined)throw Error('Unexpected civil authority');
     const a=p.appointments.find(a=>a.commandId===g.commandId&&a.factionId===g.factionId&&a.startMonth<=g.month&&g.month<=(a.endMonth??g.month)),office=a?.officeHistory?.filter(o=>o.month<=g.month&&(o.month<g.month||(byId.get(o.eventId)?.i??Infinity)<i)).at(-1)?.office;
     if(!a||office!==g.office||p.deathMonth!==undefined&&p.deathMonth<g.month||before.some(x=>(x.monthIndex??x.year)===g.month&&((x.type==='military-command-ended'&&x.metadata?.commandId===g.commandId)||(x.type==='military-person-died'&&x.metadata?.personId===p.personId)||(x.type==='ruler-died'&&x.metadata?.rulerId===g.rulerId)||(x.type==='ruler-deposed'&&x.metadata?.previousRulerId===g.rulerId))))throw Error();
     if(g.basis==='FOUNDING'){
@@ -56,8 +71,10 @@ export function validateMilitaryNobility(save:WorldSaveV1){
      if(!expected||JSON.stringify(expected)!==JSON.stringify(g)||e.metadata?.personId!==p.personId||e.metadata?.sourceUserId!==p.sourceUserId||e.metadata?.commandId!==g.commandId||e.metadata?.rank!==g.rank||e.type!=='court-peerage-granted'||e.actorFactionId!==g.factionId||e.rulerId!==g.rulerId||(e.monthIndex??e.year)!==g.month||e.metadata?.nobility!==JSON.stringify(g)||e.title!==nobleChronicle(g)||e.metadata?.courtServiceEventId!==g.courtServiceEventId||e.metadata?.courtCoupEventId!==g.courtCoupEventId)throw Error();
     }else{
     const merits=deriveNobleMerits(p,state.formations,before,g.factionId,g.month),rule=militaryNobleRule(g.rank,state.nobleMeritPolicy??'BASELINE');
-    if(g.rank!==eligibleMilitaryNobleRank(effectivePrevious,merits,state.nobleMeritPolicy??'BASELINE'))throw Error();
-    if(g.serviceMonths!==merits.serviceMonths||merits.serviceMonths<rule.serviceMonths||merits.cityIds.length<rule.cities||merits.importantCityIds.length<rule.importantCities||['captureEventIds','cityIds','importantCityIds','importantEventIds'].some(k=>JSON.stringify(g[k as keyof NobleGrant])!==JSON.stringify(merits[k as keyof typeof merits]))||e.type!=='military-ennobled'||e.actorFactionId!==g.factionId||e.rulerId!==g.rulerId||(e.monthIndex??e.year)!==g.month||e.metadata?.nobility!==JSON.stringify(g)||e.title!==nobleChronicle(g))throw Error();
+    const normal=eligibleMilitaryNobleRank(effectivePrevious,merits,state.nobleMeritPolicy??'BASELINE');
+    const special=normal?undefined:terminalVictoryPeerage({...p,nobilityHistory:p.nobilityHistory.filter(grant=>(byId.get(grant.eventId)?.i??Infinity)<i)},merits,effectivePrevious,epoch.startMonth);
+    if(g.rank!==(normal??special?.rank)||g.terminalVictoryEventId!==special?.terminalVictoryEventId)throw Error();
+    if(g.serviceMonths!==merits.serviceMonths||!special&&(merits.serviceMonths<rule.serviceMonths||merits.cityIds.length<rule.cities||merits.importantCityIds.length<rule.importantCities)||['captureEventIds','cityIds','importantCityIds','importantEventIds'].some(k=>JSON.stringify(g[k as keyof NobleGrant])!==JSON.stringify(merits[k as keyof typeof merits]))||e.type!=='military-ennobled'||e.actorFactionId!==g.factionId||e.rulerId!==g.rulerId||(e.monthIndex??e.year)!==g.month||e.metadata?.nobility!==JSON.stringify(g)||e.title!==nobleChronicle(g))throw Error();
     }
     keys.add(unique);months.add(g.month);used.add(g.eventId);lastMonth=g.month;previous.set(key,g);
    }catch{errors.push('invalid noble grant: '+(g?.eventId??p.personId));}

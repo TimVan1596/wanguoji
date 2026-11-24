@@ -666,6 +666,7 @@ export default class WorldEventSystem {
         hasFormalRuler,
       });
       if (!path) return;
+      const qualifiedSince = path === "DOMINANCE" ? team.imperialDominanceSinceMonth : team.emperorEligibleSinceMonth;
       if (!team.proclaimEmperor(year)) {
         return;
       }
@@ -681,6 +682,7 @@ export default class WorldEventSystem {
         path,
         territoryShare - topOtherShare,
         team.cities.length,
+        qualifiedSince,
       );
       DynastyRegistry.recordEmperorProclaimed(team.name, year, eventId);
     });

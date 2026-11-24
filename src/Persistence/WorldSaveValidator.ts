@@ -722,7 +722,7 @@ function validateHydrationImportShapes(save: Partial<WorldSaveV1>, errors: strin
   save.factions?.forEach((faction, index) => {
     for (const since of [faction.emperorEligibleSinceMonth, faction.imperialDominanceSinceMonth]) {
       if (since !== undefined && (!Number.isSafeInteger(since) || !Number.isSafeInteger(faction.stateFoundedMonth) ||
-        since < faction.stateFoundedMonth! || since > save.world.worldMonth ||
+        since < faction.stateFoundedMonth! || since > (save.world?.worldMonth ?? -1) ||
         faction.sovereigntyRank !== "KING" || faction.identityStage !== "STATE")) errors.push(`factions[${index}] invalid emperor observation`);
     }
     if (!Array.isArray(faction.sovereigntyHistory) || !Array.isArray(faction.nameHistory)) errors.push(`factions[${index}] history fields must be arrays`);

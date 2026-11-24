@@ -22,3 +22,17 @@ it('requires higher offices and multiple real sources for advanced civil titles 
  expect(civilNobleMerit({...p,nobilityHistory:[{...award,basis:'CIVIL'}]},[local,retired],300,90,'BO','retires')).toBeUndefined();
  expect(civilNobleMerit(p,[local,{...retired,endReason:'POLITICAL_SANCTION'}],300,90,'BO','retires')).toBeUndefined();
 });
+
+it('retains unspent receipts and requires central recovery during an actual proclamation window',()=>{
+ const baron=civilNobleMerit(p,[t],120,80)!;
+ expect(baron.civilMeritEventIds).toEqual(t.receipts.slice(0,6).map((r:any)=>r.eventId));
+ const central={...t,office:'CHENGXIANG',factionId:'qin',receipts:[144,156,168,180,192].map((month,i)=>({
+  month,eventId:'central-'+i,cityId:i%2?'A':'B',loyalty:1,devastation:1,
+ }))};
+ const proclamation:any={id:'proclamation',type:'emperor-proclaimed',actorFactionId:'qin',year:216,metadata:{path:'HEGEMONY',qualifiedSince:180}};
+ const award=civilNobleMerit(p,[central],300,90,'BO',undefined,[proclamation]);
+ expect(award).toMatchObject({rank:'HOU',civilImperialEventId:proclamation.id});
+ expect(award?.civilMeritEventIds).toContain('central-3');
+ expect(civilNobleMerit(p,[central],300,90,'BO',undefined,[{...proclamation,actorFactionId:'wei'}])).toBeUndefined();
+ expect(civilNobleMerit(p,[{...central,receipts:central.receipts.slice(0,3)}],300,90,'BO',undefined,[proclamation])).toBeUndefined();
+});

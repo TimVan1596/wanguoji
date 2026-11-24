@@ -147,7 +147,7 @@ Desktop 打包：`pnpm desktop:pack` 生成目录包；Apple Silicon Mac 使用 
 
 ## 当前已知问题
 
-- 当前 APP **v0.100.0-beta.72** / package **0.100.0-beta.72** / WorldSave **V67**。新增预备亲缘、公侯有限代袭与旁系承袭、高级文官和致仕恩爵，优化正月家族与授爵计算。旧槽位保留，须新建世界。
+- 当前 APP **v0.100.0-beta.73** / package **0.100.0-beta.73** / WorldSave **V68**。新增宗室臣爵有限旁系承袭、独立称帝路径、灭国功勋和高级文官政治恩赏。旧槽位保留，须新建世界。
 
 - v0.99931n人工Gate已PASS，真实长局自然发生至少11次同王统宗室废立。当前v0.99931n1修复连续废立后的V14生命周期校验，并完善君主即离位叙述与史评，等待[人工Gate](docs/RulerDepositionLifecycleClosureN1.md)。
 - v0.99929a 修复政治终结历史身份、退位年龄与双方君主大事记。[Political Terminal Chronicle Gate](docs/PoliticalTerminalChronicleClosure.md)已由用户完成人工PASS。
