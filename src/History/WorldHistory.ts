@@ -1212,7 +1212,7 @@ export class WorldHistoryStore {
       category: "politics",
       type: "emperor-proclaimed",
       title: rulerName
-        ? `${displayName}国威震天下，${displayName}王${rulerName}称帝。`
+        ? `${displayName}王${rulerName}称帝，建立帝号。`
         : `${displayName}正式建立帝号。`,
       factionIds: [factionId],
       actorFactionId: factionId,

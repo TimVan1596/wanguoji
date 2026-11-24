@@ -261,6 +261,7 @@ export function buildEmperorQualificationLines(input: EmperorQualificationInput)
   if (team.sovereigntyRank === "EMPEROR") {
     return [
       "帝统已立",
+      "中央官员优先治理受创或忠诚偏低的城市",
       `称帝：${
         team.proclaimedEmperorMonth !== undefined
           ? formatWorldDate(team.proclaimedEmperorMonth)

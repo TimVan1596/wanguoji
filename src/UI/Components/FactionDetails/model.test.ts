@@ -295,7 +295,7 @@ describe("faction details model", () => {
         effectiveStability: 10,
         hasFormalRuler: true,
       })
-    ).toEqual(["帝统已立", "称帝：13年10月"]);
+    ).toEqual(["帝统已立", "中央官员优先治理受创或忠诚偏低的城市", "称帝：13年10月"]);
   });
 });
 

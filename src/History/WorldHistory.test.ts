@@ -147,7 +147,7 @@ describe("world history", () => {
     WorldHistory.addEmperorProclaimed(240, "梁", "梁", "魏安", "r1", 52, 45, 68);
     const event = WorldHistory.getEvents()[0];
     expect(event.type).toBe("emperor-proclaimed");
-    expect(event.title).toBe("梁国威震天下，梁王魏安称帝。");
+    expect(event.title).toBe("梁王魏安称帝，建立帝号。");
     expect(event.metadata?.oldRank).toBe("KING");
     expect(event.metadata?.newRank).toBe("EMPEROR");
   });

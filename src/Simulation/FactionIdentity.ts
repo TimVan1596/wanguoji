@@ -91,8 +91,7 @@ export function initializeFactionIdentity(
   faction.stateFormationEligibleSinceMonth = undefined;
   faction.stateFormationEligibilityKind = undefined;
   faction.stateFoundedMonth = faction.identityStage === "STATE" ? startMonth : undefined;
-  faction.emperorEligibleSinceMonth = undefined;
-  faction.imperialDominanceSinceMonth = undefined;
+  clearEmperorProclamationObservation(faction);
   faction.proclaimedEmperorMonth = undefined;
 }
 
@@ -404,6 +403,13 @@ export function observeEmperorProclamationEligibility(
   return false;
 }
 
+export function clearEmperorProclamationObservation(
+  faction: Pick<FactionIdentityState, "emperorEligibleSinceMonth" | "imperialDominanceSinceMonth">,
+) {
+  faction.emperorEligibleSinceMonth = undefined;
+  faction.imperialDominanceSinceMonth = undefined;
+}
+
 export function proclaimEmperor(faction: FactionIdentityState, monthIndex: number) {
   if (
     faction.identityStage !== "STATE" ||
@@ -414,8 +420,7 @@ export function proclaimEmperor(faction: FactionIdentityState, monthIndex: numbe
   }
   setSovereigntyRank(faction, "EMPEROR", monthIndex);
   faction.proclaimedEmperorMonth = monthIndex;
-  faction.emperorEligibleSinceMonth = undefined;
-  faction.imperialDominanceSinceMonth = undefined;
+  clearEmperorProclamationObservation(faction);
   return true;
 }
 

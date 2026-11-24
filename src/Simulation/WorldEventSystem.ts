@@ -4,7 +4,7 @@ import {militaryLocalCrisis} from "./MilitaryLocalRules";
 import {popularCrisisFacts} from "./PopularRebellionSupport";
 import {assessMilitarySecession} from "./MilitarySecession";
 import {RegionalRebellionAudit} from "./RegionalRebellionAudit";
-import {assessPopularSupport,hasPopularPoliticalCrisis,popularPoliticalCrisis} from "./PopularRebellionSupport";
+import {assessPopularSupport,popularPoliticalCrisis} from "./PopularRebellionSupport";
 import { getPopulationCapacity } from "./PopulationSystem";
 import { getLocalRestorationClaimant, assessLocalRestorationPopulation } from "./LocalRestorationSupport";
 import { deriveRestorationTenureEvidence } from "./RestorationTenureEvidence";
@@ -641,7 +641,8 @@ export default class WorldEventSystem {
       const currentRuler = DynastyRegistry.getCurrentRuler(team.name);
       const hasFormalRuler = Boolean(
         currentRuler?.reignOrdinal !== undefined &&
-          currentRuler.accessionYear !== undefined
+          currentRuler.accessionYear !== undefined && currentRuler.accessionYear <= year &&
+          currentRuler.status === "ruling" && currentRuler.deathMonth === undefined
       );
       const baseStability = getFactionStability(team) ?? 0;
       const territoryShare = getFactionTerritoryMetric(

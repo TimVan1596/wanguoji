@@ -26,6 +26,7 @@ import {
   SovereigntyHistoryEntry,
   SovereigntyRank,
   formFactionState,
+  clearEmperorProclamationObservation,
   getFactionDisplayName,
   getFactionDisplayNameAtMonth,
   initializeFactionIdentity,
@@ -368,12 +369,14 @@ export default class Team {
   }
 
   markExiled(year: number) {
+    clearEmperorProclamationObservation(this);
     markLifecycleExiled(this, year);
     this.removeRulerUnit(true);
   }
 
   markExtinct(year: number) {
     FactionLifetimeRecords.prepareTerminal(this, year);
+    clearEmperorProclamationObservation(this);
     markLifecycleExtinct(this, year);
     this.terminationReason = "EXTINCT";
     FactionLifetimeRecords.freeze(this, year);
@@ -383,6 +386,7 @@ export default class Team {
 
   markMerged(year: number, absorbingFactionId: string) {
     FactionLifetimeRecords.prepareTerminal(this, year);
+    clearEmperorProclamationObservation(this);
     markLifecycleExtinct(this, year);
     this.farms.setDie();
     this.terminationReason = "MERGED";
@@ -397,6 +401,7 @@ export default class Team {
 
   markSubmitted(month: number, receivingFactionId: string) {
     FactionLifetimeRecords.prepareTerminal(this, month);
+    clearEmperorProclamationObservation(this);
     markLifecycleExtinct(this, month);
     this.farms.setDie();
     this.terminationReason = "SUBMITTED";

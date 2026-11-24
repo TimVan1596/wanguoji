@@ -13,6 +13,22 @@ import {getSovereigntyRankAtMonth} from '../Simulation/FactionIdentity';
 export function validateMilitaryNobility(save:WorldSaveV1){
  const errors:string[]=[],state=save.registries.militaryCommandRegistry,events=(save.worldHistory.events as WorldEvent[]).map(e=>({...e,year:e.monthIndex??e.year})),byId=new Map(events.map((e,i)=>[e.id,{e,i}])),used=new Set<string>();
  for(const [i,event] of events.entries()){
+  if(event.type==='emperor-proclaimed'&&event.metadata?.path!==undefined){
+   const {path,qualifiedSince,territoryShare,cityShare,stability,leadShare,controlledCityCount}=event.metadata;
+   const month=event.monthIndex??event.year,isDominance=path==='DOMINANCE';
+   const faction=save.factions.find(row=>row.factionId===event.actorFactionId);
+   const emperor=faction?.sovereigntyHistory?.some(rank=>rank.startMonth===month&&rank.rank==='EMPEROR');
+   if(!emperor||faction?.stateFoundedMonth===undefined||(!isDominance&&path!=='HEGEMONY')||
+    typeof qualifiedSince!=='number'||!Number.isSafeInteger(qualifiedSince)||
+    qualifiedSince<faction.stateFoundedMonth+(isDominance?120:180)||month-qualifiedSince<(isDominance?12:36)||
+    typeof territoryShare!=='number'||territoryShare<(isDominance?65:35)||territoryShare>100||
+    typeof cityShare!=='number'||cityShare<(isDominance?60:35)||cityShare>100||
+    typeof stability!=='number'||stability<(isDominance?55:60)||stability>100||
+    typeof leadShare!=='number'||leadShare<(isDominance?20:8)||leadShare>territoryShare||
+    typeof controlledCityCount!=='number'||!Number.isSafeInteger(controlledCityCount)||controlledCityCount<4){
+     errors.push('invalid imperial proclamation evidence: '+event.id);
+   }
+  }
   const captureId=event.metadata?.terminalCaptureEventId;
   if(captureId===undefined||!['faction-extinct','faction-dissolved'].includes(event.type))continue;
   const capture=typeof captureId==='string'?byId.get(captureId):undefined;
