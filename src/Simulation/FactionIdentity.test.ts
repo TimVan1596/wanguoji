@@ -157,82 +157,24 @@ describe("faction identity", () => {
     expect(observeFormationPath(copy,108,true,true)).toBe(true);
   });
 
-  it("does not proclaim emperor until stricter king eligibility is held for sixty months", () => {
+  it("requires separate uninterrupted observations for hegemony and dominance", () => {
     const faction = rebel();
     formFactionState(faction, "梁", 72);
-    expect(
-      observeEmperorProclamationEligibility(faction, 311, {
-        territoryShare: 60,
-        cityShare: 60,
-        stability: 80,
-        leadShare: 20,
-        hasFormalRuler: true,
-      })
-    ).toBe(false);
+    const regional = {territoryShare: 40, cityShare: 40, stability: 60,
+      leadShare: 10, controlledCityCount: 4, hasFormalRuler: true};
+    const dominant = {...regional, territoryShare: 66, cityShare: 62, leadShare: 21};
+    expect(observeEmperorProclamationEligibility(faction, 251, regional)).toBe(false);
     expect(faction.emperorEligibleSinceMonth).toBeUndefined();
-    expect(
-      observeEmperorProclamationEligibility(faction, 312, {
-        territoryShare: 49,
-        cityShare: 60,
-        stability: 80,
-        leadShare: 20,
-        hasFormalRuler: true,
-      })
-    ).toBe(false);
-    expect(
-      observeEmperorProclamationEligibility(faction, 312, {
-        territoryShare: 60,
-        cityShare: 49,
-        stability: 80,
-        leadShare: 20,
-        hasFormalRuler: true,
-      })
-    ).toBe(false);
-    expect(
-      observeEmperorProclamationEligibility(faction, 312, {
-        territoryShare: 60,
-        cityShare: 60,
-        stability: 69,
-        leadShare: 20,
-        hasFormalRuler: true,
-      })
-    ).toBe(false);
-    expect(
-      observeEmperorProclamationEligibility(faction, 312, {
-        territoryShare: 60,
-        cityShare: 60,
-        stability: 80,
-        leadShare: 14,
-        hasFormalRuler: true,
-      })
-    ).toBe(false);
-    expect(
-      observeEmperorProclamationEligibility(faction, 312, {
-        territoryShare: 60,
-        cityShare: 60,
-        stability: 80,
-        leadShare: 20,
-        hasFormalRuler: true,
-      })
-    ).toBe(false);
-    expect(
-      observeEmperorProclamationEligibility(faction, 371, {
-        territoryShare: 60,
-        cityShare: 60,
-        stability: 80,
-        leadShare: 20,
-        hasFormalRuler: true,
-      })
-    ).toBe(false);
-    expect(
-      observeEmperorProclamationEligibility(faction, 372, {
-        territoryShare: 60,
-        cityShare: 60,
-        stability: 80,
-        leadShare: 20,
-        hasFormalRuler: true,
-      })
-    ).toBe(true);
+    expect(observeEmperorProclamationEligibility(faction, 252, regional)).toBe(false);
+    expect(observeEmperorProclamationEligibility(faction, 265, dominant)).toBe(false);
+    expect(observeEmperorProclamationEligibility(faction, 270, regional)).toBe(false);
+    expect(faction.imperialDominanceSinceMonth).toBeUndefined();
+    expect(observeEmperorProclamationEligibility(faction, 271, dominant)).toBe(false);
+    expect(observeEmperorProclamationEligibility(faction, 282, dominant)).toBe(false);
+    expect(observeEmperorProclamationEligibility(faction, 283, dominant)).toBe("DOMINANCE");
+    expect(observeEmperorProclamationEligibility(faction, 288, regional)).toBe("HEGEMONY");
+    expect(observeEmperorProclamationEligibility(faction, 289, {...regional, controlledCityCount: 3})).toBe(false);
+    expect(faction.emperorEligibleSinceMonth).toBeUndefined();
   });
 
   it("proclaims emperor without changing faction identity or name history", () => {

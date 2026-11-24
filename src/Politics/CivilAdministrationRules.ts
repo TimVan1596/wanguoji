@@ -43,13 +43,22 @@ export function eligibleCivilCities(month:number,team:Team,terms:readonly CivilG
 export function civilGovernorCandidates(month:number,team:Team,people:readonly MilitaryPerson[],terms:readonly CivilGovernorTerm[],epochFounderId:string,lookup:(id:number,bornMonth:number)=>FamilyLink|undefined,formations:readonly import('./MilitaryCommandRegistry').MilitaryFormation[]=[],dynasties:readonly Dynasty[]=[]){
  const occupied=new Set(terms.filter(term=>term.startMonth<=month&&term.endMonth===undefined).map(term=>term.personId)),rows:CivilGovernorCandidate[]=[];
  const royalOwner=createRoyalPopulationLookup(dynasties);
+ const populationKey=(id:number,bornMonth:number)=>`${id}:${bornMonth}`;
+ const termsByPopulation=new Map<string,CivilGovernorTerm[]>();
+ for(const term of terms){
+  const key=populationKey(term.sourceUserId,term.bornMonth),history=termsByPopulation.get(key);
+  if(history)history.push(term);else termsByPopulation.set(key,[term]);
+ }
+ const peopleById=new Map(people.map(person=>[person.personId,person]));
+ const commanders=new Set(formations.filter(f=>f.status==='ACTIVE').map(f=>f.commanderPersonId));
  for(const user of team.users){
+  const history=termsByPopulation.get(populationKey(user.id,user.bornMonth))??[];
   const royalPerson=royalOwner(user);if(user.nativeRoyalRulerId||royalPerson&&(royalPerson.reignOrdinal!==undefined||royalPerson.status==='ruling'||royalPerson.accessionYear!==undefined&&royalPerson.accessionYear<=month))continue;
-  if(terms.some(t=>t.sourceUserId===user.id&&t.bornMonth===user.bornMonth&&t.endMonth===undefined)||user.isDestroyed||user.role!=='NORMAL'||user.rulerId||user.player.rulerId||month-user.bornMonth<18*12||month-user.bornMonth>75*12||occupied.has(civilGovernorPersonId(user)))continue;
-  if(terms.some(t=>t.sourceUserId===user.id&&t.bornMonth===user.bornMonth&&t.endReason==='RETIREMENT'&&(month-t.endMonth!<60||month-user.bornMonth>=72*12)))continue;
-  const person=user.militaryPersonId?people.find(candidate=>candidate.personId===user.militaryPersonId):undefined;
+  if(history.some(t=>t.endMonth===undefined)||user.isDestroyed||user.role!=='NORMAL'||user.rulerId||user.player.rulerId||month-user.bornMonth<18*12||month-user.bornMonth>75*12||occupied.has(civilGovernorPersonId(user)))continue;
+  if(history.some(t=>t.endReason==='RETIREMENT'&&(month-t.endMonth!<60||month-user.bornMonth>=72*12)))continue;
+  const person=user.militaryPersonId?peopleById.get(user.militaryPersonId):undefined;
   if(user.historicalPersonId&&user.historicalPersonId!==person?.personId)continue;
-  if(person&&(person.politicalRulerId||person.status==='DEAD'||person.deathMonth!==undefined||person.appointments.some(appointment=>appointment.factionId===team.name&&appointment.startMonth<=month&&(appointment.endMonth??Infinity)>month)||formations.some(formation=>formation.status==='ACTIVE'&&formation.commanderPersonId===person.personId)))continue;
+  if(person&&(person.politicalRulerId||person.status==='DEAD'||person.deathMonth!==undefined||person.appointments.some(appointment=>appointment.factionId===team.name&&appointment.startMonth<=month&&(appointment.endMonth??Infinity)>month)||commanders.has(person.personId)))continue;
   if(person&&unresolvedCourtBans(person,team.name,month,epochFounderId).length)continue;
   const familyLink=familyLinkAt(user,person,lookup);
   if(familyLink&&(!familyMemberPresent(familyLink.member,month)||familyResidenceAt(familyLink.family,familyLink.member,month)!==team.name))continue;
@@ -58,7 +67,7 @@ export function civilGovernorCandidates(month:number,team:Team,people:readonly M
   const identitySource:CivilGovernorSource=royal?'ROYAL':retired?'RETIRED_MILITARY':nobleRank?'NOBLE':familyLink&&familyExpansionOpen(familyLink.family,month)?'FAMILY':'ORDINARY_RESIDENT';
   const abilities=person?militaryAbilities(person):personAbilities({kind:'RESIDENT',sourceUserId:user.id,bornMonth:user.bornMonth});
   const sourceWeight=identitySource==='ORDINARY_RESIDENT'?1:identitySource==='FAMILY'?1.08:identitySource==='NOBLE'?1.04+Math.max(0,NOBLE_RANKS.indexOf(nobleRank??'NAN'))*.02:identitySource==='ROYAL'?1.12:1.06;
-  const personId=terms.find(t=>t.sourceUserId===user.id&&t.bornMonth===user.bornMonth)?.personId??person?.personId??civilGovernorPersonId(user,familyLink),prior=terms.filter(t=>t.sourceUserId===user.id&&t.bornMonth===user.bornMonth&&t.factionId===team.name&&t.epochFounderId===epochFounderId&&t.endReason==='CITY_LOST'&&t.endMonth!==undefined&&t.endMonth<=month).at(-1),returnBonus=prior?.meritEventId?1+Math.min(.15,(prior.loyaltyRecovered+prior.devastationRecovered)/100):1,weight=(.72+abilities.strategy/100*.55)*sourceWeight*returnBonus;
+  const personId=history[0]?.personId??person?.personId??civilGovernorPersonId(user,familyLink),prior=history.filter(t=>t.factionId===team.name&&t.epochFounderId===epochFounderId&&t.endReason==='CITY_LOST'&&t.endMonth!==undefined&&t.endMonth<=month).at(-1),returnBonus=prior?.meritEventId?1+Math.min(.15,(prior.loyaltyRecovered+prior.devastationRecovered)/100):1,weight=(.72+abilities.strategy/100*.55)*sourceWeight*returnBonus;
   rows.push({personId,sourceUserId:user.id,bornMonth:user.bornMonth,personalName:person?.personalName??user.name,identitySource,familyId:familyLink?.family.familyId,familyMemberId:familyLink?.member.memberId,royalRulerId:person?.royalIdentity?.rulerId,nobleRank,strategy:abilities.strategy,weight});
  }
  return rows.sort((a,b)=>b.weight-a.weight||b.strategy-a.strategy||a.bornMonth-b.bornMonth||a.personId.localeCompare(b.personId));

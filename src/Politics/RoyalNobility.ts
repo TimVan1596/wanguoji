@@ -4,7 +4,12 @@ import type {WorldEvent} from '../History/WorldHistory';
 import {currentNobleGrant} from './MilitaryNobility';
 import {FAMILY_NOBLE_NAMES as NAMES,FAMILY_NOBLE_RANKS as RANKS,type FamilyNobleRank} from './FamilyNobleSuccession';
 import {verifiedRoyalRegistration} from './RoyalPersonRegistration';
+type RoyalHeirRelation = 'CHILD'|'GRANDCHILD'|'BROTHER'|'NEPHEW';
+const relationNames: Record<RoyalHeirRelation,string> = {CHILD:'子嗣',GRANDCHILD:'孙辈',BROTHER:'兄弟',NEPHEW:'侄辈'};
+interface RoyalKinship {relation:RoyalHeirRelation;path:string[];}
 export interface RoyalNobleAct {
+ kinship?:RoyalKinship;
+ rejectedHeirs?:Array<RoyalKinship & {rulerId:string;reason:string}>;
  meritBasis?:'CIVIL';
  version:1;eventId:string;chainId:string;step:number;month:number;factionId:string;countryName:string;epochFounderId:string;
  kind:'GRANTED'|'UPGRADED'|'SUCCEEDED'|'ENDED';reason:'MERIT'|'DEATH'|'NO_HEIR'|'RANK_EXHAUSTED'|'REVOKED'|'FORFEITED'|'ACCESSION'|'FOREIGN'|'REGIME_ENDED';
@@ -39,18 +44,32 @@ function activeEpoch(d:Dynasty,epoch:string,events:readonly WorldEvent[],month:n
  const end=events.filter(e=>at(e)<=month&&(['faction-exiled','faction-extinct','dynasty-line-ended','faction-restored','dynasty-restored'].includes(e.type)&&(e.actorFactionId===d.factionId||e.targetFactionId===d.factionId)||['faction-merged','faction-submitted'].includes(e.type)&&(e.metadata?.absorbedFactionId===d.factionId||e.metadata?.submittedFactionId===d.factionId))).at(-1);
  return !end||['faction-restored','dynasty-restored'].includes(end.type);
 }
-export function royalNobleHeirAssessments(d:Dynasty,holder:Ruler,epoch:string,people:readonly MilitaryPerson[],events:readonly WorldEvent[],month:number){
+export function royalNobleHeirAssessments(d:Dynasty,holder:Ruler,epoch:string,people:readonly MilitaryPerson[],events:readonly WorldEvent[],month:number,rank?:FamilyNobleRank){
  const ids=new Set(events.map(e=>e.id)),held=new Map<string,RoyalNobleAct>();for(const a of d.royalNobility??[])if(ids.has(a.eventId))held.set(a.chainId,a);
- return d.rulers.filter(r=>r.parentId===holder.id).map(r=>{
+ const children=d.rulers.filter(r=>r.parentId===holder.id);
+ const candidates:Array<{r:Ruler;relation:RoyalHeirRelation;path:Ruler[]}>=children.map(r=>({r,relation:'CHILD',path:[holder,r]}));
+ if(rank==='GONG'||rank==='HOU'){
+  const father=d.rulers.find(r=>r.id===holder.parentId);
+  for(const child of children){
+   if(!deathEvent(child,people,events,month))continue;
+   for(const r of d.rulers.filter(r=>r.parentId===child.id))candidates.push({r,relation:'GRANDCHILD',path:[holder,child,r]});
+  }
+  if(father)for(const brother of d.rulers.filter(r=>r.id!==holder.id&&r.parentId===father.id)){
+   candidates.push({r:brother,relation:'BROTHER',path:[holder,father,brother]});
+   for(const r of d.rulers.filter(r=>r.parentId===brother.id))candidates.push({r,relation:'NEPHEW',path:[holder,father,brother,r]});
+  }
+ }
+ const order:RoyalHeirRelation[]=['CHILD','GRANDCHILD','BROTHER','NEPHEW'];
+ return candidates.map(({r,relation,path})=>{
   let reason:string|undefined;
   if(r.bornYear>month)reason='当时尚未出生';
-  else if(!verifiedRoyalRegistration(r,d.factionId,events,month))reason='当时尚未完成可核验的王室亲缘登记';
+  else if(path.some((person,index)=>index>0&&!(index===1&&(relation==='BROTHER'||relation==='NEPHEW'))&&!verifiedRoyalRegistration(person,d.factionId,events,month)))reason='当时尚未完成可核验的王室亲缘登记';
   else if(r.houseName!==holder.houseName)reason='不属原授爵王统的直接亲缘记录';
   else if(deathEvent(r,people,events,month))reason='已在结算前去世';
   else {const block=incompatibility(r,d,epoch,people,events,month);if(block)reason={ACCESSION:'此前已正式登位，不能兼领原臣爵',FORFEITED:'本人已有阻断袭爵的正式重处分',FOREIGN:'本人此前已转属其他政权'}[block];}
   if(!reason&&[...held.values()].some(a=>a.kind!=='ENDED'&&a.holderRulerId===r.id))reason='已持另一条宗室爵链，单链制度不并袭';
-  return {ruler:r,eligible:!reason,reason:reason??'符合当时直接承袭资格'};
- }).sort((a,b)=>a.ruler.bornYear-b.ruler.bornYear||a.ruler.id.localeCompare(b.ruler.id));
+  return {ruler:r,relation,path:path.map(person=>person.id),eligible:!reason,reason:reason??`符合当时${relationNames[relation]}承袭资格`};
+ }).sort((a,b)=>order.indexOf(a.relation)-order.indexOf(b.relation)||a.ruler.bornYear-b.ruler.bornYear||a.ruler.id.localeCompare(b.ruler.id));
 }
 export function eligibleRoyalNobleHeirs(d:Dynasty,holder:Ruler,epoch:string,people:readonly MilitaryPerson[],events:readonly WorldEvent[],month:number){return royalNobleHeirAssessments(d,holder,epoch,people,events,month).filter(row=>row.eligible).map(row=>row.ruler);}
 /** Pure, deterministic and one active chain per holder. No population, offices or RNG. */
@@ -67,7 +86,7 @@ function royalNobleEvidenceEvents(d:Dynasty,people:readonly MilitaryPerson[],eve
 export function nextRoyalNobleAct(d:Dynasty,people:readonly MilitaryPerson[],events:readonly WorldEvent[],month:number,status?:string,countryName?:string):RoyalNobleAct|undefined{
  events=royalNobleEvidenceEvents(d,people,events);
  const byId=new Map(events.map(e=>[e.id,e])),history=d.royalNobility??[],lasts=new Map<string,RoyalNobleAct>();for(const a of history)lasts.set(a.chainId,a);
- const make=(last:RoyalNobleAct,extra:Partial<RoyalNobleAct>):RoyalNobleAct=>({...last,step:last.step+1,eventId:`${last.chainId}-${last.step+1}`,month,previousEventId:last.eventId,previousRulerId:last.holderRulerId??last.previousRulerId,sourceEventIds:[last.eventId,last.sourceGrantEventId],deathEventId:undefined,...extra});
+ const make=(last:RoyalNobleAct,extra:Partial<RoyalNobleAct>):RoyalNobleAct=>({...last,step:last.step+1,eventId:`${last.chainId}-${last.step+1}`,month,previousEventId:last.eventId,previousRulerId:last.holderRulerId??last.previousRulerId,sourceEventIds:[last.eventId,last.sourceGrantEventId],deathEventId:undefined,kinship:undefined,rejectedHeirs:undefined,...extra});
  for(const last of lasts.values()){
   if(last.kind==='ENDED')continue;
   const r=d.rulers.find(r=>r.id===last.holderRulerId);if(!r)continue;
@@ -80,8 +99,16 @@ export function nextRoyalNobleAct(d:Dynasty,people:readonly MilitaryPerson[],eve
   const own=sourceGrant(r,d,people,events,month,last.epochFounderId);
   if(own&&RANKS.indexOf(own.rank)>RANKS.indexOf(last.rank!)){const upgraded=make(last,{kind:'UPGRADED',reason:'MERIT',sourceGrantEventId:own.eventId,rank:own.rank,previousRank:last.rank!,sourceEventIds:[last.eventId,own.eventId]});if(own.basis==='CIVIL')upgraded.meritBasis='CIVIL';else delete upgraded.meritBasis;return upgraded;}
   const death=deathEvent(r,people,events,month);if(!death)continue;
-  const cutoff=events.slice(0,events.indexOf(death)+1),heir=eligibleRoyalNobleHeirs(d,r,last.epochFounderId,people,cutoff,at(death)).find(h=>![...lasts.values()].some(a=>a.chainId!==last.chainId&&a.kind!=='ENDED'&&a.holderRulerId===h.id)),rank=RANKS[RANKS.indexOf(last.rank!)-1];
-  return make(last,{countryName:rank&&heir?(countryName??last.countryName):last.countryName,kind:rank&&heir?'SUCCEEDED':'ENDED',reason:!rank?'RANK_EXHAUSTED':heir?'DEATH':'NO_HEIR',holderRulerId:rank?heir?.id:undefined,rank:heir?rank:undefined,previousRank:last.rank!,deathEventId:death.id,sourceEventIds:[last.eventId,last.sourceGrantEventId,death.id,...rank&&heir?.registration?[heir.registration.eventId]:[]]});
+  const cutoff=events.slice(0,events.indexOf(death)+1),rank=RANKS[RANKS.indexOf(last.rank!)-1];
+  const assessments=rank?royalNobleHeirAssessments(d,r,last.epochFounderId,people,cutoff,at(death),last.rank):[];
+  const heir=assessments.find(row=>row.eligible);
+  const rejectedHeirs=assessments.slice(0,heir?assessments.indexOf(heir):undefined)
+   .map(row=>({rulerId:row.ruler.id,relation:row.relation,path:row.path,reason:row.reason}));
+  const registrationIds=heir?.path.flatMap(id=>{
+   const proof=d.rulers.find(person=>person.id===id)?.registration?.eventId;
+   return proof&&cutoff.some(event=>event.id===proof)?[proof]:[];
+  })??[];
+  return make(last,{countryName:heir?(countryName??last.countryName):last.countryName,kind:heir?'SUCCEEDED':'ENDED',reason:!rank?'RANK_EXHAUSTED':heir?'DEATH':'NO_HEIR',holderRulerId:heir?.ruler.id,rank:heir?rank:undefined,previousRank:last.rank!,deathEventId:death.id,kinship:heir?{relation:heir.relation,path:heir.path}:undefined,rejectedHeirs,sourceEventIds:[last.eventId,last.sourceGrantEventId,death.id,...registrationIds]});
  }
  for(const r of d.rulers.filter(r=>r.militaryIdentity&&people.some(p=>p.personId===r.militaryIdentity!.personId&&p.nobilityHistory?.some(g=>!g.basis||g.basis==='CIVIL')))){
   if(!verifiedRoyalRegistration(r,d.factionId,events,month))continue;
@@ -100,7 +127,7 @@ export function royalNobleText(a:RoyalNobleAct,rulers:readonly Ruler[]){
  const name=(id?:string)=>{const r=rulers.find(r=>r.id===id);return r?r.houseName.replace(/氏$/,'')+r.givenName:'原持爵者';},prefix=/国$|朝$|义军$/.test(a.countryName)?a.countryName:`${a.countryName}国`;
  if(a.kind==='GRANTED')return `${prefix}${name(a.holderRulerId)}所受${a.meritBasis==='CIVIL'?'文治':'军功'}${NAMES[a.rank!]}立为宗室世降权源。`;
  if(a.kind==='UPGRADED')return `${prefix}${name(a.holderRulerId)}凭本人${a.meritBasis==='CIVIL'?'新治绩':'新军功'}进封${NAMES[a.rank!]}，原爵链升等。`;
- if(a.kind==='SUCCEEDED')return `${prefix}${NAMES[a.previousRank as FamilyNobleRank]}${name(a.previousRulerId)}去世，其子${name(a.holderRulerId)}袭${NAMES[a.rank!]}。`;
- const reason={NO_HEIR:'当时无已登记合格直接子嗣，爵位断袭',RANK_EXHAUSTED:'世降已尽，不再承袭',REVOKED:'原爵已被正式追夺',FORFEITED:'本人受正式重处分，承袭终止',ACCESSION:'已正式登位，原臣属爵位终止',FOREIGN:'已离开原政权，原爵终止',REGIME_ENDED:'原王统政治权威终结，旧爵失效',DEATH:'承袭终止',MERIT:'承袭终止'}[a.reason];
+ if(a.kind==='SUCCEEDED')return `${prefix}${NAMES[a.previousRank as FamilyNobleRank]}${name(a.previousRulerId)}去世，其${relationNames[a.kinship?.relation??'CHILD']}${name(a.holderRulerId)}袭${NAMES[a.rank!]}。`;
+ const reason={NO_HEIR:'当时无已登记的合格继承人，爵位断袭',RANK_EXHAUSTED:'世降已尽，不再承袭',REVOKED:'原爵已被正式追夺',FORFEITED:'本人受正式重处分，承袭终止',ACCESSION:'已正式登位，原臣属爵位终止',FOREIGN:'已离开原政权，原爵终止',REGIME_ENDED:'原王统政治权威终结，旧爵失效',DEATH:'承袭终止',MERIT:'承袭终止'}[a.reason];
  return `${prefix}${name(a.previousRulerId)}${reason}。`;
 }

@@ -19,6 +19,27 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
       month >= a.startMonth && month <= Math.min(a.endMonth ?? worldMonth, worldMonth) &&
       f.captures.some(c => c.eventId === id && c.cityId === e.cityId && c.month === month) ? [e] : [];
   });
+  const terminalByGroup=index?.terminalByGroup??new Map<string,WorldEvent[]>();
+  if(!index)for(const event of events){
+    if(!event.historyGroupId||!["faction-extinct","faction-dissolved"].includes(event.type))continue;
+    const group=terminalByGroup.get(event.historyGroupId)??[];
+    group.push(event);
+    terminalByGroup.set(event.historyGroupId,group);
+  }
+  const endings=new Map<string,{event:WorldEvent;capture:WorldEvent;kind:"UPRISING"|"KINGDOM"|"EMPIRE"}>();
+  for(const capture of captures){
+    if(!capture.historyGroupId)continue;
+    for(const event of terminalByGroup.get(capture.historyGroupId)??[]){
+      if(event.metadata?.isFinalCityCapture!==1||event.targetFactionId!==capture.targetFactionId||
+        event.conquerorFactionId!==capture.actorFactionId||event.metadata?.cityId!==capture.cityId||
+        (event.monthIndex??event.year)!==(capture.monthIndex??capture.year))continue;
+      const stage=event.metadata.defeatedIdentityStage,rank=event.metadata.defeatedSovereigntyRank;
+      const kind=event.type==="faction-dissolved"&&stage==="PROVISIONAL"?"UPRISING":
+        event.type==="faction-extinct"&&stage==="STATE"&&rank==="EMPEROR"?"EMPIRE":
+        event.type==="faction-extinct"&&stage==="STATE"&&rank==="KING"?"KINGDOM":undefined;
+      if(kind&&!endings.has(event.id))endings.set(event.id,{event,capture,kind});
+    }
+  }
   const distinctCapturedCities=new Set(captures.map(e=>e.cityId)).size;
   const distinctCapitalCities=new Set(captures.filter(e=>e.metadata?.wasCapital===1).map(e=>e.cityId)).size;
   const capitalCaptures = captures.filter(e => e.metadata?.wasCapital === 1).length;
@@ -32,7 +53,7 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
   const currentUnitCount = new Set(active.flatMap(f => f.memberUnitIds)).size;
   // Time alone contributes at most .35; combined appointment advantage is capped at 2x.
   const weight = 1 + Math.min(.35, serviceMonths / 240 * .35) + Math.min(.5, distinctCapturedCities * .1 + distinctCapitalCities * .05) + Math.min(.15, recordedCommandSize / 12 * .15);
-  return { activities:deriveMilitaryActivities(person,formations,events,worldMonth,captures.map(e=>e.id),false,index),serviceMonths, appointmentCount: appointments.length, reappointments: Math.max(0, appointments.length - 1),
+  return { terminalVictories:[...endings.values()],activities:deriveMilitaryActivities(person,formations,events,worldMonth,captures.map(e=>e.id),false,index),serviceMonths, appointmentCount: appointments.length, reappointments: Math.max(0, appointments.length - 1),
     ordinaryCaptures, capitalCaptures, distinctCapturedCities, unclassifiedCaptures: captures.length - ordinaryCaptures - capitalCaptures, verifiedCaptures: captures.length,
     capturedEventIds: captures.map(e => e.id), recordedCommandSize, currentUnitCount, hasActiveFormation: active.length > 0,
     ageRetired: person.status !== "ACTIVE" && appointments.at(-1)?.endReason === "AGE_RETIREMENT", dead: person.status === "DEAD",

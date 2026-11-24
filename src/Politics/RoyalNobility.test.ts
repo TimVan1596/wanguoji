@@ -23,3 +23,29 @@ describe('real royal merit is a finite independent title source',()=>{
 });
 
 it('civil merit uses the existing single finite royal title chain without inventing military merit',()=>{const x=world(),child=x.add('civil-child','father',0,20),g=x.grant('ZI',50);g.basis='CIVIL';x.events.at(-1)!.type='civil-ennobled';x.events.at(-1)!.metadata.nobility=JSON.stringify(g);const first=x.run(50)!;expect(first).toMatchObject({kind:'GRANTED',rank:'ZI',meritBasis:'CIVIL'});expect(royalNobleText(first,x.d.rulers)).toContain('文治子爵');expect(royalNobleText(first,x.d.rulers)).not.toContain('军功');x.die(x.father,100);expect(x.run(100)).toMatchObject({kind:'SUCCEEDED',rank:'NAN',holderRulerId:child.id});x.die(child,200);expect(x.run(200)).toMatchObject({kind:'ENDED',reason:'RANK_EXHAUSTED'});expect(new Set(x.d.royalNobility.map((a:any)=>a.chainId)).size).toBe(1);});
+
+it('passes an inherited marquisate to a registered brother, using the death boundary',()=>{
+ const x=world();
+ const elder=x.add('elder','father',0,20),younger=x.add('younger','father',5,20);
+ x.grant('GONG');x.run(50);
+ x.die(x.father,100);expect(x.run(100)).toMatchObject({rank:'HOU',holderRulerId:elder.id});
+ x.die(elder,120);
+ x.events.push({id:'transfer',type:'royal-person-transferred',rulerId:younger.id,actorFactionId:'qin',year:120});
+ const act=x.run(120)!;
+ expect(act).toMatchObject({rank:'BO',holderRulerId:younger.id,kinship:{relation:'BROTHER',path:[elder.id,x.father.id,younger.id]},deathEventId:'elder-death'});
+ expect(x.run(120)).toMatchObject({kind:'ENDED',reason:'FOREIGN'});
+});
+
+it.each(['GRANDCHILD','NEPHEW'])('uses verified %s proof after the closer relatives die',relation=>{
+ const x=world();
+ const elder=x.add('elder','father',0,20),younger=x.add('younger','father',5,20);
+ const child=x.add('child',relation==='GRANDCHILD'?elder.id:younger.id,21,21);
+ x.grant('GONG');x.run(50);
+ if(relation==='NEPHEW'){
+  x.die(x.father,100);x.run(100);
+  x.die(younger,110);x.die(elder,120);
+ }else{
+  x.die(elder,90);x.die(younger,95);x.die(x.father,100);
+ }
+ expect(x.run(120)).toMatchObject({kind:'SUCCEEDED',holderRulerId:child.id,kinship:{relation}});
+});

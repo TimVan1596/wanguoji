@@ -5,6 +5,7 @@ import { getFactionTerminalMonth, type HistoricalFactionSort } from "../../../Si
 import {
   EMPEROR_MIN_CITY_SHARE,
   EMPEROR_MIN_KING_MONTHS,
+  EMPEROR_MIN_CITIES,
   EMPEROR_MIN_LEAD_SHARE,
   EMPEROR_MIN_STABILITY,
   EMPEROR_MIN_TERRITORY_SHARE,
@@ -36,6 +37,7 @@ export interface FactionDetailsTeamLike {
   stateFormationEligibilityKind?: "ORDINARY" | "DE_FACTO";
   sovereigntyRank?: string;
   emperorEligibleSinceMonth?: number;
+  imperialDominanceSinceMonth?: number;
   proclaimedEmperorMonth?: number;
   status?: string;
   cities?: unknown[];
@@ -272,6 +274,7 @@ export function buildEmperorQualificationLines(input: EmperorQualificationInput)
   const kingMonths = Math.max(0, worldMonth - (team.stateFoundedMonth ?? worldMonth));
   const safeStability = effectiveStability ?? 0;
   const baseReady =
+    (team.cities?.length ?? 0) >= EMPEROR_MIN_CITIES &&
     kingMonths >= EMPEROR_MIN_KING_MONTHS &&
     territoryShare >= EMPEROR_MIN_TERRITORY_SHARE &&
     cityShare >= EMPEROR_MIN_CITY_SHARE &&
@@ -283,7 +286,9 @@ export function buildEmperorQualificationLines(input: EmperorQualificationInput)
       ? Math.max(0, worldMonth - team.emperorEligibleSinceMonth)
       : 0;
   return [
-    `王国历史 ${formatProgressDuration(kingMonths, EMPEROR_MIN_KING_MONTHS)}`,
+    `霸主称帝 · 王国历史 ${formatProgressDuration(kingMonths, EMPEROR_MIN_KING_MONTHS)}`,
+    `有效城邑 ${team.cities?.length ?? 0} / ${EMPEROR_MIN_CITIES}`,
+    `统一型称帝观察 ${Math.min(12, Math.max(0, worldMonth - (team.imperialDominanceSinceMonth ?? worldMonth)))} / 12个月`,
     `诸国领土 ${territoryShare.toFixed(1)}% / ${EMPEROR_MIN_TERRITORY_SHARE}%${territoryShare >= EMPEROR_MIN_TERRITORY_SHARE ? " ✓" : ""}`,
     `城市控制 ${cityShare.toFixed(1)}% / ${EMPEROR_MIN_CITY_SHARE}%${cityShare >= EMPEROR_MIN_CITY_SHARE ? " ✓" : ""}`,
     input.leadShare === undefined

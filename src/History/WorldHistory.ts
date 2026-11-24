@@ -1200,7 +1200,10 @@ export class WorldHistoryStore {
     rulerId?: string,
     territoryShare?: number,
     cityShare?: number,
-    stability?: number
+    stability?: number,
+    path?: "HEGEMONY" | "DOMINANCE",
+    leadShare?: number,
+    controlledCityCount?: number
   ) {
     return this.addEvent({
       id: `emperor-proclaimed-${year}-${factionId}-${this.sequence++}`,
@@ -1222,6 +1225,9 @@ export class WorldHistoryStore {
         territoryShare,
         cityShare,
         stability,
+        path,
+        leadShare,
+        controlledCityCount,
       },
       importance: "major",
     });

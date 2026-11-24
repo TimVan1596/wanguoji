@@ -26,7 +26,18 @@ export function civilNobleMerit(person:MilitaryPerson,terms:readonly CivilGovern
    receipts.length<(marquis?12:9)||contribution<(marquis?20:13)||assessments.length<(marquis?4:2)||new Set(receipts.map(r=>r.cityId)).size<2)return;
  }else if(serviceMonths<(rank==='ZI'?180:96)||receipts.length<(rank==='ZI'?8:6)||contribution<(rank==='ZI'?12:8))return;
  if(retirementEventId&&(serviceMonths<144||loyalty<75||contribution<12))return;
- return {rank,serviceMonths,civilTermId:current.assignmentId,civilMeritEventIds:receipts.map(r=>r.eventId),civilLoyalty:loyalty,
+ const minimumCount=rank==='HOU'?12:rank==='BO'?9:rank==='ZI'?8:6;
+ const minimumContribution=Math.max(retirementEventId?12:0,rank==='HOU'?20:rank==='BO'?13:rank==='ZI'?12:8);
+ const selected:typeof receipts=[];
+ let points=0;
+ const cities=new Set<string>();
+ for(const receipt of receipts){
+  if(selected.length>=minimumCount&&points>=minimumContribution&&(!higher||cities.size>=2))break;
+  selected.push(receipt);
+  points+=receipt.loyalty+receipt.devastation;
+  cities.add(receipt.cityId);
+ }
+ return {rank,serviceMonths,civilTermId:current.assignmentId,civilMeritEventIds:selected.map(r=>r.eventId),civilLoyalty:loyalty,
   ...(higher?{civilStewardshipEventIds:assessments.slice(0,rank==='HOU'?4:2).map(a=>a.eventId)}:{}),...(retirementEventId?{civilRetirementEventId:retirementEventId}:{})};
 }
 

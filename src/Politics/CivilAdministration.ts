@@ -1,3 +1,4 @@
+import {civilTransferStewardship,hasCivilTransferMerit} from './CivilAdministrationSchema';
 import {CIVIL_CAREER_POLICY,civilRetirementEvidence,civilPromotionChance,validStewardshipWindow,stewardshipContribution,stewardshipInterval,type CivilCareerPolicy,type CivilStewardshipWindow} from './CivilCareerRules';
 import {civilCrossCareerEvidence,civilPromotionCompetitionWeight} from './CrossCareerCompetition';
 import {civilNobleMerit,civilPeerageDraw} from './CivilNobility';
@@ -68,8 +69,10 @@ class CivilAdministrationStore {
    const current=this.state.terms.filter(term=>term.factionId===team.name&&active(term,month));
    if(current.length>=Math.min(MAX_ACTIVE_CIVIL_GOVERNORS_PER_FACTION,Math.max(1,Math.ceil(team.cities.length/4))))continue;
    if(this.state.terms.some(term=>term.factionId===team.name&&term.startMonth>=month&&term.startMonth<month+12))continue;
-   const eligibleCities=eligibleCivilCities(month,team,this.state.terms),candidates=civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,bornMonth)=>Military.getFamilyMember(id,bornMonth),Military.getFormations(),DynastyRegistry.getAll());
-   if(!eligibleCities.length||!candidates.length)continue;
+   const eligibleCities=eligibleCivilCities(month,team,this.state.terms);
+   if(!eligibleCities.length)continue;
+   const candidates=civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,bornMonth)=>Military.getFamilyMember(id,bornMonth),Military.getFormations(),DynastyRegistry.getAll());
+   if(!candidates.length)continue;
    const rng=new WorldRandom();rng.initialize(`civil-administration-v1:${worldRandom.exportState().seed}:${team.name}:${month}`);
    if(rng.next()>=CIVIL_APPOINTMENT_CHANCE[this.state.policy])continue;
    const city=eligibleCities[Math.min(eligibleCities.length-1,Math.floor(rng.next()*eligibleCities.length))],candidate=selectCivilGovernorCandidate(candidates,rng.next())!;
@@ -151,7 +154,7 @@ class CivilAdministrationStore {
  private transferCandidates(month:number,team:Team,dynasty:Dynasty){
   const targets=eligibleCivilCities(month,team,this.state.terms).filter(c=>c.loyalty<50||c.devastation>=40).sort((a,b)=>a.loyalty-b.loyalty||b.devastation-a.devastation||a.id.localeCompare(b.id));
   if(!targets.length)return;
-  const rows=this.state.terms.filter(t=>t.factionId===team.name&&active(t,month)&&isLocalCivilOffice(t.office)&&month-t.startMonth>=60&&!!t.meritEventId).filter(t=>{const c=team.cities.find(c=>c.id===t.cityId);return c&&!c.underSiege&&c.ownerFactionId===team.name&&c.loyalty>=75&&c.devastation<=10;}).sort((a,b)=>(b.loyaltyRecovered+b.devastationRecovered)-(a.loyaltyRecovered+a.devastationRecovered)||a.personId.localeCompare(b.personId));
+  const rows=this.state.terms.filter(t=>t.factionId===team.name&&active(t,month)&&isLocalCivilOffice(t.office)&&month-t.startMonth>=60&&hasCivilTransferMerit(t,month)).filter(t=>{const c=team.cities.find(c=>c.id===t.cityId);return c&&!c.underSiege&&c.ownerFactionId===team.name&&c.loyalty>=75&&c.devastation<=10;}).sort((a,b)=>(b.loyaltyRecovered+b.devastationRecovered)-(a.loyaltyRecovered+a.devastationRecovered)||a.personId.localeCompare(b.personId));
   if(!rows.length)return;
   const rng=new WorldRandom();rng.initialize(`civil-transfer-v1:${worldRandom.exportState().seed}:${team.name}:${month}`);
   if(rng.next()>=.2)return;
@@ -159,9 +162,9 @@ class CivilAdministrationStore {
  }
  transfer(month:number,term:CivilGovernorTerm,team:Team,target:City,dynasty:Dynasty){
   const current=this.state.terms.find(t=>t.assignmentId===term.assignmentId),source=team.cities.find(c=>c.id===current?.cityId),user=[...team.users].find(u=>u.id===term.sourceUserId&&u.bornMonth===term.bornMonth),person=Military.getPerson(term.personId),ruler=dynasty.rulers.find(r=>r.id===dynasty.currentRulerId);
-  if(month%12!==0||!current||!active(current,month)||!isLocalCivilOffice(current.office)||month-current.startMonth<60||!current.meritEventId||!source||source===target||source.ownerFactionId!==team.name||source.underSiege||source.loyalty<75||source.devastation>10||!eligibleCivilCities(month,team,this.state.terms).some(c=>c===target)||target.loyalty>=50&&target.devastation<40||!user||user.isDestroyed||user.role!=='NORMAL'||user.rulerId||user.player.rulerId||user.nativeRoyalRulerId||user.team!==team||!person||person.deathMonth!==undefined||person.politicalRulerId||person.appointments.some(a=>a.endMonth===undefined)||unresolvedCourtBans(person,team.name,month,current.epochFounderId).length||!ruler||ruler.status!=='ruling'||ruler.deathMonth!==undefined||dynasty.factionId!==team.name||!dynasty.houseEpochs?.some(e=>e.foundingRulerId===current.epochFounderId&&e.startMonth<=month&&(e.endMonth??Infinity)>month))throw Error('Invalid civil transfer');
+  if(month%12!==0||!current||!active(current,month)||!isLocalCivilOffice(current.office)||month-current.startMonth<60||!hasCivilTransferMerit(current,month)||!source||source===target||source.ownerFactionId!==team.name||source.underSiege||source.loyalty<75||source.devastation>10||!eligibleCivilCities(month,team,this.state.terms).some(c=>c===target)||target.loyalty>=50&&target.devastation<40||!user||user.isDestroyed||user.role!=='NORMAL'||user.rulerId||user.player.rulerId||user.nativeRoyalRulerId||user.team!==team||!person||person.deathMonth!==undefined||person.politicalRulerId||person.appointments.some(a=>a.endMonth===undefined)||unresolvedCourtBans(person,team.name,month,current.epochFounderId).length||!ruler||ruler.status!=='ruling'||ruler.deathMonth!==undefined||dynasty.factionId!==team.name||!dynasty.houseEpochs?.some(e=>e.foundingRulerId===current.epochFounderId&&e.startMonth<=month&&(e.endMonth??Infinity)>month))throw Error('Invalid civil transfer');
   return Military.civilTransaction(team,()=>transaction(()=>{
-   const evidence={fromAssignmentId:current.assignmentId,meritEventIds:(current.receipts??[]).map(r=>r.eventId),sourceLoyalty:source.loyalty,sourceDevastation:source.devastation,targetLoyalty:target.loyalty,targetDevastation:target.devastation};
+   const evidence={fromAssignmentId:current.assignmentId,stewardshipEventIds:civilTransferStewardship(current,month),meritEventIds:(current.receipts??[]).map(r=>r.eventId),sourceLoyalty:source.loyalty,sourceDevastation:source.devastation,targetLoyalty:target.loyalty,targetDevastation:target.devastation};
    this.end(month,current,'TRANSFERRED');
    const sequence=this.state.sequence+1,assignmentId=`civil-governor-${team.name}-${sequence}`,eventId=`${assignmentId}-appointed`,next:CivilGovernorTerm={...current,transfer:evidence,assignmentId,cityId:target.id,cityName:target.name,startMonth:month,appointEventId:eventId,receipts:[],stewardshipAssessments:[],loyaltyRecovered:0,devastationRecovered:0,rulerId:ruler.id,rulerTitle:DynastyRegistry.getRulerHistoricalTitle(ruler.id,team.name,month)??ruler.givenName,countryName:team.displayName??team.name};
    for(const key of ['promotionReview','stewardshipWindow','retirement','promotion','endMonth','endReason','endEventId','lastEffectMonth','meritMonth','meritEventId','meritLoyaltyRecovered','meritDevastationRecovered'] as const)delete next[key];
@@ -227,7 +230,12 @@ class CivilAdministrationStore {
  private applyGovernance(month:number,teams:Team[]){
   for(const term of this.state.terms.filter(t=>active(t,month))){
    if(term.lastEffectMonth!==undefined&&month-term.lastEffectMonth<12)continue;
-   const team=teams.find(t=>t.name===term.factionId),city=isLocalCivilOffice(term.office)?team?.cities.find(c=>c.id===term.cityId):team?.cities.filter(c=>!c.destroyed&&c.ownerFactionId===term.factionId&&(c.loyalty<80||c.devastation>0)).sort((a,b)=>a.id.localeCompare(b.id))[0];
+   const team=teams.find(t=>t.name===term.factionId),city=isLocalCivilOffice(term.office)?team?.cities.find(c=>c.id===term.cityId):team?.cities.filter(c=>!c.destroyed&&c.ownerFactionId===term.factionId&&(c.loyalty<80||c.devastation>0)).sort((a,b)=>{
+    // An imperial central office can direct its existing recovery work to the most distressed city.
+    const priority=team.sovereigntyRank==='EMPEROR'
+     ? (b.devastation+Math.max(0,80-b.loyalty))-(a.devastation+Math.max(0,80-a.loyalty)) : 0;
+    return priority||a.id.localeCompare(b.id);
+   })[0];
    if(!team||!city)continue;
    const effect=civilGovernanceEffect(term,city,month,this.state.policy);if(!effect.loyalty&&!effect.devastation)continue;
    const cityBefore={loyalty:city.loyalty,devastation:city.devastation};

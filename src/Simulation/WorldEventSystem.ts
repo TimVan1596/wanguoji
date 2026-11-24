@@ -657,17 +657,15 @@ export default class WorldEventSystem {
         baseStability,
         team.sovereigntyRank
       );
-      if (
-        !observeEmperorProclamationEligibility(team, year, {
-          territoryShare,
-          cityShare,
-          stability: effectiveStability,
-          leadShare: territoryShare - topOtherShare,
-          hasFormalRuler,
-        })
-      ) {
-        return;
-      }
+      const path = observeEmperorProclamationEligibility(team, year, {
+        territoryShare,
+        cityShare,
+        stability: effectiveStability,
+        leadShare: territoryShare - topOtherShare,
+        controlledCityCount: team.cities.length,
+        hasFormalRuler,
+      });
+      if (!path) return;
       if (!team.proclaimEmperor(year)) {
         return;
       }
@@ -679,7 +677,10 @@ export default class WorldEventSystem {
         currentRuler?.id,
         territoryShare,
         cityShare,
-        effectiveStability
+        effectiveStability,
+        path,
+        territoryShare - topOtherShare,
+        team.cities.length,
       );
       DynastyRegistry.recordEmperorProclaimed(team.name, year, eventId);
     });

@@ -536,6 +536,8 @@ export default class Core {
       founder: finalCity.founderFactionId,
       wasCapital: finalCity.isCapital ? 1 : 0,
       isFinalCityCapture: 1,
+      defeatedIdentityStage: fallenTeam.identityStage,
+      defeatedSovereigntyRank: fallenTeam.sovereigntyRank,
     };
 
     if (!hasFormalStateIdentity(fallenTeam)) {

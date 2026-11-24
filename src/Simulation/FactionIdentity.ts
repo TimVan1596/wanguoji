@@ -29,6 +29,7 @@ export interface FactionIdentityState {
   sovereigntyRank: SovereigntyRank;
   sovereigntyHistory: SovereigntyHistoryEntry[];
   emperorEligibleSinceMonth?: number;
+  imperialDominanceSinceMonth?: number;
   proclaimedEmperorMonth?: number;
   nameHistory: FactionNameHistoryEntry[];
   cities: unknown[];
@@ -56,12 +57,12 @@ export const DE_FACTO_STATE_MIN_STABILITY = 50;
 export const DE_FACTO_STATE_REQUIRED_MONTHS = 24;
 export const PROVISIONAL_DISSOLUTION_MIN_MONTHS = 50 * 12;
 export const PROVISIONAL_DISSOLUTION_MAX_TERRITORY_SHARE = 8;
-export const EMPEROR_MIN_KING_MONTHS = 240;
-export const EMPEROR_MIN_TERRITORY_SHARE = 50;
-export const EMPEROR_MIN_CITY_SHARE = 50;
-export const EMPEROR_MIN_STABILITY = 70;
-export const EMPEROR_MIN_LEAD_SHARE = 15;
-export const EMPEROR_REQUIRED_MONTHS = 60;
+export const EMPEROR_MIN_KING_MONTHS = 180;
+export const EMPEROR_MIN_TERRITORY_SHARE = 35;
+export const EMPEROR_MIN_CITY_SHARE = 35;
+export const EMPEROR_MIN_STABILITY = 60;
+export const EMPEROR_MIN_LEAD_SHARE = 8;
+export const EMPEROR_REQUIRED_MONTHS = 36;
 
 export function getInitialIdentityStage(factionType: FactionType): FactionIdentityStage {
   return factionType === "KINGDOM" ? "STATE" : "PROVISIONAL";
@@ -91,6 +92,7 @@ export function initializeFactionIdentity(
   faction.stateFormationEligibilityKind = undefined;
   faction.stateFoundedMonth = faction.identityStage === "STATE" ? startMonth : undefined;
   faction.emperorEligibleSinceMonth = undefined;
+  faction.imperialDominanceSinceMonth = undefined;
   faction.proclaimedEmperorMonth = undefined;
 }
 
@@ -363,44 +365,43 @@ export interface EmperorEligibilityInput {
   stability: number;
   leadShare?: number;
   hasFormalRuler: boolean;
+  controlledCityCount: number;
 }
 
+export const EMPEROR_MIN_CITIES = 4;
+export type EmperorProclamationPath = "HEGEMONY" | "DOMINANCE";
+type ImperialCandidate = Pick<FactionIdentityState,
+  "identityStage" | "sovereigntyRank" | "status" | "stateFoundedMonth">;
+
 export function isEmperorProclamationEligible(
-  faction: Pick<
-    FactionIdentityState,
-    "identityStage" | "sovereigntyRank" | "status" | "stateFoundedMonth"
-  >,
+  faction: ImperialCandidate,
   monthIndex: number,
-  input: EmperorEligibilityInput
+  input: EmperorEligibilityInput,
+  path: EmperorProclamationPath = "HEGEMONY",
 ) {
-  return (
-    faction.identityStage === "STATE" &&
-    faction.sovereigntyRank === "KING" &&
-    faction.status === "ACTIVE" &&
-    faction.stateFoundedMonth !== undefined &&
-    monthIndex - faction.stateFoundedMonth >= EMPEROR_MIN_KING_MONTHS &&
-    input.territoryShare >= EMPEROR_MIN_TERRITORY_SHARE &&
-    input.cityShare >= EMPEROR_MIN_CITY_SHARE &&
-    input.stability >= EMPEROR_MIN_STABILITY &&
-    (input.leadShare ?? Number.POSITIVE_INFINITY) >= EMPEROR_MIN_LEAD_SHARE &&
-    input.hasFormalRuler
-  );
+  if (faction.identityStage !== "STATE" || faction.sovereigntyRank !== "KING" ||
+      faction.status !== "ACTIVE" || faction.stateFoundedMonth === undefined ||
+      !input.hasFormalRuler || input.controlledCityCount < EMPEROR_MIN_CITIES) return false;
+  const dominance = path === "DOMINANCE";
+  return monthIndex - faction.stateFoundedMonth >= (dominance ? 120 : EMPEROR_MIN_KING_MONTHS) &&
+    input.territoryShare >= (dominance ? 65 : EMPEROR_MIN_TERRITORY_SHARE) &&
+    input.cityShare >= (dominance ? 60 : EMPEROR_MIN_CITY_SHARE) &&
+    input.stability >= (dominance ? 55 : EMPEROR_MIN_STABILITY) &&
+    (input.leadShare ?? -Infinity) >= (dominance ? 20 : EMPEROR_MIN_LEAD_SHARE);
 }
 
 export function observeEmperorProclamationEligibility(
   faction: FactionIdentityState,
   monthIndex: number,
-  input: EmperorEligibilityInput
-) {
-  if (!isEmperorProclamationEligible(faction, monthIndex, input)) {
-    faction.emperorEligibleSinceMonth = undefined;
-    return false;
-  }
-  if (faction.emperorEligibleSinceMonth === undefined) {
-    faction.emperorEligibleSinceMonth = monthIndex;
-    return false;
-  }
-  return monthIndex - faction.emperorEligibleSinceMonth >= EMPEROR_REQUIRED_MONTHS;
+  input: EmperorEligibilityInput,
+): EmperorProclamationPath | false {
+  faction.emperorEligibleSinceMonth = isEmperorProclamationEligible(faction, monthIndex, input)
+    ? faction.emperorEligibleSinceMonth ?? monthIndex : undefined;
+  faction.imperialDominanceSinceMonth = isEmperorProclamationEligible(faction, monthIndex, input, "DOMINANCE")
+    ? faction.imperialDominanceSinceMonth ?? monthIndex : undefined;
+  if (monthIndex - (faction.imperialDominanceSinceMonth ?? monthIndex) >= 12) return "DOMINANCE";
+  if (monthIndex - (faction.emperorEligibleSinceMonth ?? monthIndex) >= EMPEROR_REQUIRED_MONTHS) return "HEGEMONY";
+  return false;
 }
 
 export function proclaimEmperor(faction: FactionIdentityState, monthIndex: number) {
@@ -414,6 +415,7 @@ export function proclaimEmperor(faction: FactionIdentityState, monthIndex: numbe
   setSovereigntyRank(faction, "EMPEROR", monthIndex);
   faction.proclaimedEmperorMonth = monthIndex;
   faction.emperorEligibleSinceMonth = undefined;
+  faction.imperialDominanceSinceMonth = undefined;
   return true;
 }
 

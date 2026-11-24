@@ -268,6 +268,7 @@ describe("faction details model", () => {
         sovereigntyRank: "KING",
         stateFoundedMonth: 0,
         emperorEligibleSinceMonth: 130,
+        cities: [],
       },
       worldMonth: 308,
       territoryShare: 54,
@@ -276,9 +277,9 @@ describe("faction details model", () => {
       effectiveStability: 74,
       hasFormalRuler: true,
     });
-    expect(kingLines).toContain("帝号资格：政治条件成熟");
-    expect(kingLines).toContain("领先优势 18.0pp / 15pp ✓");
-    expect(kingLines).toContain("整合进程：60 / 60个月");
+    expect(kingLines).toContain("有效城邑 0 / 4");
+    expect(kingLines).toContain("领先优势 18.0pp / 8pp ✓");
+    expect(kingLines).toContain("连续资格 0 / 36个月");
     expect(
       buildEmperorQualificationLines({
         team: {

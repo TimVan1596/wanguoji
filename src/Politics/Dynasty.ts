@@ -513,7 +513,7 @@ class DynastyRegistryStore {
   updateRoyalNobility(month:number,teams:Team[]){
     const people=MilitaryCommandRegistry.getPeople(),byPerson=new Map(people.map(p=>[p.personId,p]));let events:ReturnType<typeof WorldHistory.getRecordedEvents>|undefined;
     for(const d of this.dynasties.values()){
-      if(!d.royalNobility?.some(a=>a.kind!=='ENDED'&&!d.royalNobility?.some(n=>n.chainId===a.chainId&&n.step>a.step))&&!d.rulers.some(r=>r.militaryIdentity&&byPerson.get(r.militaryIdentity.personId)?.nobilityHistory?.some(g=>!g.basis&&!d.royalNobility?.some(a=>a.chainId===`royal-noble-${r.id}-${g.epochFounderId}`))))continue;
+      if(!d.royalNobility?.some(a=>a.kind!=='ENDED'&&!d.royalNobility?.some(n=>n.chainId===a.chainId&&n.step>a.step))&&!d.rulers.some(r=>r.militaryIdentity&&byPerson.get(r.militaryIdentity.personId)?.nobilityHistory?.some(g=>(!g.basis||g.basis==='CIVIL')&&!d.royalNobility?.some(a=>a.chainId===`royal-noble-${r.id}-${g.epochFounderId}`))))continue;
       // Each committed act is a separate quiescent transaction; failures preserve
       // the already observed death/transfer and can be retried without duplicate awards.
       for(let count=0;count<d.rulers.length*3+1;count++){

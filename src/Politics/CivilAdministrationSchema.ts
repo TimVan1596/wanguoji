@@ -13,10 +13,16 @@ export type CivilGovernorEndReason='DEATH'|'CITY_LOST'|'FACTION_ENDED'|'REGIME_E
 export interface CivilGovernanceReceipt {eventId:string;month:number;cityId:string;cityName:string;loyalty:number;devastation:number;}
 export interface CivilPromotionEvidence {stewardshipEventIds?:string[];fromAssignmentId:string;fromOffice:CivilOffice;serviceMonths:number;meritEventIds:string[];contribution:number;strategy:number;loyalty:number;}
 export interface CivilPromotionReview {month:number;historyIndex:number;cityCount:number;loyalty:number;policy:CivilCareerPolicy;reasons:string[];outcome:'INELIGIBLE'|'CHANCE_NOT_MET'|'NOT_SELECTED'|'SELECTED';selectedAssignmentId?:string;sharedRoll?:number;}
+/** Two completed appraisal periods can qualify a stable posting for transfer. */
+export const civilTransferStewardship = (term:CivilGovernorTerm,month:number) =>
+ (term.stewardshipAssessments??[]).filter(record=>record.month<month).map(record=>record.eventId);
+export const hasCivilTransferMerit = (term:CivilGovernorTerm,month:number) =>
+ (term.meritMonth!==undefined&&term.meritMonth<=month&&!!term.meritEventId) ||
+ civilTransferStewardship(term,month).length>=2;
 export interface CivilGovernorTerm {
  promotionReview?:CivilPromotionReview;
  stewardshipWindow?:CivilStewardshipWindow;stewardshipAssessments?:CivilStewardshipAssessment[];retirement?:CivilRetirementEvidence;
- transfer?:{fromAssignmentId:string;meritEventIds:string[];sourceLoyalty:number;sourceDevastation:number;targetLoyalty:number;targetDevastation:number};
+ transfer?:{fromAssignmentId:string;meritEventIds:string[];stewardshipEventIds:string[];sourceLoyalty:number;sourceDevastation:number;targetLoyalty:number;targetDevastation:number};
  office?:CivilOffice;promotion?:CivilPromotionEvidence;receipts?:CivilGovernanceReceipt[];
  nameEvidence:{seed:string;culture:import('./NameCulture').NameCulture;originalName:string;source:'GENERATED'|'ESTABLISHED'};
  version:1;assignmentId:string;personId:string;sourceUserId:number;bornMonth:number;personalName:string;
