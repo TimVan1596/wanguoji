@@ -797,6 +797,7 @@ export default class WorldEventSystem {
     const formalMonths = new Map(teams.filter(team => team.stateFoundedMonth !== undefined).map(team => [team.name, team.stateFoundedMonth!]));
     const teamsById = new Map(teams.map(team => [team.name, team]));
     const zeroRemnantExiles = exiled.filter(t => (WorldRemnants.get(t.name)?.population ?? 0) <= 0);
+    const zeroRemnantIds = new Set(zeroRemnantExiles.map(t=>t.name));
     const local = diagnostics.localSupport;
     this.observeLocal("countries",zeroRemnantExiles.map(t=>t.name));
     const cities = teams.flatMap(team => team.cities);
@@ -805,24 +806,26 @@ export default class WorldEventSystem {
       diagnostics.cityChecks++;
       const rd=this.regional.counts;rd.cityChecks++;
       const pf=this.regional.popularFunnel;pf.cityChecks++;this.regional.cityChecked(city.id);
-      const ordinaryCrisis=hasPopularPoliticalCrisis(city,year,Game.Core?.totalCells??1);
+      const crisis=popularPoliticalCrisis(city,year,Game.Core?.totalCells??1);
+      const ordinaryCrisis=crisis.eligible;
       const armedCrisis=city.ownerTeam?militaryLocalCrisis(popularCrisisFacts(city,year,Game.Core?.totalCells??1)).eligible:false;
       const rawMilitaryParty=armedCrisis?assessMilitarySecession(city,year,r=>this.regional.militaryStep(r)):undefined;
       const politicalBeforeFilters=ordinaryCrisis||Boolean(rawMilitaryParty);
       if(armedCrisis)this.regional.militaryStep('ARMED_CITY_CRISIS');
-      if(politicalBeforeFilters)pf.political++;else {const reason=popularPoliticalCrisis(city,year,Game.Core?.totalCells??1).reason;if(reason==="LOYALTY")pf.loyaltyBlocked++;else pf.crisisBlocked++;}
+      if(politicalBeforeFilters)pf.political++;else {const reason=crisis.reason;if(reason==="LOYALTY")pf.loyaltyBlocked++;else pf.crisisBlocked++;}
       const owner = city.ownerTeam;
       const founder = city.founderTeam;
       if (!owner) continue;
       this.regional.militaryStep('CITY_CHECK');
+      let popularSupport:ReturnType<typeof assessPopularSupport>|undefined;
       if(politicalBeforeFilters){
         this.regional.militaryStep('POLITICAL_CRISIS');
         if(owner.cities.length<2)this.regional.militaryStep('ONE_CITY');
-        if(!assessPopularSupport(city,year).users.length)this.regional.militaryStep('NO_OTHER_SUPPORT');
+        if(!(popularSupport=assessPopularSupport(city,year)).users.length)this.regional.militaryStep('NO_OTHER_SUPPORT');
         if(founder?.status==='EXILED')this.regional.militaryStep(FactionRegistry.canRestoreFaction(founder,year)?'FOUNDER_RESTORABLE':'FOUNDER_EXILED_NOT_RESTORABLE');
       }else this.regional.militaryStep('NO_CRISIS');
       const rules = exiled.length ? deriveHistoricalCityRules(city, year, formalMonths) : undefined;
-      const localHistoryCount = (rules ?? []).filter(r => zeroRemnantExiles.some(t => t.name === r.factionId) && getHistoricalRestorationBasis(r)).length;
+      const localHistoryCount = (rules ?? []).filter(r => zeroRemnantIds.has(r.factionId) && getHistoricalRestorationBasis(r)).length;
       local.candidateChecks += zeroRemnantExiles.length;
       local.historyEligible += localHistoryCount;
       local.historyBlocked += Math.max(0,zeroRemnantExiles.length-localHistoryCount);
@@ -885,10 +888,10 @@ export default class WorldEventSystem {
           if (basis === "FORMER_CAPITAL") diagnostics.capitalEligible++; else diagnostics.longRuleEligible++;
         }
       }
-      const populationSupport = !warTornPath||politicalBeforeFilters ? assessPopularSupport(city,year) : undefined;
+      const populationSupport = !warTornPath||politicalBeforeFilters ? popularSupport??assessPopularSupport(city,year) : undefined;
       if(populationSupport){this.regional.accountSpatial(populationSupport.spatial);rd.validOrdinary+=populationSupport.validOrdinary;rd.identityBlocked+=populationSupport.identityBlocked;
         rd.geographyBlocked+=populationSupport.outsideArea;rd.discontentBlocked+=populationSupport.discontentBlocked;rd.supporters+=populationSupport.users.length;}
-      const stableBlocked=!hasPopularPoliticalCrisis(city,year,Game.Core?.totalCells ?? 1);
+      const stableBlocked=!ordinaryCrisis;
       const capacityBlocked=(Game.Core?.teams ?? teams).filter(t=>!t.isDie).length>=MAX_ACTIVE_FACTIONS;
       if(stableBlocked)rd.stabilityBlocked++;if(capacityBlocked)rd.capacityBlocked++;
       const cityPolitical=politicalBeforeFilters;

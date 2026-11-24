@@ -11,7 +11,7 @@ export function createMilitaryEvidenceIndex(events:readonly WorldEvent[],formati
  const commandEvents=(p:MilitaryPerson)=>[...new Set(p.appointments.map(a=>a.commandId))].flatMap(id=>byCommand.get(id)??[]).sort((a,b)=>order.get(a)!-order.get(b)!);
  return {byId,terminalByGroup,allById,byPerson,chronological:sorted,starts,ends,formsByPerson,commandEvents,dependencies(p:MilitaryPerson){
   const refs=new Set<WorldEvent>([...commandEvents(p),...(byPerson.get(p.personId)??[]),...p.capturedEventIds.flatMap(id=>allById.get(id)??[])]);
-  for(const e of [...refs]){const id=e.metadata?.battleId;if(typeof id==='string'){for(const x of starts.get(id)??[])refs.add(x);for(const x of ends.get(id)??[])refs.add(x);}}
+  for(const e of [...refs]){if(e.historyGroupId)for(const terminal of terminalByGroup.get(e.historyGroupId)??[])refs.add(terminal);const id=e.metadata?.battleId;if(typeof id==='string'){for(const x of starts.get(id)??[])refs.add(x);for(const x of ends.get(id)??[])refs.add(x);}}
   return [...refs].sort((a,b)=>order.get(a)!-order.get(b)!);
  },eligibleCount(month:number){let a=0,b=sorted.length;while(a<b){const m=(a+b)>>>1;if((sorted[m].monthIndex??sorted[m].year)<=month)a=m+1;else b=m;}return a;}};
 }

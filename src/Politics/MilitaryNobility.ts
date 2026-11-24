@@ -93,7 +93,9 @@ export function nobleEpochForRuler(d:Dynasty|undefined,rulerId:string|null){
 }
 
 type MeritRow={person:MilitaryPerson;merits:ReturnType<typeof deriveNobleMerits>};
-function compareMeritRows(a:MeritRow,b:MeritRow){return b.merits.importantCityIds.length-a.merits.importantCityIds.length||b.merits.cityIds.length-a.merits.cityIds.length||b.merits.defendedCityIds.length-a.merits.defendedCityIds.length||b.merits.serviceMonths-a.merits.serviceMonths||b.merits.activities-a.merits.activities||a.person.personId.localeCompare(b.person.personId);}
+const terminalMeritWeight=(merits:MeritRow['merits'])=>Math.min(3,merits.terminalVictories.reduce(
+ (weight,victory)=>weight+(victory.kind==='EMPIRE'?2:victory.kind==='KINGDOM'?1:0),0));
+function compareMeritRows(a:MeritRow,b:MeritRow){return b.merits.importantCityIds.length-a.merits.importantCityIds.length||terminalMeritWeight(b.merits)-terminalMeritWeight(a.merits)||b.merits.cityIds.length-a.merits.cityIds.length||b.merits.defendedCityIds.length-a.merits.defendedCityIds.length||b.merits.serviceMonths-a.merits.serviceMonths||b.merits.activities-a.merits.activities||a.person.personId.localeCompare(b.person.personId);}
 /** Per-view evidence cache: immutable proofs are reused, the actual service clock and ranking are always current. */
 export function createMeritRosterProjection(){
  let sourceEvents:WorldEvent[]|undefined,index:MilitaryEvidenceIndex|undefined,scope:string|undefined;

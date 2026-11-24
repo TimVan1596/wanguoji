@@ -620,6 +620,20 @@ export class MilitaryCommandRegistryStore {
     for(const person of this.people.values()){
       const team=teams.find(t=>t.name===person.factionId),dy=dynasties.find(d=>d.factionId===person.factionId);if(!team||!dy)continue;
       const grant=this.eligibleNobleGrant(person,month,team,dy);if(!grant)continue;
+      if(grant.terminalVictoryEventId&&!person.royalIdentity){
+        try{
+          this.civilTransaction(team,()=>{
+            this.recordNoble(person,grant);
+            this.updateFamilies(month,teams,dynasties,person.personId);
+            const link=this.getFamilyMember(person.sourceUserId,person.bornMonth);
+            if(!link)throw Error('Terminal victory peerage family charter was not committed');
+            const failures=this.diagnostics.familyTitleFailures,rejected=this.diagnostics.familyTitleIdentityRejected;
+            this.updateFamilyTitles(month,teams,dynasties,link.family.familyId);
+            if(this.diagnostics.familyTitleFailures!==failures||this.diagnostics.familyTitleIdentityRejected!==rejected)throw Error('Terminal victory hereditary settlement failed');
+          });
+        }catch(error){console.warn('[MilitaryNobility] terminal victory reward rolled back',error);return;}
+        continue;
+      }
       const prior=person.nobilityHistory?structuredClone(person.nobilityHistory):undefined,history=WorldHistory.exportState(),rng=worldRandom.exportState();
       try{this.recordNoble(person,grant);}catch{if(prior)person.nobilityHistory=prior;else delete person.nobilityHistory;WorldHistory.importState(history);worldRandom.restore(rng);}
     }
@@ -726,12 +740,13 @@ export class MilitaryCommandRegistryStore {
     }
   }
   commitFamilyTitle(familyId:string,act:import('./FamilyNobleSuccession').FamilyNobleAct){const f=this.families.find(f=>f.familyId===familyId);if(!f||f.nobleSuccession?.some(a=>a.eventId===act.eventId))throw Error('Duplicate family succession');(f.nobleSuccession??=[]).push(structuredClone(act));}
-  updateFamilies(month:number,teams:Team[],dynasties:Dynasty[]){
+  updateFamilies(month:number,teams:Team[],dynasties:Dynasty[],onlyPersonId?:string){
     if(month%12!==0||!this.eventWriter)return;
     // Stable lookup for this one annual boundary; entries below only append new houses/renewals.
     const linkedByPerson=new Map(this.families.flatMap(f=>f.members.filter(m=>m.militaryPersonId).map(m=>[m.militaryPersonId!,{family:f,member:m}] as const)));
     const sourcesByEpoch=new Map<string,{count:number;events:WorldEvent[]}>();
-    for(const p of this.people.values()){
+    const people=onlyPersonId?[this.people.get(onlyPersonId)!]:this.people.values();
+    for(const p of people){
       // These people could never supply a new charter/renewal in the original planner.
       if(p.royalIdentity||p.politicalRulerId||p.deathMonth!==undefined)continue;
       const link=linkedByPerson.get(p.personId);

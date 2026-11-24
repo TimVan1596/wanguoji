@@ -26,7 +26,7 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
     group.push(event);
     terminalByGroup.set(event.historyGroupId,group);
   }
-  const endings=new Map<string,{event:WorldEvent;capture:WorldEvent;kind:"UPRISING"|"KINGDOM"|"EMPIRE"}>();
+  const endings=new Map<string,{event:WorldEvent;capture:WorldEvent;kind:"UPRISING"|"REGIONAL_UPRISING"|"KINGDOM"|"EMPIRE"}>();
   for(const capture of captures){
     if(!capture.historyGroupId)continue;
     for(const event of terminalByGroup.get(capture.historyGroupId)??[]){
@@ -34,7 +34,7 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
         event.conquerorFactionId!==capture.actorFactionId||event.metadata?.cityId!==capture.cityId||
         (event.monthIndex??event.year)!==(capture.monthIndex??capture.year))continue;
       const stage=event.metadata.defeatedIdentityStage,rank=event.metadata.defeatedSovereigntyRank;
-      const kind=event.type==="faction-dissolved"&&stage==="PROVISIONAL"?"UPRISING":
+      const kind=event.type==="faction-dissolved"&&stage==="PROVISIONAL"?(Number(event.metadata.defeatedPeakCityCount)>=3?"REGIONAL_UPRISING":"UPRISING"):
         event.type==="faction-extinct"&&stage==="STATE"&&rank==="EMPEROR"?"EMPIRE":
         event.type==="faction-extinct"&&stage==="STATE"&&rank==="KING"?"KINGDOM":undefined;
       if(kind&&!endings.has(event.id))endings.set(event.id,{event,capture,kind});

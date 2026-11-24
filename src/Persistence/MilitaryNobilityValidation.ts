@@ -24,7 +24,8 @@ export function validateMilitaryNobility(save:WorldSaveV1){
    capture.e.year!==month||capture.e.cityId!==event.metadata?.cityId||capture.e.targetFactionId!==event.targetFactionId||
    capture.e.actorFactionId!==event.conquerorFactionId||event.metadata?.isFinalCityCapture!==1||
    !target||event.metadata?.defeatedIdentityStage!==stage||!ranks.includes(event.metadata?.defeatedSovereigntyRank as never)||
-   event.type!==(stage==='STATE'?'faction-extinct':'faction-dissolved'))errors.push('invalid terminal capture source: '+event.id);
+   event.type!==(stage==='STATE'?'faction-extinct':'faction-dissolved')||
+   event.type==='faction-dissolved'&&event.metadata?.defeatedPeakCityCount!==save.factionLifetime?.records.find(record=>record.factionId===target.factionId)?.peakCityCount.value)errors.push('invalid terminal capture source: '+event.id);
  }
  for(const p of state.people){
   if(p.nobilityHistory===undefined)continue;if(!Array.isArray(p.nobilityHistory)){errors.push('invalid noble history');continue;}

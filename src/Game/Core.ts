@@ -518,7 +518,7 @@ export default class Core {
       }
     });
 
-    const terminalCapture = historyGroupId && WorldHistory.getEventsForCity(finalCity.id).find(event=>
+    const terminalCapture = historyGroupId && WorldHistory.getEventsForCity(finalCity.id).findLast(event=>
       event.historyGroupId===historyGroupId && (event.monthIndex??event.year)===year &&
       ["city-captured","city-recovered","capital-fallen"].includes(event.type) &&
       event.actorFactionId===conqueror.name && event.targetFactionId===fallenTeam.name);
@@ -543,6 +543,7 @@ export default class Core {
       terminalCaptureEventId: terminalCapture ? terminalCapture.id : undefined,
       defeatedIdentityStage: terminalCapture ? fallenTeam.identityStage : undefined,
       defeatedSovereigntyRank: terminalCapture ? fallenTeam.sovereigntyRank : undefined,
+      defeatedPeakCityCount: terminalCapture && !hasFormalStateIdentity(fallenTeam) ? FactionLifetimeRecords.get(fallenTeam.name)?.peakCityCount.value : undefined,
     };
 
     if (!hasFormalStateIdentity(fallenTeam)) {
