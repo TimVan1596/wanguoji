@@ -28,3 +28,19 @@ export function personAmbition(source:AbilitySource){
  const identity=source.kind==='RESIDENT'?`resident:${source.sourceUserId}:${source.bornMonth}`:`royal:${source.rulerId}:${source.bornMonth}`;
  let h=2166136261;for(const ch of `person-ambition-v2:${identity}`)h=Math.imul(h^ch.charCodeAt(0),16777619)>>>0;return h%101;
 }
+
+/** A derived observation. No health history, lifespan prediction, or world random draw. */
+export function personHealth(source:AbilitySource,month:number,deathMonth?:number){
+ const at=Math.min(month,deathMonth??month);
+ if(!Number.isSafeInteger(at)||at<source.bornMonth)return undefined;
+ const identity=source.kind==='RESIDENT'?source.sourceUserId:source.rulerId;
+ let hash=2166136261;
+ for(const ch of `person-constitution-v1:${source.kind}:${identity}:${source.bornMonth}`)hash=Math.imul(hash^ch.charCodeAt(0),16777619)>>>0;
+ const age=(at-source.bornMonth)/12;
+ const decline=Math.max(0,age-50)*.85+Math.max(0,age-70)*1.15;
+ return Math.max(0,Math.min(100,Math.round(76+hash%25-decline)));
+}
+
+export function appointmentHealthFactor(source:AbilitySource,month:number){
+ return .92+.08*(personHealth(source,month)??100)/100;
+}

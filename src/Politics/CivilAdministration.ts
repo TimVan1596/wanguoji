@@ -81,8 +81,12 @@ class CivilAdministrationStore {
  }
  appoint(month:number,team:Team,city:City,candidate:CivilGovernorCandidate,dynasty:Dynasty){
   const ruler=dynasty.rulers.find(r=>r.id===dynasty.currentRulerId),epoch=ruler&&(dynasty.houseEpochs??[]).find(e=>e.startMonth<=month&&(e.endMonth??Infinity)>=month);
-  if(this.state.terms.filter(t=>t.factionId===team.name&&active(t,month)).length>=civilOfficeCap(team.cities.length)||!ruler||!epoch||!eligibleCivilCities(month,team,this.state.terms).some(c=>c.id===city.id)||!civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,bornMonth)=>Military.getFamilyMember(id,bornMonth),Military.getFormations(),DynastyRegistry.getAll()).some(c=>c.personId===candidate.personId))throw Error('Invalid civil governor appointment');
-  candidate=civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,bornMonth)=>Military.getFamilyMember(id,bornMonth),Military.getFormations(),DynastyRegistry.getAll()).find(c=>c.personId===candidate.personId&&c.sourceUserId===candidate.sourceUserId&&c.bornMonth===candidate.bornMonth)??(()=>{throw Error('Civil population identity mismatch');})();
+  if(this.state.terms.filter(t=>t.factionId===team.name&&active(t,month)).length>=civilOfficeCap(team.cities.length)||!ruler||!epoch||!eligibleCivilCities(month,team,this.state.terms).some(c=>c.id===city.id))throw Error('Invalid civil governor appointment');
+  const eligible=civilGovernorCandidates(month,team,Military.getPeople(),this.state.terms,epoch.foundingRulerId,(id,bornMonth)=>Military.getFamilyMember(id,bornMonth),Military.getFormations(),DynastyRegistry.getAll());
+  if(!eligible.some(c=>c.personId===candidate.personId))throw Error('Invalid civil governor appointment');
+  const verified=eligible.find(c=>c.personId===candidate.personId&&c.sourceUserId===candidate.sourceUserId&&c.bornMonth===candidate.bornMonth);
+  if(!verified)throw Error('Civil population identity mismatch');
+  candidate=verified;
   return Military.civilTransaction(team,()=>transaction(()=>{
    const sequence=this.state.sequence+1,assignmentId=`civil-governor-${team.name}-${city.id}-${sequence}`,eventId=`${assignmentId}-appointed`;
    const user=[...team.users].find(u=>u.id===candidate.sourceUserId&&u.bornMonth===candidate.bornMonth)!;

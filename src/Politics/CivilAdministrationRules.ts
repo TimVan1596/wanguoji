@@ -6,7 +6,7 @@ import type Team from '../Components/Team';
 import type User from '../Components/User';
 import type {MilitaryFamily,MilitaryFamilyMember} from './MilitaryFamily';
 import type {MilitaryPerson} from './MilitaryCommandRegistry';
-import {personAbilities,militaryAbilities} from './PersonAbilities';
+import {appointmentHealthFactor,personAbilities,militaryAbilities} from './PersonAbilities';
 import {currentNobleGrant,NOBLE_RANKS,type NobleRank} from './MilitaryNobility';
 import {familyNobleRankAt,familyResidenceAt,familyMemberPresent} from './FamilyNobleSuccession';
 import {unresolvedCourtBans} from './MilitaryCourtStanding';
@@ -67,7 +67,7 @@ export function civilGovernorCandidates(month:number,team:Team,people:readonly M
   const identitySource:CivilGovernorSource=royal?'ROYAL':retired?'RETIRED_MILITARY':nobleRank?'NOBLE':familyLink&&familyExpansionOpen(familyLink.family,month,team.name,epochFounderId)?'FAMILY':'ORDINARY_RESIDENT';
   const abilities=person?militaryAbilities(person):personAbilities({kind:'RESIDENT',sourceUserId:user.id,bornMonth:user.bornMonth});
   const sourceWeight=identitySource==='ORDINARY_RESIDENT'?1:identitySource==='FAMILY'?1.08:identitySource==='NOBLE'?1.04+Math.max(0,NOBLE_RANKS.indexOf(nobleRank??'NAN'))*.02:identitySource==='ROYAL'?1.12:1.06;
-  const personId=history[0]?.personId??person?.personId??civilGovernorPersonId(user,familyLink),prior=history.filter(t=>t.factionId===team.name&&t.epochFounderId===epochFounderId&&t.endReason==='CITY_LOST'&&t.endMonth!==undefined&&t.endMonth<=month).at(-1),returnBonus=prior?.meritEventId?1+Math.min(.15,(prior.loyaltyRecovered+prior.devastationRecovered)/100):1,weight=(.72+abilities.strategy/100*.55)*sourceWeight*returnBonus;
+  const personId=history[0]?.personId??person?.personId??civilGovernorPersonId(user,familyLink),prior=history.filter(t=>t.factionId===team.name&&t.epochFounderId===epochFounderId&&t.endReason==='CITY_LOST'&&t.endMonth!==undefined&&t.endMonth<=month).at(-1),returnBonus=prior?.meritEventId?1+Math.min(.15,(prior.loyaltyRecovered+prior.devastationRecovered)/100):1,weight=(.72+(.85*abilities.strategy+.15*abilities.command)/100*.55)*sourceWeight*returnBonus*appointmentHealthFactor(abilities.source,month);
   rows.push({personId,sourceUserId:user.id,bornMonth:user.bornMonth,personalName:person?.personalName??user.name,identitySource,familyId:familyLink?.family.familyId,familyMemberId:familyLink?.member.memberId,royalRulerId:person?.royalIdentity?.rulerId,nobleRank,strategy:abilities.strategy,weight});
  }
  return rows.sort((a,b)=>b.weight-a.weight||b.strategy-a.strategy||a.bornMonth-b.bornMonth||a.personId.localeCompare(b.personId));

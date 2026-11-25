@@ -8,6 +8,17 @@ export function validateFamilyNobility(save:WorldSaveV1){
  const errors:string[]=[],events=save.worldHistory.events as WorldEvent[],state=save.registries.militaryCommandRegistry,positions=new Map(events.map((e,i)=>[e.id,i])),bound=new Set<string>();
  const dynasties=save.dynasties.map(d=>({factionId:String(d.factionId),houseEpochs:d.houseEpochs as import('../Politics/DynasticRevolution').DynastyHouseEpoch[]|undefined,rulers:(d.rulers as RulerSaveV17[]).map(importRulerSave)}));
  const grantEventIds=new Set(state.people.flatMap(p=>p.nobilityHistory?.map(g=>g.eventId)??[]));
+ const familyDeaths=new Map<string,number>(),militaryDeaths=new Map<string,number>();
+ const deathKey=(id:unknown,detail:unknown)=>JSON.stringify([id,detail]);
+ events.forEach((event,index)=>{
+  if(event.type==='family-member-died'){
+   const key=deathKey(event.metadata?.familyId,event.metadata?.memberId);
+   if(!familyDeaths.has(key))familyDeaths.set(key,index);
+  }else if(event.type==='military-person-died'){
+   const key=deathKey(event.metadata?.personId,at(event));
+   if(!militaryDeaths.has(key))militaryDeaths.set(key,index);
+  }
+ });
  for(const f of state.families??[])try{
   if(f.nobleSuccession!==undefined&&!Array.isArray(f.nobleSuccession))throw Error('title chain must be an array');
   // Each opening or upgrade needs an unused real grant. Descent is finite
@@ -27,7 +38,7 @@ export function validateFamilyNobility(save:WorldSaveV1){
   }
   for(const member of f.members){
    for(const field of ['deathHistoryIndex','exitHistoryIndex'] as const){const v=member[field];if(v!==undefined&&(!Number.isSafeInteger(v)||v<0||v>events.length))throw Error('invalid life evidence boundary');}
-   if(member.deathMonth!==undefined){const own=events.findIndex(e=>e.type==='family-member-died'&&e.metadata?.familyId===f.familyId&&e.metadata?.memberId===member.memberId),mil=events.findIndex(e=>e.type==='military-person-died'&&e.metadata?.personId===member.militaryPersonId&&at(e)===member.deathMonth),source=member.militaryPersonId?mil:own;if(member.deathHistoryIndex===undefined||source<0||events[source].metadata?.deathCause!==member.deathCause||member.deathHistoryIndex>source||!member.militaryPersonId&&member.deathHistoryIndex!==own)throw Error('missing contemporaneous actual death boundary');}
+   if(member.deathMonth!==undefined){const own=familyDeaths.get(deathKey(f.familyId,member.memberId))??-1,mil=militaryDeaths.get(deathKey(member.militaryPersonId,member.deathMonth))??-1,source=member.militaryPersonId?mil:own;if(member.deathHistoryIndex===undefined||source<0||events[source].metadata?.deathCause!==member.deathCause||member.deathHistoryIndex>source||!member.militaryPersonId&&member.deathHistoryIndex!==own)throw Error('missing contemporaneous actual death boundary');}
    if(member.factionHistory!==undefined&&!Array.isArray(member.factionHistory))throw Error('invalid family residence history');
    let previousMonth=member.enteredMonth,previousIndex=-1,previousFaction=member.birth?.factionId??f.factionId;
    for(const h of member.factionHistory??[]){if(!Number.isSafeInteger(h.month)||h.month<previousMonth||h.month>save.world.worldMonth||h.month>(member.deathMonth??Infinity)||!Number.isSafeInteger(h.eventIndex)||h.eventIndex<previousIndex||h.eventIndex>events.length||h.factionId===previousFaction||!save.factions.some(t=>t.factionId===h.factionId))throw Error('invalid actual population transfer');previousMonth=h.month;previousIndex=h.eventIndex;previousFaction=h.factionId;}
