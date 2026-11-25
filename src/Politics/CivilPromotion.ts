@@ -1,9 +1,9 @@
 import {CIVIL_OFFICES,civilOfficeLevel,centralCivilOfficeAvailable} from './CivilOffice';
 import type {CivilGovernorTerm,CivilPromotionEvidence} from './CivilAdministrationSchema';
-import {personAbilities} from './PersonAbilities';
+import {civilAbilitySource,personAbilities} from './PersonAbilities';
 export const CIVIL_PROMOTION_BLOCKS:Record<string,string>={HIGHEST:'已至最高文职',INACTIVE:'任期已经结束',MONTH:'尚非年度选拔月份',VACANCY:'中央官额或对应职位尚无空缺',TENURE:'本职任职资历尚不足',STRATEGY:'谋略未达该级门槛',LOYALTY:'当时忠诚未达门槛',MERIT:'恢复治绩与守成考课尚不足'};
 export function civilPromotionFacts(term:CivilGovernorTerm,month:number,loyalty:number,cities:number,terms:readonly CivilGovernorTerm[]){
- const level=civilOfficeLevel(term.office),next=CIVIL_OFFICES[level+1],strategy=personAbilities(term.royalRulerId?{kind:'ROYAL',rulerId:term.royalRulerId,bornMonth:term.bornMonth}:{kind:'RESIDENT',sourceUserId:term.sourceUserId,bornMonth:term.bornMonth}).strategy;
+ const level=civilOfficeLevel(term.office),next=CIVIL_OFFICES[level+1],strategy=personAbilities(civilAbilitySource(term)).strategy;
  const assessments=(term.stewardshipAssessments??[]).filter(a=>a.month<=month),receipts=(term.receipts??[]).filter(r=>r.month<=month),serviceMonths=month-term.startMonth,contribution=receipts.reduce((sum,r)=>sum+r.loyalty+r.devastation,0)+assessments.reduce((sum,a)=>sum+a.contribution,0),reasons:string[]=[];
  if(!next)reasons.push('HIGHEST');if(term.endMonth!==undefined)reasons.push('INACTIVE');if(month%12!==0)reasons.push('MONTH');
  if(next&&!centralCivilOfficeAvailable(next,cities,terms,term.factionId))reasons.push('VACANCY');

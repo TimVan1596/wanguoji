@@ -1,4 +1,4 @@
-import {personHealth} from './PersonAbilities';
+import {civilAbilitySource,personHealth} from './PersonAbilities';
 import type {CivilGovernorTerm} from './CivilAdministrationSchema';
 import {WorldRandom} from '../Simulation/WorldRandom';
 export type CivilCareerPolicy='BASELINE'|'LOW'|'MEDIUM';
@@ -17,7 +17,7 @@ export function validStewardshipWindow(w:CivilStewardshipWindow,startMonth:numbe
 export function civilRetirementEvidence(term:CivilGovernorTerm,month:number,worldSeed:string,policy:CivilCareerPolicy):CivilRetirementEvidence|undefined{
  const ageMonths=month-term.bornMonth,serviceMonths=month-term.startMonth;
  if(policy==='BASELINE'||month%12!==0||ageMonths<65*12||serviceMonths<60||term.endMonth!==undefined)return;
- const source=term.royalRulerId?{kind:'ROYAL' as const,rulerId:term.royalRulerId,bornMonth:term.bornMonth}:{kind:'RESIDENT' as const,sourceUserId:term.sourceUserId,bornMonth:term.bornMonth};
+ const source=civilAbilitySource(term);
  const health=personHealth(source,month);
  const baseChance=ageMonths>=80*12?.65:ageMonths>=75*12?.3:ageMonths>=70*12?.12:.04;
  const chance=Math.min(.70,baseChance+Math.max(0,65-(health??65))*.002),seed=`civil-retirement-v1:${worldSeed}:${term.assignmentId}:${month}`,rng=new WorldRandom();rng.initialize(seed);const roll=rng.next();

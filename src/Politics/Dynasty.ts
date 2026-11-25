@@ -1860,7 +1860,7 @@ MilitaryCommandRegistry.setRoyalService({
   transaction:(team,work)=>successionTransaction(team,DynastyRegistry,work),
   calibration:()=>DynastyRegistry.getPoliticalCalibration(),
   nobleEpoch:(factionId)=>{const d=DynastyRegistry.get(factionId);return nobleEpochForRuler(d,d?.currentRulerId??null)?.foundingRulerId;},
-  candidateAbilities:(c)=>{const r=DynastyRegistry.get(c.factionId)?.rulers.find(r=>r.id===c.rulerId);return r?rulerAbilities(r,MilitaryCommandRegistry.getPeople()):undefined;},
+  candidateAbilities:(c)=>{const r=DynastyRegistry.get(c.factionId)?.rulers.find(r=>r.id===c.rulerId);return r?rulerAbilities(r,MilitaryCommandRegistry.getPeople(),r.residentIdentity?MilitaryCommandRegistry.getFamilyMember(r.residentIdentity.sourceUserId,r.bornYear)?.member:undefined):undefined;},
   candidates:(team,month)=>DynastyRegistry.getRoyalMilitaryCandidates(team,month),
   enlist:(candidate,team,month,members)=>DynastyRegistry.enlistRoyalMilitary(candidate,team,month,members),
   eligible:(user,month)=>DynastyRegistry.isRoyalMilitaryEligible(user,month),

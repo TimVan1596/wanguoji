@@ -109,7 +109,7 @@ export default class PopulationSystem {
         if (current >= capacity) return;
         const roomRatio = (capacity - current) / capacity;
         const ruler=Dynasty.getCurrentRuler(team.name);
-        const administration=populationRulerRecovery(ruler,worldMonth,()=>rulerAbilities(ruler!,Military.getPeople()).strategy);
+        const administration=populationRulerRecovery(ruler,worldMonth,()=>rulerAbilities(ruler!,Military.getPeople(),ruler!.residentIdentity?Military.getFamilyMember(ruler!.residentIdentity.sourceUserId,ruler!.bornYear)?.member:undefined).strategy);
         const chance = Math.min(.85, BASE_GROWTH_CHANCE * roomRatio * (current <= 0 ? .65 : 1) * context.multiplier * administration * effect * worldRecoveryMultiplier(worldPopulation));
         const beforeDraw=worldRandom.exportState();
         if (worldRandom.next() < chance) {

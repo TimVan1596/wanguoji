@@ -29,7 +29,7 @@ export interface CivilGovernorTerm {
  office?:CivilOffice;promotion?:CivilPromotionEvidence;receipts?:CivilGovernanceReceipt[];
  nameEvidence:{seed:string;culture:import('./NameCulture').NameCulture;originalName:string;source:'GENERATED'|'ESTABLISHED'};
  version:1;assignmentId:string;personId:string;sourceUserId:number;bornMonth:number;personalName:string;
- identitySource:CivilGovernorSource;familyId?:string;familyMemberId?:string;royalRulerId?:string;
+ identitySource:CivilGovernorSource;familyId?:string;familyMemberId?:string;royalRulerId?:string;familyBirthAbilityId?:string;
  factionId:string;countryName:string;epochFounderId:string;cityId?:string;cityName?:string;
  rulerId:string;rulerTitle:string;startMonth:number;appointEventId:string;
  endMonth?:number;endReason?:CivilGovernorEndReason;endEventId?:string;

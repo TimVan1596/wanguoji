@@ -6,7 +6,7 @@ import type Team from '../Components/Team';
 import type User from '../Components/User';
 import type {MilitaryFamily,MilitaryFamilyMember} from './MilitaryFamily';
 import type {MilitaryPerson} from './MilitaryCommandRegistry';
-import {appointmentHealthFactor,personAbilities,militaryAbilities} from './PersonAbilities';
+import {civilAbilitySource,residentAbilitySource,appointmentHealthFactor,personAbilities,militaryAbilities} from './PersonAbilities';
 import {currentNobleGrant,NOBLE_RANKS,type NobleRank} from './MilitaryNobility';
 import {familyNobleRankAt,familyResidenceAt,familyMemberPresent} from './FamilyNobleSuccession';
 import {unresolvedCourtBans} from './MilitaryCourtStanding';
@@ -26,7 +26,7 @@ export function civilGovernorStatus(term:CivilGovernorTerm,city:City|undefined,m
 }
 export function civilGovernanceEffect(term:CivilGovernorTerm,city:City,month:number,policy:CivilGovernancePolicy='MEDIUM'){
  if(term.endMonth!==undefined||city.destroyed||city.underSiege||city.isInCaptureGrace(month)||month<=term.startMonth||(month-term.startMonth)%12!==0)return {loyalty:0,devastation:0};
- const source=term.royalRulerId?{kind:'ROYAL' as const,rulerId:term.royalRulerId,bornMonth:term.bornMonth}:{kind:'RESIDENT' as const,sourceUserId:term.sourceUserId,bornMonth:term.bornMonth};
+ const source=civilAbilitySource(term);
  const value=personAbilities(source).strategy,threshold=civilGovernanceThreshold(policy);
  return {loyalty:value>=threshold&&city.loyalty<80?1:0,devastation:value>=Math.max(0,threshold-12)&&city.devastation>0?1:0};
 }
@@ -65,7 +65,7 @@ export function civilGovernorCandidates(month:number,team:Team,people:readonly M
   const nobleRank=higherRank(person?currentNobleGrant(person,team.name,month,epochFounderId)?.rank:undefined,familyLink?familyNobleRankAt(familyLink.family,familyLink.member,month,team.name,epochFounderId):undefined);
   const retired=!!person&&person.status==='RETIRED'&&person.appointments.length>0,royal=!!person?.royalIdentity;
   const identitySource:CivilGovernorSource=royal?'ROYAL':retired?'RETIRED_MILITARY':nobleRank?'NOBLE':familyLink&&familyExpansionOpen(familyLink.family,month,team.name,epochFounderId)?'FAMILY':'ORDINARY_RESIDENT';
-  const abilities=person?militaryAbilities(person):personAbilities({kind:'RESIDENT',sourceUserId:user.id,bornMonth:user.bornMonth});
+  const abilities=person?militaryAbilities(person):personAbilities(residentAbilitySource(user.id,user.bornMonth,familyLink?.member));
   const sourceWeight=identitySource==='ORDINARY_RESIDENT'?1:identitySource==='FAMILY'?1.08:identitySource==='NOBLE'?1.04+Math.max(0,NOBLE_RANKS.indexOf(nobleRank??'NAN'))*.02:identitySource==='ROYAL'?1.12:1.06;
   const personId=history[0]?.personId??person?.personId??civilGovernorPersonId(user,familyLink),prior=history.filter(t=>t.factionId===team.name&&t.epochFounderId===epochFounderId&&t.endReason==='CITY_LOST'&&t.endMonth!==undefined&&t.endMonth<=month).at(-1),returnBonus=prior?.meritEventId?1+Math.min(.15,(prior.loyaltyRecovered+prior.devastationRecovered)/100):1,weight=(.72+(.85*abilities.strategy+.15*abilities.command)/100*.55)*sourceWeight*returnBonus*appointmentHealthFactor(abilities.source,month);
   rows.push({personId,sourceUserId:user.id,bornMonth:user.bornMonth,personalName:person?.personalName??user.name,identitySource,familyId:familyLink?.family.familyId,familyMemberId:familyLink?.member.memberId,royalRulerId:person?.royalIdentity?.rulerId,nobleRank,strategy:abilities.strategy,weight});

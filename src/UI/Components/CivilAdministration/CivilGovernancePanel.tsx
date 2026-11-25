@@ -1,3 +1,4 @@
+import {civilAbilitySource} from '../../../Politics/PersonAbilities';
 import HistoricalEventArchive from '../FactionDetails/HistoricalEventArchive';
 import {CIVIL_PROMOTION_BLOCKS} from '../../../Politics/CivilPromotion';
 import {civilCareerReading} from '../../../Politics/CivilHistoriography';
@@ -49,7 +50,7 @@ export function governorProfile(term:CivilGovernorTerm,month:number){
 
  const portraitMonth=Math.min(month,deathMonth??month,term.endMonth===undefined?month:Math.max(term.startMonth,term.endMonth-1));
  const team=Game.Core?.teams.find(t=>t.name===term.factionId);
- const abilities=linkedRuler?rulerAbilities(linkedRuler,Military.getPeople()):person?militaryAbilities(person):personAbilities(term.royalRulerId?{kind:'ROYAL',rulerId:term.royalRulerId,bornMonth:term.bornMonth}:{kind:'RESIDENT',sourceUserId:term.sourceUserId,bornMonth:term.bornMonth});
+ const abilities=linkedRuler?rulerAbilities(linkedRuler,Military.getPeople(),familyLink?.member):person?militaryAbilities(person):personAbilities(civilAbilitySource(term));
  const loyalty=user&&user.role!=='RULER'?{value:user.loyalty,factionName:Game.Core?.teams.find(t=>t.users.has(user))?.displayName??term.countryName,month}:undefined;
  return {person,family,memberId,user,linkedRuler,linkedHouse,deathMonth,portraitMonth,abilities,loyalty,portrait:{personId:term.royalRulerId??term.personId,age:Math.max(0,Math.floor((portraitMonth-term.bornMonth)/12)),color:team?getFactionColorAtMonth(team,portraitMonth):undefined,deceased:deathMonth!==undefined&&deathMonth<=month,royalKin:!!term.royalRulerId,role:term.office??'JUNSHOU',nobleRank:person?currentNobleGrant(person,term.factionId,portraitMonth,term.epochFounderId)?.rank:undefined}};
 }

@@ -13,6 +13,7 @@ export function terminalCaptureKind(event:WorldEvent,capture:WorldEvent){
  const stage=event.metadata.defeatedIdentityStage,rank=event.metadata.defeatedSovereigntyRank;
  if(event.type==='faction-dissolved'&&stage==='PROVISIONAL')return Number(event.metadata.defeatedPeakCityCount)>=3?'REGIONAL_UPRISING':'UPRISING';
  if(event.type==='faction-extinct'&&stage==='STATE')return rank==='EMPEROR'?'EMPIRE':rank==='KING'?'KINGDOM':undefined;
+ return undefined;
 }
 
 export function readTerminalConflict(event:WorldEvent,capture:WorldEvent,worldMonth=Infinity){
