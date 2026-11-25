@@ -11,7 +11,7 @@ export function validateRoyalHouseholds(save:WorldSaveV1){
  const firstPosition=new Map<string,number>(),royalDeaths=new Map<string,Array<{position:number;month:number}>>(),militaryDeath=new Map<string,number>(),kinDeaths=new Map<string,WorldEvent[]>(),transfers=new Map<string,Array<{position:number;month:number;to:string}>>();
  events.forEach((e,position)=>{
   if(!firstPosition.has(e.id))firstPosition.set(e.id,position);
-  if(['ruler-died','heir-died','royal-kin-died'].includes(e.type))for(const id of new Set([e.rulerId,e.metadata?.heirId]))if(typeof id==='string'){
+  if(['ruler-died','heir-died','royal-kin-died'].includes(e.type))for(const id of new Set([e.rulerId,e.metadata?.rulerId,e.metadata?.heirId]))if(typeof id==='string'){
    const rows=royalDeaths.get(id)??[];rows.push({position,month:e.monthIndex??e.year});royalDeaths.set(id,rows);
   }
   if(e.type==='military-person-died'&&typeof e.metadata?.personId==='string'&&!militaryDeath.has(e.metadata.personId))militaryDeath.set(e.metadata.personId,position);
@@ -41,7 +41,7 @@ export function validateRoyalHouseholds(save:WorldSaveV1){
    const context={...d,currentRulerId:d.rulers.find(r=>r.accessionYear!==undefined&&r.accessionYear<=month&&(r.endYear??Infinity)>month)?.id??null,houseName:epoch.houseName,rulers:historical,royalNobility:d.royalNobility?.filter(a=>before(a.eventId))};const alreadyBorn=historical.filter(r=>r.householdBirth?.opportunityMonth===Math.floor(month/12)*12).length;let living=historical.filter(r=>(r.deathMonth??Infinity)>month&&(r.naturalDeathYear??Infinity)>month).length;const planned:Ruler[]=[];
    const blocked=new Set(historical.filter(r=>{const last=(transfers.get(r.id)??[]).filter(e=>e.position<boundary&&e.month<=month).at(-1);return !!last&&last.to!==d.factionId;}).map(r=>r.id));
    for(const [ordinal,parent] of householdBirthParents(context,month,blocked).entries()){if(planned.length+alreadyBorn>=HOUSEHOLD_ANNUAL_CAP||living>=HOUSEHOLD_LIVING_CAP)break;const child=householdBirthPlan(parent,month,String(save.worldRandom.seed),policy,epoch.foundingRulerId,ordinal);if(child){planned.push(child);living++;}}
-   if(planned.length!==actual.length)throw Error('royal birth annual cap/selection mismatch');
+   if(planned.length!==actual.length)throw Error(`royal birth annual cap/selection mismatch at month ${month}: expected ${planned.length}, recorded ${actual.length}`);
    for(let i=0;i<actual.length;i++){const a=actual[i],p=planned[i];if(a.id!==p.id||a.givenName!==p.givenName||a.houseName!==p.houseName||a.bornYear!==p.bornYear||a.naturalDeathYear!==p.naturalDeathYear||JSON.stringify(a.householdBirth)!==JSON.stringify(p.householdBirth))throw Error('royal birth deterministic replay mismatch');}
   }
  }catch(e){errors.push(`invalid royal household ${raw.factionId}: ${String(e)}`);}}

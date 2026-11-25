@@ -49,3 +49,11 @@ it.each(['GRANDCHILD','NEPHEW'])('uses verified %s proof after the closer relati
  }
  expect(x.run(120)).toMatchObject({kind:'SUCCEEDED',holderRulerId:child.id,kinship:{relation}});
 });
+
+it('settles the death before a later same-month regime ending',()=>{
+ const x=world();const child=x.add('child','father',0,20);
+ x.grant();x.run(50);x.die(x.father,100);
+ x.events.push({id:'end',type:'faction-extinct',targetFactionId:'qin',year:100});
+ expect(x.run(100)).toMatchObject({kind:'SUCCEEDED',rank:'BO',holderRulerId:child.id});
+ expect(x.run(100)).toMatchObject({kind:'ENDED',reason:'REGIME_ENDED'});
+});

@@ -25,9 +25,9 @@ it.each(['parent','name','lifespan','opportunity','scope','erased-proof'])('reje
  if(field==='parent')r.parentId='other';if(field==='name')r.givenName='伪名';if(field==='lifespan')r.naturalDeathMonth++;if(field==='opportunity')r.householdBirth.opportunityMonth+=12;if(field==='scope')delete r.successionScope;if(field==='erased-proof'){delete r.successionScope;delete r.householdBirth;}
  expect(validateRoyalHouseholds(save).length).toBeGreaterThan(0);
 });
-it('honors the actual before/after event boundary for a same-month father death',()=>{
+it.each(['royal-kin-died','ruler-died'] as const)('honors the actual before/after boundary for %s',type=>{
  const {save,parentId,childId,month}=fixture(),r:any=(save.dynasties[0].rulers as any[]).find(r=>r.rulerId===parentId),events=save.worldHistory.events as WorldEvent[];
- r.deathMonth=month;r.status='dead';const death={id:'actual-parent-death',year:month,type:'royal-kin-died',rulerId:parentId,title:'死亡'} as WorldEvent;events.push(death);expect(validateRoyalHouseholds(save)).toEqual([]);
+ r.deathMonth=month;r.status='dead';const death={id:'actual-parent-death',year:month,type,...(type==='ruler-died'?{metadata:{rulerId:parentId}}:{rulerId:parentId}),title:'死亡'} as WorldEvent;events.push(death);expect(validateRoyalHouseholds(save)).toEqual([]);
  events.pop();const boundary=events.findIndex(e=>e.rulerId===childId);events.splice(boundary,0,death);expect(validateRoyalHouseholds(save).length).toBeGreaterThan(0);
 });
 

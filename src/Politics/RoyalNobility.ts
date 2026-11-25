@@ -28,7 +28,7 @@ function sourceGrant(r:Ruler,d:Dynasty,people:readonly MilitaryPerson[],events:r
 function deathEvent(r:Ruler,people:readonly MilitaryPerson[],events:readonly WorldEvent[],month:number){
  if(r.deathMonth===undefined||r.deathMonth>month)return;
  const p=royalNoblePerson(r,people);
- return events.find(e=>at(e)===r.deathMonth&&(['ruler-died','heir-died','royal-kin-died'].includes(e.type)&&(e.rulerId===r.id||e.metadata?.heirId===r.id)||e.type==='military-person-died'&&p&&e.metadata?.personId===p.personId));
+ return events.find(e=>at(e)===r.deathMonth&&(['ruler-died','heir-died','royal-kin-died'].includes(e.type)&&(e.rulerId===r.id||e.metadata?.rulerId===r.id||e.metadata?.heirId===r.id)||e.type==='military-person-died'&&p&&e.metadata?.personId===p.personId));
 }
 function incompatibility(r:Ruler,d:Dynasty,epoch:string,people:readonly MilitaryPerson[],events:readonly WorldEvent[],month:number){
  const p=royalNoblePerson(r,people),pid=p?.personId;
@@ -92,16 +92,19 @@ export function nextRoyalNobleAct(d:Dynasty,people:readonly MilitaryPerson[],eve
  for(const last of lasts.values()){
   if(last.kind==='ENDED')continue;
   const r=d.rulers.find(r=>r.id===last.holderRulerId);if(!r)continue;
+  const death=deathEvent(r,people,events,month);
+  const cutoff=death?events.slice(0,events.indexOf(death)+1):events;
+  const authorityMonth=death?at(death):month;
   const source=people.flatMap(p=>p.nobilityHistory??[]).find(g=>g.eventId===last.sourceGrantEventId),sourcePerson=source&&people.find(p=>p.personId===source.personId);
   let reason:RoyalNobleAct['reason']|undefined;
-  if(!activeEpoch(d,last.epochFounderId,events,month)||status==='EXTINCT')reason='REGIME_ENDED';
-  else if(sourcePerson?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.factionId===d.factionId&&h.epochFounderId===last.epochFounderId&&h.month>=source!.month&&h.month<=month&&byId.has(h.eventId)))reason='REVOKED';
-  else reason=incompatibility(r,d,last.epochFounderId,people,events,month);
+  if(!activeEpoch(d,last.epochFounderId,cutoff,authorityMonth)||!death&&status==='EXTINCT')reason='REGIME_ENDED';
+  else if(sourcePerson?.honorHistory?.some(h=>h.kind==='REVOKED'&&h.factionId===d.factionId&&h.epochFounderId===last.epochFounderId&&h.month>=source!.month&&h.month<=authorityMonth&&(death?cutoff.some(event=>event.id===h.eventId):byId.has(h.eventId))))reason='REVOKED';
+  else reason=incompatibility(r,d,last.epochFounderId,people,cutoff,authorityMonth);
   if(reason)return make(last,{kind:'ENDED',reason,holderRulerId:undefined,rank:undefined,previousRank:last.rank!});
-  const own=sourceGrant(r,d,people,events,month,last.epochFounderId);
+  const own=sourceGrant(r,d,people,cutoff,authorityMonth,last.epochFounderId);
   if(own&&RANKS.indexOf(own.rank)>RANKS.indexOf(last.rank!)){const upgraded=make(last,{kind:'UPGRADED',reason:'MERIT',sourceGrantEventId:own.eventId,rank:own.rank,previousRank:last.rank!,sourceEventIds:[last.eventId,own.eventId]});if(own.basis==='CIVIL')upgraded.meritBasis='CIVIL';else delete upgraded.meritBasis;return upgraded;}
-  const death=deathEvent(r,people,events,month);if(!death)continue;
-  const cutoff=events.slice(0,events.indexOf(death)+1),rank=RANKS[RANKS.indexOf(last.rank!)-1];
+  if(!death)continue;
+  const rank=RANKS[RANKS.indexOf(last.rank!)-1];
   const occupied=new Set([...lasts.values()].filter(act=>act.chainId!==last.chainId&&act.kind!=='ENDED').map(act=>act.holderRulerId));
   const assessments=rank?royalNobleHeirAssessments(d,r,last.epochFounderId,people,cutoff,at(death),last.rank)
    .filter(row=>row.path.slice(1).every(id=>{

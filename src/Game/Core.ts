@@ -518,7 +518,7 @@ export default class Core {
       }
     });
 
-    const terminalCapture = historyGroupId && WorldHistory.getEventsForCity(finalCity.id).findLast(event=>
+    const terminalCapture = historyGroupId && WorldHistory.getEventsForCity(finalCity.id).reverse().find(event=>
       event.historyGroupId===historyGroupId && (event.monthIndex??event.year)===year &&
       ["city-captured","city-recovered","capital-fallen"].includes(event.type) &&
       event.actorFactionId===conqueror.name && event.targetFactionId===fallenTeam.name);
