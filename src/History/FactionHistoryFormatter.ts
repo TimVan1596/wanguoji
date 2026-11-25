@@ -45,6 +45,7 @@ export function formatFactionHistoryEvent(
   const month = event.monthIndex ?? event.year;
   const name = (id?: string) => resolveFactionHistoricalName(factionById, id, month);
   const selectedName = name(factionId);
+  if(event.metadata?.terminalConflictReading===1)return event.title;
   if(event.metadata?.politicalReadingKind==='FINAL_END')return formatHistoryEventTitle(event,factionById);
   if(event.metadata?.politicalReadingKind==='FOUNDING')return formatFoundingIdentity(event,name(event.actorFactionId));
 

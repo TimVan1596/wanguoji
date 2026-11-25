@@ -3,6 +3,7 @@ import type {WorldEvent} from './WorldHistory';
 export function cityEventReferences(e:WorldEvent){
  const out=new Map<string,string>(),m=e.metadata??{},add=(id:unknown,role:string)=>{if(typeof id==='string'&&id)out.set(id,role);};
  if(e.cityId)add(e.cityId,'DIRECT');
+ if(['faction-extinct','faction-dissolved','faction-exiled'].includes(e.type)&&m.isFinalCityCapture===1)add(m.cityId,'LAST_CITY');
  if(['rebel-faction-founded','frontier-faction-founded','empire-split'].includes(e.type)){
   add(m.leaderSourceCityId,'FOUNDING');add(m.splitCoreCityId,'FOUNDING');if(typeof m.foundingCityIds==='string')for(const id of m.foundingCityIds.split(','))add(id,'FOUNDING');
  }

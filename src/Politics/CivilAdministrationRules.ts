@@ -78,9 +78,17 @@ export function selectCivilGovernorCandidate(candidates:readonly CivilGovernorCa
   if(pool.some(candidate=>candidate.identitySource===source))continue;
   const representative=candidates.find(candidate=>candidate.identitySource===source);if(representative&&pool.length<12)pool.push(representative);
  }
- const total=pool.reduce((sum,candidate)=>sum+candidate.weight,0);
- if(!pool.length||!Number.isFinite(roll)||roll<0||roll>=1||total<=0)return;
- let target=roll*total;for(const candidate of pool){target-=candidate.weight;if(target<0)return candidate;}
- return pool.at(-1);
+ if(!pool.length||!Number.isFinite(roll)||roll<0||roll>=1)return;
+ // Keep most selections in the existing shortlist. A small share of the
+ // same draw gives all other eligible candidates a genuine route into office.
+ const shortlisted=new Set(pool);
+ const reserve=candidates.filter(candidate=>!shortlisted.has(candidate));
+ const reserveShare=.10;
+ const eligible=reserve.length&&roll>=1-reserveShare?reserve:pool;
+ const ticket=reserve.length?(eligible===reserve?(roll-(1-reserveShare))/reserveShare:roll/(1-reserveShare)):roll;
+ const total=eligible.reduce((sum,candidate)=>sum+candidate.weight,0);
+ if(total<=0)return;
+ let target=ticket*total;for(const candidate of eligible){target-=candidate.weight;if(target<0)return candidate;}
+ return eligible.at(-1);
 }
 const higherRank=(a?:NobleRank,b?:NobleRank)=>a&&b?(NOBLE_RANKS.indexOf(a)>=NOBLE_RANKS.indexOf(b)?a:b):a??b;

@@ -1,4 +1,4 @@
-import {formatTerminalConflict,readTerminalConflict} from './TerminalConflictReading';
+import {formatTerminalConflict,isLinkedLastCityCapture,readTerminalConflict} from './TerminalConflictReading';
 import {mergePoliticalReading,isFirstFoundingAccession} from './PoliticalReadingProjection';
 import {mergeMilitaryLifeEvents} from '../Politics/MilitaryLifePresentation';
 import type { WorldEvent } from "./WorldHistory";
@@ -255,12 +255,14 @@ function createNarrativeEvent(group: CollapseGroup): WorldEvent {
 
   const directCapture=group.events.find(event=>event.id===group.collapseEvent.metadata?.terminalCaptureEventId);
   const conflict=directCapture&&readTerminalConflict(group.collapseEvent,directCapture);
+  const exileCapture=exiled&&directCapture&&isLinkedLastCityCapture(group.collapseEvent,directCapture)?directCapture:undefined;
+  const exileText=exileCapture?`${exileCapture.metadata?.defenderNameAtEvent??group.factionId}失去最后城邑${exileCapture.cityName??''}，王室流亡，复国权源尚存。`:undefined;
   const headline=exiled?`${group.factionId}失去最后城邑`:`${group.factionId}亡国`;
   const sourceEventIds = [...new Set(group.events.flatMap(event=>[event.id,...(typeof event.metadata?.sourceEventIds==='string'?event.metadata.sourceEventIds.split(','):[])]))].join(",");
   return {
     ...group.collapseEvent,
     id: `history-collapse-${group.key}-${group.events.length}`,
-    title: conflict?formatTerminalConflict(conflict,'WORLD'):`${headline}。${unique(clauses).join("，")}。`,
+    title: conflict?formatTerminalConflict(conflict,'WORLD'):exileText??`${headline}。${unique(clauses).join("，")}。`,
     description: group.events.map((event) => event.title).join(" / "),
     factionIds: unique([
       group.factionId,
@@ -274,6 +276,7 @@ function createNarrativeEvent(group: CollapseGroup): WorldEvent {
     metadata: {
       ...group.collapseEvent.metadata,
       groupedEventCount: group.events.length,
+      terminalConflictReading: conflict||exileText?1:undefined,
       groupedAccessionCapitalText: succession ? formatAccessionCapital(succession) : undefined,
       sourceEventIds,
       capturedRulerName,

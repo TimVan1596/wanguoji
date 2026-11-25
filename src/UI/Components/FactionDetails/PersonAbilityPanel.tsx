@@ -14,7 +14,7 @@ function Attribute({id,label,value,color}:{id:string;label:string;value?:number;
  </Box>;
 }
 
-export default function PersonAbilityPanel({abilities,ambition,loyalty,royal=false,month,deathMonth,lifeUnverified=false}:{abilities?:PersonAbilities;ambition?:number;loyalty?:LoyaltyObservation;royal?:boolean;month?:number;deathMonth?:number;lifeUnverified?:boolean}){
+export default function PersonAbilityPanel({abilities,ambition,loyalty,royal=false,month,deathMonth,politicalSummary,lifeUnverified=false}:{abilities?:PersonAbilities;ambition?:number;loyalty?:LoyaltyObservation;royal?:boolean;month?:number;deathMonth?:number;politicalSummary?:string;lifeUnverified?:boolean}){
  if(abilities&&month!==undefined&&month<abilities.source.bornMonth)return null;
  const deceased=month!==undefined&&deathMonth!==undefined&&deathMonth<=month;
  const health=abilities&&month!==undefined&&!lifeUnverified?personHealth(abilities.source,month,deathMonth):undefined;
@@ -24,7 +24,8 @@ export default function PersonAbilityPanel({abilities,ambition,loyalty,royal=fal
    {deceased&&valid(health)&&<Typography fontSize=".72rem" color="var(--gg-text-muted)">卒前状态 · {formatWorldDate(deathMonth!)}</Typography>}
    {lifeUnverified&&<Typography fontSize=".72rem" color="var(--gg-text-muted)">生死未载，健康资料不足</Typography>}
   </>:<Typography fontSize=".78rem" color="var(--gg-text-muted)">能力资料不足</Typography>}
-  {(valid(ambition)||relationship)&&<details><summary>政治性格与国家关系</summary>
+  {(valid(ambition)||relationship||politicalSummary)&&<details><summary>政治性格与国家关系</summary>
+   {politicalSummary&&<Typography fontSize=".78rem">政治取向：{politicalSummary}</Typography>}
    <Attribute id="ambition" label="野心" value={ambition} color="#ac793b"/>
    {relationship&&<><Attribute id="loyalty" label="忠诚" value={relationship.value} color="#93636e"/><Typography fontSize=".72rem" color="var(--gg-text-muted)">忠诚对象：{relationship.factionName} · {formatWorldDate(relationship.month)}{relationship.historical?'记录':'当前关系'}</Typography></>}
   </details>}

@@ -49,7 +49,7 @@ describe("history narrative grouper", () => {
 
     expect(grouped).toHaveLength(1);
     expect(grouped[0].title).toBe(
-      "魏灭韩。韩王韩惠被俘处死，韩烈继位，王室流亡。"
+      "韩失去最后城邑。韩王韩惠被俘处死，韩烈继位，王室流亡。"
     );
     expect(grouped[0].metadata?.groupedEventCount).toBe(4);
   });
@@ -110,7 +110,7 @@ describe("history narrative grouper", () => {
     ]);
 
     expect(grouped).toHaveLength(1);
-    expect(grouped[0].title).toBe("秦灭赵。赵王赵平被俘处死，赵国王统断绝。");
+    expect(grouped[0].title).toBe("赵亡国。赵王赵平被俘处死，赵国王统断绝。");
   });
 
   it("does not keep an ephemeral successor in a final extinction narrative", () => {

@@ -294,6 +294,14 @@ export default class City {
       return;
     }
 
+    const rulerAtCapture=(team:Team)=>{
+      const ruler=DynastyRegistry.getCurrentRuler(team.name);
+      if(team.status==='ACTIVE'&&ruler?.status==='ruling'&&(ruler.accessionYear??Infinity)<=year&&(ruler.deathMonth??Infinity)>year)
+        return {id:ruler.id,title:DynastyRegistry.getRulerHistoricalTitle(ruler.id,team.name,year)};
+      return undefined;
+    };
+    const victor=oldOwner.cities.length===1?rulerAtCapture(newOwner):undefined;
+    const defeated=oldOwner.cities.length===1?rulerAtCapture(oldOwner):undefined;
     const restoredFromExile=newOwner.status==="EXILED";
     const previousOwnerName = oldOwner.name;
     const battle=this.siegeBattle;
@@ -457,7 +465,7 @@ export default class City {
     if (wasCapital) {
       this.handleCapitalLoss(oldOwner, year, newOwner, capitalTransitionGroupId);
     } else if (oldOwner.cities.length === 0) {
-      Game.Core.handleFactionExtinction(oldOwner, newOwner, this, year, collapseGroupId);
+      Game.Core.handleFactionExtinction(oldOwner, newOwner, this, year, collapseGroupId,{victorRulerId:victor?.id,victorRulerTitle:victor?.title,defeatedRulerId:defeated?.id,defeatedRulerTitle:defeated?.title});
     }
   }
 

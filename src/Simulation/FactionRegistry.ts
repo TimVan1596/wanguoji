@@ -1,3 +1,7 @@
+import CivilAdministration from '../Politics/CivilAdministration';
+import {civilOfficeTitle} from '../Politics/CivilOffice';
+import {currentNobleGrant,nobleEpochForRuler,NOBLE_NAMES,NOBLE_RANKS} from '../Politics/MilitaryNobility';
+import {familyTitleForMember} from '../Politics/FamilyNobleSuccession';
 import {civilPopulationIdentity} from '../Politics/CivilCareerIdentity';
 import {localMilitarySupporter} from './MilitaryLocalRules';
 import {militaryCrisisSourceIds} from "./MilitaryCrisisSources";
@@ -205,12 +209,29 @@ class FactionRegistryStore {
     Game.Core?.scene?.sys?.events?.once("postupdate", () => groups.forEach(g => { if (g?.scene) destroyRuntimeGroupAtSafeBoundary(g, true); }));
   }
 
+  private founderPriorStanding(leader:User,owner:Team,month:number){
+    const person=leader.militaryPersonId?MilitaryCommandRegistry.getPerson(leader.militaryPersonId):undefined;
+    const civil=civilPopulationIdentity(leader.id,leader.bornMonth),d=DynastyRegistry.get(owner.name);
+    const term=civil&&CivilAdministration.getByPerson(civil.personId).filter(t=>t.factionId===owner.name&&t.startMonth<=month).at(-1);
+    const epoch=nobleEpochForRuler(d,d?.currentRulerId??null)?.foundingRulerId;
+    const family=MilitaryCommandRegistry.getFamilyMember(leader.id,leader.bornMonth);
+    const personal=person&&epoch?currentNobleGrant(person,owner.name,month,epoch):undefined;
+    const inherited=family&&epoch?familyTitleForMember(family.family,family.member.memberId,month,owner.name,epoch):undefined;
+    const recorded=personal&&(!inherited?.rank||NOBLE_RANKS.indexOf(personal.rank)>=NOBLE_RANKS.indexOf(inherited.rank))?personal:inherited;
+    if(!term&&!recorded?.rank)return undefined;
+    return {
+      ...(term?{civilEventId:term.appointEventId,civilTitle:civilOfficeTitle(term)}:{}),
+      ...(recorded?.rank?{nobleEventId:recorded.eventId,nobleTitle:NOBLE_NAMES[recorded.rank]}:{}),
+    };
+  }
+
   /** Population preparation precedes city consequences and runtime registration. */
   private prepareFoundingPopulation(team: Team, owner: Team, users: User[], month: number, cause: "REBELLION_TRANSFER" | "EMPIRE_SPLIT_TRANSFER", city: City, military?:MilitarySecessionEvidence, deferAudit=false) {
     if(users.some(u=>this.foundingTransactions.has(u))) {this.lastFoundingFailure="居民已在另一转属事务中";return false;}
     users.forEach(u=>this.foundingTransactions.add(u));
     const dynastyBefore=DynastyRegistry.exportState(),historyBefore=WorldHistory.exportState(),lifetimeBefore=FactionLifetimeRecords.exportState();
     const leader=users[0];
+    const priorStanding=leader?this.founderPriorStanding(leader,owner,month):undefined;
     const beforeOwner=owner.users.size,beforeNew=team.users.size;
     const ownerUsers=[...owner.users],ownerPlayers=owner.players.getChildren().slice();
     const militaryBefore=MilitaryCommandRegistry.snapshotTransaction();
@@ -221,7 +242,7 @@ class FactionRegistryStore {
         if (user.team !== team) {this.lastFoundingFailure="居民未完成转属";throw new Error("founding supporter transfer failed");}
       }
       if(leader)DynastyRegistry.initializeFaction(team,month,false,{user:leader,origin:{
-        military,personId:military?.personId??civilPopulationIdentity(leader.id,leader.bornMonth)?.personId??`resident-${team.name}-${leader.id}-${leader.bornMonth}`,sourceUserId:leader.id,sourceUserLabel:leader.name,bornMonth:leader.bornMonth,
+        military,priorStanding,personId:military?.personId??civilPopulationIdentity(leader.id,leader.bornMonth)?.personId??`resident-${team.name}-${leader.id}-${leader.bornMonth}`,sourceUserId:leader.id,sourceUserLabel:leader.name,bornMonth:leader.bornMonth,
         sourceFactionId:owner.name,sourceFactionName:owner.displayName,foundedMonth:month,cityId:city.id,cityName:city.name,
       }});
       if (Game.Core.addRuntimeTeam(team)) {
@@ -434,7 +455,7 @@ class FactionRegistryStore {
     const r=DynastyRegistry.getCurrentRuler(team.name),i=r?.residentIdentity;
     return {foundingIdentityStage:team.identityStage,foundingSovereigntyRank:team.sovereigntyRank,
       ...(i?{leaderPersonalName:i.personalName,leaderNameSource:i.nameSource,leaderPersonId:i.personId,leaderSourceUserId:i.sourceUserId,leaderBornMonth:i.bornMonth,leaderOriginalFactionId:i.sourceFactionId,leaderOriginalFactionName:i.sourceFactionName,
-        leaderSourceCityId:i.cityId,leaderSourceCityName:i.cityName,leaderPreviousRole:i.military?"MILITARY":"RESIDENT",splitSource:i.military?"MILITARY":"RESIDENT",
+        leaderSourceCityId:i.cityId,leaderSourceCityName:i.cityName,leaderPriorCivilTitle:i.priorStanding?.civilTitle,leaderPriorNobleTitle:i.priorStanding?.nobleTitle,leaderPreviousRole:i.military?"MILITARY":"RESIDENT",splitSource:i.military?"MILITARY":"RESIDENT",
         ...(i.military?{militaryPersonId:i.military.personId,militarySplitEvidence:JSON.stringify(i.military)}:{})}:{}),};
   }
 

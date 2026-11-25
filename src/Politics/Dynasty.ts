@@ -122,6 +122,7 @@ export type RulerRelationType =
   | "LEADER_SUCCESSOR";
 
 export interface ResidentFounderIdentity {
+  priorStanding?:{civilEventId?:string;civilTitle?:string;nobleEventId?:string;nobleTitle?:string};
   succession?:LawfulPoliticalSuccession;
   personalName?:string;nameSource?:ResidentNameSource;
   military?:MilitarySecessionEvidence;

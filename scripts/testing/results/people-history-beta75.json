@@ -1,0 +1,703 @@
+{
+  "version": "0.100.0-beta.75",
+  "worldSave": 70,
+  "pair": {
+    "input": "same canonical 500-year regional-1 V69 checkpoint from beta.74",
+    "months": 300,
+    "repetitionsPerBuild": 3,
+    "scope": "Same host. Baseline and performance-only Core ran sequentially without other test builds or simulation. Render loop stopped.",
+    "changes": [
+      "one candidate-pool evaluation per validated civil appointment",
+      "earliest death evidence indexed by identity and month during strict replay"
+    ],
+    "base": [
+      {
+        "canonicalSha256": "6f9c98baa8cb11f9c97b3180ee5c56be920eaf02dd19583027727fd8eaba6b8e",
+        "clockMismatches": 0,
+        "monthlyP50": 2.699999988079071,
+        "hydrationMs": 1663.5999999642372,
+        "exportMs": 1528.5,
+        "phases": {
+          "total fixed/month step": {
+            "sampleCount": 300,
+            "averageMs": 13.110666665037472,
+            "p95Ms": 60,
+            "p99Ms": 113.70000004768372,
+            "maxMs": 208.0999999642372
+          },
+          "total fixed/month step/January": {
+            "sampleCount": 25,
+            "averageMs": 78.59999999284744,
+            "p95Ms": 134.19999998807907,
+            "p99Ms": 208.0999999642372,
+            "maxMs": 208.0999999642372
+          },
+          "total fixed/month step/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 7.157090907963839,
+            "p95Ms": 32.19999998807907,
+            "p99Ms": 43.5,
+            "maxMs": 60
+          },
+          "Civil administration": {
+            "sampleCount": 300,
+            "averageMs": 2.7563333342472713,
+            "p95Ms": 21.69999998807907,
+            "p99Ms": 40.69999998807907,
+            "maxMs": 70.69999998807907
+          },
+          "Civil administration/January": {
+            "sampleCount": 25,
+            "averageMs": 27.044000000953673,
+            "p95Ms": 56,
+            "p99Ms": 70.69999998807907,
+            "maxMs": 70.69999998807907
+          },
+          "Civil administration/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.5483636372739619,
+            "p95Ms": 0.20000004768371582,
+            "p99Ms": 10.5,
+            "maxMs": 11.299999952316284
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 300,
+            "averageMs": 4.125666666825612,
+            "p95Ms": 19.19999998807907,
+            "p99Ms": 41.69999998807907,
+            "maxMs": 50.69999998807907
+          },
+          "DynastyRegistry.update/January": {
+            "sampleCount": 25,
+            "averageMs": 15.332000002861022,
+            "p95Ms": 47.40000003576279,
+            "p99Ms": 50.69999998807907,
+            "maxMs": 50.69999998807907
+          },
+          "DynastyRegistry.update/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 3.106909090822393,
+            "p95Ms": 12.5,
+            "p99Ms": 39.10000002384186,
+            "maxMs": 41.69999998807907
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 300,
+            "averageMs": 1.5269999996821086,
+            "p95Ms": 9,
+            "p99Ms": 39.5,
+            "maxMs": 46.90000003576279
+          },
+          "MilitaryCommandRegistry.update/January": {
+            "sampleCount": 25,
+            "averageMs": 16.991999998092652,
+            "p95Ms": 46,
+            "p99Ms": 46.90000003576279,
+            "maxMs": 46.90000003576279
+          },
+          "MilitaryCommandRegistry.update/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.12109090891751376,
+            "p95Ms": 0.20000004768371582,
+            "p99Ms": 0.40000003576278687,
+            "maxMs": 2.899999976158142
+          },
+          "Family noble succession": {
+            "sampleCount": 300,
+            "averageMs": 0.513666665951411,
+            "p95Ms": 0.10000002384185791,
+            "p99Ms": 20,
+            "maxMs": 31.400000035762787
+          },
+          "Family noble succession/January": {
+            "sampleCount": 25,
+            "averageMs": 4.05599999666214,
+            "p95Ms": 21.69999998807907,
+            "p99Ms": 31.400000035762787,
+            "maxMs": 31.400000035762787
+          },
+          "Family noble succession/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.19163636315952648,
+            "p95Ms": 0.10000002384185791,
+            "p99Ms": 0.30000001192092896,
+            "maxMs": 20.80000001192093
+          }
+        }
+      },
+      {
+        "canonicalSha256": "6f9c98baa8cb11f9c97b3180ee5c56be920eaf02dd19583027727fd8eaba6b8e",
+        "clockMismatches": 0,
+        "monthlyP50": 2.5,
+        "hydrationMs": 1414.2999999523163,
+        "exportMs": 1386.300000011921,
+        "phases": {
+          "total fixed/month step": {
+            "sampleCount": 300,
+            "averageMs": 12.795,
+            "p95Ms": 54.90000003576279,
+            "p99Ms": 111,
+            "maxMs": 224.10000002384186
+          },
+          "total fixed/month step/January": {
+            "sampleCount": 25,
+            "averageMs": 77.38400000095368,
+            "p95Ms": 137.9000000357628,
+            "p99Ms": 224.10000002384186,
+            "maxMs": 224.10000002384186
+          },
+          "total fixed/month step/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 6.9232727271860295,
+            "p95Ms": 32,
+            "p99Ms": 46.60000002384186,
+            "maxMs": 58.30000001192093
+          },
+          "Civil administration": {
+            "sampleCount": 300,
+            "averageMs": 2.7396666636069615,
+            "p95Ms": 21.19999998807907,
+            "p99Ms": 40.80000001192093,
+            "maxMs": 75.19999998807907
+          },
+          "Civil administration/January": {
+            "sampleCount": 25,
+            "averageMs": 26.83199999332428,
+            "p95Ms": 60.39999997615814,
+            "p99Ms": 75.19999998807907,
+            "maxMs": 75.19999998807907
+          },
+          "Civil administration/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.549454542723569,
+            "p95Ms": 0.20000004768371582,
+            "p99Ms": 10.800000011920929,
+            "maxMs": 12.199999988079071
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 300,
+            "averageMs": 4.045333330233892,
+            "p95Ms": 18,
+            "p99Ms": 44.59999996423721,
+            "maxMs": 52.799999952316284
+          },
+          "DynastyRegistry.update/January": {
+            "sampleCount": 25,
+            "averageMs": 15.351999993324279,
+            "p95Ms": 50.299999952316284,
+            "p99Ms": 52.799999952316284,
+            "maxMs": 52.799999952316284
+          },
+          "DynastyRegistry.update/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 3.01745454268022,
+            "p95Ms": 10.600000023841858,
+            "p99Ms": 37.80000001192093,
+            "maxMs": 44.59999996423721
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 300,
+            "averageMs": 1.4886666675408682,
+            "p95Ms": 9.299999952316284,
+            "p99Ms": 38,
+            "maxMs": 48.89999997615814
+          },
+          "MilitaryCommandRegistry.update/January": {
+            "sampleCount": 25,
+            "averageMs": 16.579999995231628,
+            "p95Ms": 39.799999952316284,
+            "p99Ms": 48.89999997615814,
+            "maxMs": 48.89999997615814
+          },
+          "MilitaryCommandRegistry.update/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.11672727411443537,
+            "p95Ms": 0.20000004768371582,
+            "p99Ms": 0.30000001192092896,
+            "maxMs": 3.100000023841858
+          },
+          "Family noble succession": {
+            "sampleCount": 300,
+            "averageMs": 0.48400000035762786,
+            "p95Ms": 0.10000002384185791,
+            "p99Ms": 17.399999976158142,
+            "maxMs": 34.40000003576279
+          },
+          "Family noble succession/January": {
+            "sampleCount": 25,
+            "averageMs": 3.9960000038146974,
+            "p95Ms": 18.100000023841858,
+            "p99Ms": 34.40000003576279,
+            "maxMs": 34.40000003576279
+          },
+          "Family noble succession/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.16472727277062155,
+            "p95Ms": 0.10000002384185791,
+            "p99Ms": 0.19999998807907104,
+            "maxMs": 17.700000047683716
+          }
+        }
+      },
+      {
+        "canonicalSha256": "6f9c98baa8cb11f9c97b3180ee5c56be920eaf02dd19583027727fd8eaba6b8e",
+        "clockMismatches": 0,
+        "monthlyP50": 2.400000035762787,
+        "hydrationMs": 1353.1000000238419,
+        "exportMs": 1589.4000000357628,
+        "phases": {
+          "total fixed/month step": {
+            "sampleCount": 300,
+            "averageMs": 12.382666666309039,
+            "p95Ms": 55.19999998807907,
+            "p99Ms": 113.5,
+            "maxMs": 199.10000002384186
+          },
+          "total fixed/month step/January": {
+            "sampleCount": 25,
+            "averageMs": 73.99999999284745,
+            "p95Ms": 129,
+            "p99Ms": 199.10000002384186,
+            "maxMs": 199.10000002384186
+          },
+          "total fixed/month step/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 6.781090909351002,
+            "p95Ms": 32,
+            "p99Ms": 41,
+            "maxMs": 58.60000002384186
+          },
+          "Civil administration": {
+            "sampleCount": 300,
+            "averageMs": 2.6903333353996275,
+            "p95Ms": 21,
+            "p99Ms": 40.19999998807907,
+            "maxMs": 81.19999998807907
+          },
+          "Civil administration/January": {
+            "sampleCount": 25,
+            "averageMs": 26.627999999523162,
+            "p95Ms": 54.60000002384186,
+            "p99Ms": 81.19999998807907,
+            "maxMs": 81.19999998807907
+          },
+          "Civil administration/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.5141818204793063,
+            "p95Ms": 0.20000004768371582,
+            "p99Ms": 10.199999988079071,
+            "maxMs": 10.5
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 300,
+            "averageMs": 3.915333334207535,
+            "p95Ms": 17.899999976158142,
+            "p99Ms": 39.09999996423721,
+            "maxMs": 47.40000003576279
+          },
+          "DynastyRegistry.update/January": {
+            "sampleCount": 25,
+            "averageMs": 14.36400000333786,
+            "p95Ms": 45.5,
+            "p99Ms": 47.40000003576279,
+            "maxMs": 47.40000003576279
+          },
+          "DynastyRegistry.update/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 2.965454546104778,
+            "p95Ms": 10.5,
+            "p99Ms": 37.30000001192093,
+            "maxMs": 39.09999996423721
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 300,
+            "averageMs": 1.3516666664679846,
+            "p95Ms": 7.900000035762787,
+            "p99Ms": 36.10000002384186,
+            "maxMs": 42.30000001192093
+          },
+          "MilitaryCommandRegistry.update/January": {
+            "sampleCount": 25,
+            "averageMs": 15.13599999666214,
+            "p95Ms": 37.30000001192093,
+            "p99Ms": 42.30000001192093,
+            "maxMs": 42.30000001192093
+          },
+          "MilitaryCommandRegistry.update/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.09854545463215221,
+            "p95Ms": 0.19999998807907104,
+            "p99Ms": 0.20000004768371582,
+            "maxMs": 2.900000035762787
+          },
+          "Family noble succession": {
+            "sampleCount": 300,
+            "averageMs": 0.4789999989668528,
+            "p95Ms": 0.10000002384185791,
+            "p99Ms": 17.80000001192093,
+            "maxMs": 31.599999964237213
+          },
+          "Family noble succession/January": {
+            "sampleCount": 25,
+            "averageMs": 3.895999999046326,
+            "p95Ms": 17.80000001192093,
+            "p99Ms": 31.599999964237213,
+            "maxMs": 31.599999964237213
+          },
+          "Family noble succession/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.16836363532326437,
+            "p95Ms": 0.10000002384185791,
+            "p99Ms": 0.20000004768371582,
+            "maxMs": 18.69999998807907
+          }
+        }
+      }
+    ],
+    "opt": [
+      {
+        "canonicalSha256": "6f9c98baa8cb11f9c97b3180ee5c56be920eaf02dd19583027727fd8eaba6b8e",
+        "clockMismatches": 0,
+        "monthlyP50": 2.599999964237213,
+        "hydrationMs": 1547.1000000238419,
+        "exportMs": 1497.699999988079,
+        "phases": {
+          "total fixed/month step": {
+            "sampleCount": 300,
+            "averageMs": 12.92533333381017,
+            "p95Ms": 59.5,
+            "p99Ms": 107.80000001192093,
+            "maxMs": 205.5
+          },
+          "total fixed/month step/January": {
+            "sampleCount": 25,
+            "averageMs": 78.0960000038147,
+            "p95Ms": 135.0999999642372,
+            "p99Ms": 205.5,
+            "maxMs": 205.5
+          },
+          "total fixed/month step/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 7.000727272900668,
+            "p95Ms": 31.599999964237213,
+            "p99Ms": 44.80000001192093,
+            "maxMs": 59.5
+          },
+          "Civil administration": {
+            "sampleCount": 300,
+            "averageMs": 2.6906666658322016,
+            "p95Ms": 21.200000047683716,
+            "p99Ms": 41,
+            "maxMs": 69.19999998807907
+          },
+          "Civil administration/January": {
+            "sampleCount": 25,
+            "averageMs": 26.360000002384187,
+            "p95Ms": 54.59999996423721,
+            "p99Ms": 69.19999998807907,
+            "maxMs": 69.19999998807907
+          },
+          "Civil administration/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.5389090897820212,
+            "p95Ms": 0.2999999523162842,
+            "p99Ms": 10.5,
+            "maxMs": 10.599999964237213
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 300,
+            "averageMs": 4.073999998966853,
+            "p95Ms": 20,
+            "p99Ms": 41.30000001192093,
+            "maxMs": 51.30000001192093
+          },
+          "DynastyRegistry.update/January": {
+            "sampleCount": 25,
+            "averageMs": 15.647999997138976,
+            "p95Ms": 48.90000003576279,
+            "p99Ms": 51.30000001192093,
+            "maxMs": 51.30000001192093
+          },
+          "DynastyRegistry.update/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 3.0218181809512052,
+            "p95Ms": 10.599999964237213,
+            "p99Ms": 38.89999997615814,
+            "maxMs": 41.30000001192093
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 300,
+            "averageMs": 1.5143333345651626,
+            "p95Ms": 8.800000011920929,
+            "p99Ms": 37.30000001192093,
+            "maxMs": 46.19999998807907
+          },
+          "MilitaryCommandRegistry.update/January": {
+            "sampleCount": 25,
+            "averageMs": 16.83600000858307,
+            "p95Ms": 40.90000003576279,
+            "p99Ms": 46.19999998807907,
+            "maxMs": 46.19999998807907
+          },
+          "MilitaryCommandRegistry.update/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.12145454601808028,
+            "p95Ms": 0.20000004768371582,
+            "p99Ms": 0.3999999761581421,
+            "maxMs": 2.899999976158142
+          },
+          "Family noble succession": {
+            "sampleCount": 300,
+            "averageMs": 0.48866666555404664,
+            "p95Ms": 0.10000002384185791,
+            "p99Ms": 18.599999964237213,
+            "maxMs": 31.200000047683716
+          },
+          "Family noble succession/January": {
+            "sampleCount": 25,
+            "averageMs": 3.9360000014305117,
+            "p95Ms": 18.599999964237213,
+            "p99Ms": 31.200000047683716,
+            "maxMs": 31.200000047683716
+          },
+          "Family noble succession/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.17527272592891346,
+            "p95Ms": 0.10000002384185791,
+            "p99Ms": 0.30000001192092896,
+            "maxMs": 19.399999976158142
+          }
+        }
+      },
+      {
+        "canonicalSha256": "6f9c98baa8cb11f9c97b3180ee5c56be920eaf02dd19583027727fd8eaba6b8e",
+        "clockMismatches": 0,
+        "monthlyP50": 2.400000035762787,
+        "hydrationMs": 1363.5999999642372,
+        "exportMs": 1396.6000000238419,
+        "phases": {
+          "total fixed/month step": {
+            "sampleCount": 300,
+            "averageMs": 12.557333333889643,
+            "p95Ms": 54.90000003576279,
+            "p99Ms": 104.40000003576279,
+            "maxMs": 200.9000000357628
+          },
+          "total fixed/month step/January": {
+            "sampleCount": 25,
+            "averageMs": 75.89200000524521,
+            "p95Ms": 137.30000001192093,
+            "p99Ms": 200.9000000357628,
+            "maxMs": 200.9000000357628
+          },
+          "total fixed/month step/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 6.79963636376641,
+            "p95Ms": 31.19999998807907,
+            "p99Ms": 44.10000002384186,
+            "maxMs": 58.39999997615814
+          },
+          "Civil administration": {
+            "sampleCount": 300,
+            "averageMs": 2.6913333336512246,
+            "p95Ms": 21.19999998807907,
+            "p99Ms": 41.30000001192093,
+            "maxMs": 70
+          },
+          "Civil administration/January": {
+            "sampleCount": 25,
+            "averageMs": 26.412000000476837,
+            "p95Ms": 55,
+            "p99Ms": 70,
+            "maxMs": 70
+          },
+          "Civil administration/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.5349090912125327,
+            "p95Ms": 0.20000004768371582,
+            "p99Ms": 10.399999976158142,
+            "maxMs": 11.100000023841858
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 300,
+            "averageMs": 3.9736666671435037,
+            "p95Ms": 18.100000023841858,
+            "p99Ms": 42.19999998807907,
+            "maxMs": 51.40000003576279
+          },
+          "DynastyRegistry.update/January": {
+            "sampleCount": 25,
+            "averageMs": 15.132000007629394,
+            "p95Ms": 50.39999997615814,
+            "p99Ms": 51.40000003576279,
+            "maxMs": 51.40000003576279
+          },
+          "DynastyRegistry.update/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 2.9592727270993318,
+            "p95Ms": 10.599999964237213,
+            "p99Ms": 37.19999998807907,
+            "maxMs": 42.19999998807907
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 300,
+            "averageMs": 1.4323333317041398,
+            "p95Ms": 9.100000023841858,
+            "p99Ms": 38,
+            "maxMs": 47.60000002384186
+          },
+          "MilitaryCommandRegistry.update/January": {
+            "sampleCount": 25,
+            "averageMs": 16.027999997138977,
+            "p95Ms": 38.30000001192093,
+            "p99Ms": 47.60000002384186,
+            "maxMs": 47.60000002384186
+          },
+          "MilitaryCommandRegistry.update/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.10545454393733632,
+            "p95Ms": 0.19999998807907104,
+            "p99Ms": 0.30000001192092896,
+            "maxMs": 2.800000011920929
+          },
+          "Family noble succession": {
+            "sampleCount": 300,
+            "averageMs": 0.4723333334922791,
+            "p95Ms": 0.10000002384185791,
+            "p99Ms": 17.5,
+            "maxMs": 31.69999998807907
+          },
+          "Family noble succession/January": {
+            "sampleCount": 25,
+            "averageMs": 3.8960000014305116,
+            "p95Ms": 17.900000035762787,
+            "p99Ms": 31.69999998807907,
+            "maxMs": 31.69999998807907
+          },
+          "Family noble succession/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.16109090913425791,
+            "p95Ms": 0.10000002384185791,
+            "p99Ms": 0.10000002384185791,
+            "maxMs": 18.200000047683716
+          }
+        }
+      },
+      {
+        "canonicalSha256": "6f9c98baa8cb11f9c97b3180ee5c56be920eaf02dd19583027727fd8eaba6b8e",
+        "clockMismatches": 0,
+        "monthlyP50": 2.400000035762787,
+        "hydrationMs": 1295.2999999523163,
+        "exportMs": 1432.8999999761581,
+        "phases": {
+          "total fixed/month step": {
+            "sampleCount": 300,
+            "averageMs": 12.325666664640108,
+            "p95Ms": 54.30000001192093,
+            "p99Ms": 100.19999998807907,
+            "maxMs": 198.5
+          },
+          "total fixed/month step/January": {
+            "sampleCount": 25,
+            "averageMs": 73.86799999713898,
+            "p95Ms": 132.19999998807907,
+            "p99Ms": 198.5,
+            "maxMs": 198.5
+          },
+          "total fixed/month step/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 6.730909088958393,
+            "p95Ms": 30.899999976158142,
+            "p99Ms": 41.39999997615814,
+            "maxMs": 58.5
+          },
+          "Civil administration": {
+            "sampleCount": 300,
+            "averageMs": 2.656333333849907,
+            "p95Ms": 21.19999998807907,
+            "p99Ms": 40.200000047683716,
+            "maxMs": 70.09999996423721
+          },
+          "Civil administration/January": {
+            "sampleCount": 25,
+            "averageMs": 26.035999994277955,
+            "p95Ms": 55,
+            "p99Ms": 70.09999996423721,
+            "maxMs": 70.09999996423721
+          },
+          "Civil administration/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.5309090919928118,
+            "p95Ms": 0.20000004768371582,
+            "p99Ms": 10.5,
+            "maxMs": 10.700000047683716
+          },
+          "DynastyRegistry.update": {
+            "sampleCount": 300,
+            "averageMs": 3.9310000000397363,
+            "p95Ms": 18.099999964237213,
+            "p99Ms": 39.19999998807907,
+            "maxMs": 48.700000047683716
+          },
+          "DynastyRegistry.update/January": {
+            "sampleCount": 25,
+            "averageMs": 14.7,
+            "p95Ms": 46,
+            "p99Ms": 48.700000047683716,
+            "maxMs": 48.700000047683716
+          },
+          "DynastyRegistry.update/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 2.952000000043349,
+            "p95Ms": 10.600000023841858,
+            "p99Ms": 36.59999996423721,
+            "maxMs": 39.19999998807907
+          },
+          "MilitaryCommandRegistry.update": {
+            "sampleCount": 300,
+            "averageMs": 1.3550000001986822,
+            "p95Ms": 8.100000023841858,
+            "p99Ms": 35.5,
+            "maxMs": 43.5
+          },
+          "MilitaryCommandRegistry.update/January": {
+            "sampleCount": 25,
+            "averageMs": 15.212000002861023,
+            "p95Ms": 39.10000002384186,
+            "p99Ms": 43.5,
+            "maxMs": 43.5
+          },
+          "MilitaryCommandRegistry.update/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.09527272722937843,
+            "p95Ms": 0.19999998807907104,
+            "p99Ms": 0.20000004768371582,
+            "maxMs": 2.699999988079071
+          },
+          "Family noble succession": {
+            "sampleCount": 300,
+            "averageMs": 0.467999999721845,
+            "p95Ms": 0.10000002384185791,
+            "p99Ms": 17.600000023841858,
+            "maxMs": 30.69999998807907
+          },
+          "Family noble succession/January": {
+            "sampleCount": 25,
+            "averageMs": 3.828000001907349,
+            "p95Ms": 17.600000023841858,
+            "p99Ms": 30.69999998807907,
+            "maxMs": 30.69999998807907
+          },
+          "Family noble succession/ordinary": {
+            "sampleCount": 275,
+            "averageMs": 0.1625454540686174,
+            "p95Ms": 0.10000002384185791,
+            "p99Ms": 0.20000004768371582,
+            "maxMs": 17.80000001192093
+          }
+        }
+      }
+    ],
+    "authorityMatches": true
+  }
+}

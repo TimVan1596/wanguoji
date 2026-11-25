@@ -8,7 +8,7 @@ import type { FactionColorHistoryEntry } from "../Simulation/FactionColorHistory
 import type { MilitaryCommandState } from "../Politics/MilitaryCommandRegistry";
 import type {CivilAdministrationState} from "../Politics/CivilAdministration";
 
-export const CURRENT_SAVE_SCHEMA_VERSION = 69 as const;
+export const CURRENT_SAVE_SCHEMA_VERSION = 70 as const;
 
 /** V16 preserves political office/death facts and adds authoritative military personal names in registries. */
 export type RulerSaveV17 = Omit<Ruler, "id" | "bornYear" | "naturalDeathYear" | "accessionYear" |

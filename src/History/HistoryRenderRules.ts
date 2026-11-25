@@ -257,6 +257,7 @@ function formatHistoryEventTitleBase(
     const rulerClause = rulerName ? `，${rulerName}成为${event.metadata?.foundingIdentityStage==="STATE"?"首任国君":"首任首领"}` : "";
     return `${parentClause}${cityClause}建立${factionName}${rulerClause}。`;
   }
+  if(event.metadata?.terminalConflictReading===1)return event.title;
   if (event.metadata?.groupedEventCount) {
     const fallenName = name(event.targetFactionId);
     const conquerorName = name(event.conquerorFactionId);

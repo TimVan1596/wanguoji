@@ -42,9 +42,9 @@ it('reports governance state from actual city conditions and separates ended off
  expect(civilGovernorStatus({...term,meritEventId:'merit'},city({loyalty:70,devastation:10}) as any,240)).toBe('治理有绩');
  expect(civilGovernorStatus({...term,endMonth:240,endReason:'CITY_LOST'},undefined,240)).toBe('已离任');
 });
-it('keeps ordinary candidates in a bounded weighted pool while respecting limited rank or status advantages',()=>{
+it('keeps the shortlist advantage while giving eligible candidates outside it a path to appointment',()=>{
  const rows:any[]=[{personId:'ordinary',weight:1},{personId:'noble',weight:1.2},{personId:'royal',weight:1.25},...Array.from({length:20},(_,i)=>({personId:`r${i}`,weight:.9}))];
- const ranked=rows.sort((a,b)=>b.weight-a.weight),pool=new Set(ranked.slice(0,12).map(row=>row.personId)),picks=new Set(Array.from({length:1000},(_,i)=>selectCivilGovernorCandidate(ranked,(i+.5)/1000)!.personId));expect(picks.has('ordinary')).toBe(true);expect(picks.has('noble')||picks.has('royal')).toBe(true);expect([...picks].every(id=>pool.has(id))).toBe(true);
+ const ranked=rows.sort((a,b)=>b.weight-a.weight),pool=new Set(ranked.slice(0,12).map(row=>row.personId)),picks=new Set(Array.from({length:1000},(_,i)=>selectCivilGovernorCandidate(ranked,(i+.5)/1000)!.personId));expect(picks.has('ordinary')).toBe(true);expect(picks.has('noble')||picks.has('royal')).toBe(true);expect([...picks].some(id=>!pool.has(id))).toBe(true);expect(selectCivilGovernorCandidate(ranked,0.5)?.personId).not.toBe('r19');
 });
 
 it('allows the same former governor to compete again after city loss, without creating a second identity or a ban',()=>{

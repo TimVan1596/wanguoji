@@ -1,3 +1,5 @@
+import {civilOfficeTitle} from '../Politics/CivilOffice';
+import {NOBLE_NAMES} from '../Politics/MilitaryNobility';
 import {selectRecordedDynasticSuccessor} from '../Politics/DynasticCandidateRules';
 import {importRulerSave} from './RulerSaveProjection';
 import {politicalSuccessionCandidates} from '../Politics/PoliticalSuccession';
@@ -67,6 +69,22 @@ export function validateResidentIdentities(save:WorldSaveV1):string[]{
     }
     if(events.some(e=>e.metadata?.leaderPersonId===i.personId&&(e.metadata?.leaderPersonalName!==i.personalName||e.metadata?.leaderNameSource!==i.nameSource)))errors.push('resident founding history name conflict');
     const accession=events.find((e:any)=>e.type==="ruler-acceded"&&e.rulerId===r.rulerId);
+    if(i.priorStanding){
+      const standing=i.priorStanding,pos=accession?events.indexOf(accession):-1;
+      if(standing.civilEventId!==undefined||standing.civilTitle!==undefined){
+        const term=save.registries.civilAdministration.terms.find(t=>t.appointEventId===standing.civilEventId&&t.sourceUserId===i.sourceUserId&&t.bornMonth===i.bornMonth&&t.factionId===i.sourceFactionId);
+        const source=eventById.get(standing.civilEventId);
+        if(!term||standing.civilTitle!==civilOfficeTitle(term)||!source||events.indexOf(source)>=pos)errors.push('invalid founder civil standing');
+      }
+      if(standing.nobleEventId!==undefined||standing.nobleTitle!==undefined){
+        const state=save.registries.militaryCommandRegistry;
+        const personal=state.people.find(p=>p.sourceUserId===i.sourceUserId&&p.bornMonth===i.bornMonth)?.nobilityHistory?.find(g=>g.eventId===standing.nobleEventId&&g.factionId===i.sourceFactionId);
+        const inherited=state.families?.flatMap(f=>(f.nobleSuccession??[]).filter(a=>a.eventId===standing.nobleEventId&&a.factionId===i.sourceFactionId&&f.members.some(m=>m.memberId===a.holderMemberId&&m.sourceUserId===i.sourceUserId&&m.bornMonth===i.bornMonth)))[0];
+        const rank=personal?.rank??inherited?.rank,source=eventById.get(standing.nobleEventId);
+        if(!rank||standing.nobleTitle!==NOBLE_NAMES[rank]||!source||events.indexOf(source)>=pos)errors.push('invalid founder noble standing');
+      }
+      if(events.some(e=>e.metadata?.leaderPersonId===i.personId&&(e.metadata?.leaderPriorCivilTitle!==standing.civilTitle||e.metadata?.leaderPriorNobleTitle!==standing.nobleTitle)))errors.push('resident founding history prior standing conflict');
+    }
     if(!accession||accession.metadata?.residentPersonalName!==i.personalName||accession.metadata?.residentNameSource!==i.nameSource||accession.metadata?.residentPersonId!==i.personId||accession.metadata?.sourceUserId!==i.sourceUserId||accession.metadata?.sourceFactionId!==i.sourceFactionId||accession.metadata?.foundingCityId!==i.cityId)errors.push("resident founder lacks canonical accession evidence");
   }
   for(const u of users)if(u.historicalPersonId!==undefined&&!people.has(String(u.historicalPersonId))&&!save.dynasties.some(d=>Array.isArray(d?.rulers)&&d.rulers.some(r=>(r?.militaryIdentity?.personId===u.historicalPersonId||r?.militaryUsurperIdentity?.personId===u.historicalPersonId))))errors.push("unknown resident historicalPersonId");

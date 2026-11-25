@@ -58,12 +58,13 @@ export function GovernorDetail({term,month,careerIndex}:{term:CivilGovernorTerm;
  const navigation=usePersonArchiveNavigation(),{person,family,memberId,user,linkedRuler,linkedHouse,deathMonth,portraitMonth,abilities,loyalty}=governorProfile(term,month);
  const milestones=personCareerMilestones(careerIndex?.events??WorldHistory.getRecordedEvents(),term.personId,month,[],careerIndex);
  const reading=civilCareerReading(CivilAdministration.getByPerson(term.personId),person,month);
+ const lifeUnverified=deathMonth===undefined&&!user&&!linkedRuler;
  const ageMonth=deathMonth??(user?month:term.endMonth??month);
  return <Box data-civil-governor-detail={term.assignmentId}>
  <PersonChronicleLayout personKey={term.personId}
   title={<Typography fontWeight="bold">{term.personalName} · {term.countryName} · {civilOfficeTitle(term)}{term.endMonth!==undefined?'（已离任）':''}</Typography>}
   identity={<><PersonCareerIdentity personId={term.personId} name={term.personalName} bornMonth={term.bornMonth} deathMonth={deathMonth}/><Typography fontSize=".76rem">{deathMonth!==undefined?`享年${Math.floor((deathMonth-term.bornMonth)/12)}岁`:user?`年龄${Math.floor((month-term.bornMonth)/12)}岁`:`任职末期${Math.floor((ageMonth-term.bornMonth)/12)}岁 · 此后生死未载`} · {sourceLabel(term)}</Typography></>}
-  preBiography={<>{person?<MilitaryDispositionPanel month={month} deathMonth={deathMonth} person={person} personId={person.personId} bornMonth={person.bornMonth} loyalty={loyalty?.value} loyaltyContext={loyalty}/>:<PersonAbilityPanel month={month} deathMonth={deathMonth} abilities={abilities} ambition={personAmbition(abilities.source)} loyalty={loyalty}/>}
+  preBiography={<>{person?<MilitaryDispositionPanel month={month} deathMonth={deathMonth} lifeUnverified={lifeUnverified} person={person} personId={person.personId} bornMonth={person.bornMonth} loyalty={loyalty?.value} loyaltyContext={loyalty}/>:<PersonAbilityPanel month={month} deathMonth={deathMonth} lifeUnverified={lifeUnverified} abilities={abilities} ambition={personAmbition(abilities.source)} loyalty={loyalty}/>}
   {linkedRuler&&linkedHouse&&<Button size="small" onClick={()=>navigation.open({kind:'RULER',factionId:linkedHouse.factionId,id:linkedRuler.id})}>查看君主本纪</Button>}
   {person?.appointments.length?<MilitaryServicePanel personId={term.personId} month={month} timelineOwnsPolitics includeRulers={false}/>:null}<PersonRulersPanel personId={term.personId} month={month}/>
   {person&&family&&<FamilyTitleBadge personId={person.personId} factionId={family.factionId} month={month}/>}

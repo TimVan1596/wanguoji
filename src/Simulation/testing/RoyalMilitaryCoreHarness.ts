@@ -144,8 +144,16 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    current.naturalDeathYear=month+1;current.plannedEndYear=month+1;
    core.setWorldRunning(true);step();core.setWorldRunning(false);
    const body=t.getUserById(identity.sourceUserId)!,enemy=core.teams.find(e=>e!==t&&e.status==="ACTIVE")!;
+   check(d.currentRulerId===r.id,"designated royal actually succeeds before the foreign-body exile check");
    body.setTeam(enemy,{cause:"LIVE_TRANSFER",month:month+1});
-   for(const city of [...t.cities])city.capture(enemy,month+1);
+   // This branch tests a surviving exile. Give it verified remaining loyalists,
+   // and control the existing escape draw independently of the new appointment path.
+   check(t.users.size>0,"defeated country has real residents able to become exiled remnants");
+   for(const resident of t.users)resident.loyalty=100;
+   const originalEscapeDraw=worldRandom.next;
+   worldRandom.next=()=>{originalEscapeDraw.call(worldRandom);return 0;};
+   try{for(const city of [...t.cities])city.capture(enemy,month+1);}
+   finally{worldRandom.next=originalEscapeDraw;}
    check(r.status as string==="exiled"&&body.role==="NORMAL"&&d.currentRulerId===r.id,"transferred normal body still belongs to the same historical exiled monarch");
    (core.simulator as any).clock.importState({worldMonth:month+2,elapsedMs:0,running:false});
    check(body.destroyUser(false,{cause:"SIEGE_LOSS",month:month+2,damageSource:"CITY_SIEGE"}),"foreign normal body suffers a real siege casualty");

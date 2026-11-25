@@ -13,6 +13,7 @@ const identityKey=(source:AbilitySource)=>`${source.kind.toLowerCase()}:${source
 export function familyMemberAbilitySource(member:MilitaryFamilyMember):AbilitySource|undefined{
  if(member.birth)return {kind:'FAMILY_BIRTH',memberId:member.memberId,bornMonth:member.bornMonth};
  if(member.sourceUserId!==undefined)return {kind:'RESIDENT',sourceUserId:member.sourceUserId,bornMonth:member.bornMonth};
+ return undefined;
 }
 export function residentAbilitySource(sourceUserId:number,bornMonth:number,member?:MilitaryFamilyMember):AbilitySource{
  return member?.birth&&member.bornMonth===bornMonth&&member.sourceUserId===sourceUserId?{kind:'FAMILY_BIRTH',memberId:member.memberId,bornMonth}:{kind:'RESIDENT',sourceUserId,bornMonth};

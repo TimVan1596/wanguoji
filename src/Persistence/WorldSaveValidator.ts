@@ -1,3 +1,4 @@
+import {validateTerminalConflictParticipants} from './TerminalConflictValidation';
 import {validateNativeRoyalPopulation} from './NativeRoyalPopulationValidation';
 import {validateFamilyChildren} from './FamilyChildValidation';
 import {validateCivilAdministration} from './CivilAdministrationValidation';
@@ -534,6 +535,7 @@ export function validateWorldSave(value: unknown): SaveValidationResult {
   if (!errors.length) errors.push(...measureSaveValidation('validateFamilyChildren',()=>validateFamilyChildren(save as WorldSaveV1)));
   if (!errors.length) errors.push(...measureSaveValidation('validateCivilAdministration',()=>validateCivilAdministration(save as WorldSaveV1)));
   if (!errors.length) errors.push(...measureSaveValidation('validateFamilyNobility',()=>validateFamilyNobility(save as WorldSaveV1)));
+  if (!errors.length) errors.push(...measureSaveValidation('validateTerminalConflictParticipants',()=>validateTerminalConflictParticipants(save as WorldSaveV1)));
   return { valid: errors.length === 0, errors };
 }
 
