@@ -1,3 +1,4 @@
+import {formatTerminalConflict,readTerminalConflict} from './TerminalConflictReading';
 import {mergePoliticalReading,isFirstFoundingAccession} from './PoliticalReadingProjection';
 import {mergeMilitaryLifeEvents} from '../Politics/MilitaryLifePresentation';
 import type { WorldEvent } from "./WorldHistory";
@@ -252,14 +253,14 @@ function createNarrativeEvent(group: CollapseGroup): WorldEvent {
     clauses.push(exiled ? "王室流亡" : `${group.factionId}国王统断绝`);
   }
 
-  const headline = conquerorFactionId
-    ? `${conquerorFactionId}灭${group.factionId}`
-    : `${group.factionId}亡国`;
+  const directCapture=group.events.find(event=>event.id===group.collapseEvent.metadata?.terminalCaptureEventId);
+  const conflict=directCapture&&readTerminalConflict(group.collapseEvent,directCapture);
+  const headline=exiled?`${group.factionId}失去最后城邑`:`${group.factionId}亡国`;
   const sourceEventIds = [...new Set(group.events.flatMap(event=>[event.id,...(typeof event.metadata?.sourceEventIds==='string'?event.metadata.sourceEventIds.split(','):[])]))].join(",");
   return {
     ...group.collapseEvent,
     id: `history-collapse-${group.key}-${group.events.length}`,
-    title: `${headline}。${unique(clauses).join("，")}。`,
+    title: conflict?formatTerminalConflict(conflict,'WORLD'):`${headline}。${unique(clauses).join("，")}。`,
     description: group.events.map((event) => event.title).join(" / "),
     factionIds: unique([
       group.factionId,

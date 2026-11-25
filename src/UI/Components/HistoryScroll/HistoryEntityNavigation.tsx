@@ -16,6 +16,12 @@ export default function HistoryEntityNavigation({event}:{event:WorldEvent}){
  const court=readCourtCoup(event),people=Military.getPeople(),families=Military.getFamilies(),dynasties=Dynasty.getAll();
  const factions=new Set(core.teams.map(t=>t.name)),cities=new Set([...core.allCities.map(c=>c.id),...sources.archived.list().map(c=>c.id)]);
  const links=historyEntityLinks(event,families,people,dynasties,factions,cities).filter(l=>!court||l.target.kind==='FACTION'||l.target.kind==='CITY'||l.target.kind==='FAMILY');
+ for(const [key,factionId] of [['victorRulerId',event.conquerorFactionId],['defeatedRulerId',event.targetFactionId]] as const){
+  const id=event.metadata?.[key];
+  if(typeof id==='string'&&factionId&&dynasties.some(d=>d.factionId===factionId&&d.rulers.some(r=>r.id===id))&&!links.some(l=>l.target.id===id&&l.target.kind==='RULER')){
+   links.push({label:key==='victorRulerId'?'胜方君主':'败方君主',target:{kind:'RULER',id,factionId}});
+  }
+ }
  if((event.type==='faction-extinct'||event.type==='faction-dissolved')&&typeof event.metadata?.cityId==='string'&&event.metadata.terminalCaptureEventId){
   const original=WorldHistory.getEventsForCity(event.metadata.cityId).find(e=>e.id===event.metadata?.terminalCaptureEventId&&e.historyGroupId===event.historyGroupId);
   if(original)for(const link of historyEntityLinks(original,families,people,dynasties,factions,cities)){

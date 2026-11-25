@@ -478,6 +478,13 @@ export default class Core {
     historyGroupId?: string
   ) {
     if(fallenTeam.status!=="ACTIVE")return; // A collapse episode cannot be settled again while already exiled/ended.
+    const rulingAtSettlement=(team:Team)=>{
+      const ruler=DynastyRegistry.getCurrentRuler(team.name);
+      return ruler?.status==='ruling'&&(ruler.accessionYear??Infinity)<=year&&(ruler.deathMonth??Infinity)>year?ruler:undefined;
+    };
+    const victor=rulingAtSettlement(conqueror),defeated=rulingAtSettlement(fallenTeam);
+    const victorRulerTitle=victor&&DynastyRegistry.getRulerHistoricalTitle(victor.id,conqueror.name,year);
+    const defeatedRulerTitle=defeated&&DynastyRegistry.getRulerHistoricalTitle(defeated.id,fallenTeam.name,year);
     const users = [...fallenTeam.users];
     let surrenderedPopulation = 0;
     let disbandedPopulation = 0;
@@ -541,6 +548,10 @@ export default class Core {
       wasCapital: finalCity.isCapital ? 1 : 0,
       isFinalCityCapture: 1,
       terminalCaptureEventId: terminalCapture ? terminalCapture.id : undefined,
+      victorRulerId: terminalCapture ? victor?.id : undefined,
+      defeatedRulerId: terminalCapture ? defeated?.id : undefined,
+      victorRulerTitle: terminalCapture ? victorRulerTitle : undefined,
+      defeatedRulerTitle: terminalCapture ? defeatedRulerTitle : undefined,
       defeatedIdentityStage: terminalCapture ? fallenTeam.identityStage : undefined,
       defeatedSovereigntyRank: terminalCapture ? fallenTeam.sovereigntyRank : undefined,
       defeatedPeakCityCount: terminalCapture && !hasFormalStateIdentity(fallenTeam) ? FactionLifetimeRecords.get(fallenTeam.name)?.peakCityCount.value : undefined,

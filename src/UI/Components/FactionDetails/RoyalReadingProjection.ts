@@ -1,3 +1,4 @@
+import {readTerminalConflict} from '../../../History/TerminalConflictReading';
 import {insurgentChronicle,insurgentChronicleOrder} from '../../../Politics/InsurgentChronicle';
 import type {Ruler} from '../../../Politics/Dynasty';
 import type {MilitaryPerson,MilitaryFormation} from '../../../Politics/MilitaryCommandRegistry';
@@ -12,9 +13,20 @@ export interface RoyalReadingInput {
 }
 function build(a:RoyalReadingInput){
  const {ruler,team,events,worldMonth}=a,plan=projectRulerHistoricalEvents(events,ruler,team.name,worldMonth,ruler.chronicle.notableEventIds,new Set(a.people.filter(p=>p.royalIdentity?.factionId===team.name).map(p=>p.personId)));
- const duty=insurgentChronicle(ruler.id,a.formations,a.allEvents,worldMonth),full=[...new Map([...plan.all,...duty].map(e=>[e.id,e])).values()].sort(insurgentChronicleOrder),selected=[...new Map([...plan.select(8),...duty.filter(e=>e.type==='leader-command-started'||e.type==='leader-command-ended')].map(e=>[e.id,e])).values()].sort(insurgentChronicleOrder);
+ const duty=insurgentChronicle(ruler.id,a.formations,a.allEvents,worldMonth);
+ const terminals=events.filter(e=>e.metadata?.victorRulerId===ruler.id||e.metadata?.defeatedRulerId===ruler.id);
+ const captures=terminals.length?new Map(a.allEvents.map(e=>[e.id,e])):new Map<string,WorldEvent>();
+ const conflicts=new Map(terminals.flatMap(event=>{
+  const capture=captures.get(String(event.metadata?.terminalCaptureEventId)),fact=capture&&readTerminalConflict(event,capture,worldMonth);
+  return fact?[[event.id,fact] as const]:[];
+ }));
+ const merge=(rows:WorldEvent[])=>[...new Map(rows.map(e=>[e.id,e])).values()].sort(insurgentChronicleOrder);
+ const terminalEvents=[...conflicts.values()].map(fact=>fact.event);
+ const full=merge([...plan.all,...duty,...terminalEvents]);
+ const featured=merge([...plan.select(8),...duty.filter(e=>e.type==='leader-command-started'||e.type==='leader-command-ended')]).filter(e=>!conflicts.has(e.id));
+ const selected=merge([...terminalEvents,...featured.slice(0,Math.max(0,10-terminalEvents.length))]);
  let diplomacy:WorldEvent[]|undefined,reignEvents:WorldEvent[]|undefined;
- return {evidence:deriveRulerAssessment({ruler,dynasty:{rulers:a.rulers},faction:team,events,worldMonth}).evidence,full,selected:selected.slice(0,10),
+ return {evidence:deriveRulerAssessment({ruler,dynasty:{rulers:a.rulers},faction:team,events,worldMonth}).evidence,full,selected,conflicts,
   service:personServiceLinks(team.name,[ruler],a.people,a.formations,a.allEvents,worldMonth),earlier:preAccessionMilitary(ruler,a.people,a.formations,a.allEvents,{factions:a.factions}),
   get diplomacy(){return diplomacy??=getRulerDiplomaticEvents(events,ruler,team.name,worldMonth);},
   get reignEvents(){return reignEvents??=events.filter(e=>{const at=e.monthIndex??e.year;return at>=ruler.accessionYear&&at<=Math.min(ruler.endYear??worldMonth,worldMonth)&&(e.actorFactionId===team.name||e.targetFactionId===team.name||e.factionIds?.includes(team.name));});}};

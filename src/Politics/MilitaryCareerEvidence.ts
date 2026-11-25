@@ -1,3 +1,4 @@
+import {terminalCaptureKind} from '../History/TerminalConflictReading';
 import type {MilitaryEvidenceIndex} from './MilitaryEvidenceIndex';
 import {deriveMilitaryActivities} from "./MilitaryExperience";
 import type { MilitaryPerson, MilitaryFormation } from "./MilitaryCommandRegistry";
@@ -30,13 +31,7 @@ export function deriveMilitaryCareer(person: MilitaryPerson, formations: Militar
   for(const capture of captures){
     if(!capture.historyGroupId)continue;
     for(const event of terminalByGroup.get(capture.historyGroupId)??[]){
-      if(event.metadata?.terminalCaptureEventId!==capture.id||event.metadata?.isFinalCityCapture!==1||event.targetFactionId!==capture.targetFactionId||
-        event.conquerorFactionId!==capture.actorFactionId||event.metadata?.cityId!==capture.cityId||
-        (event.monthIndex??event.year)!==(capture.monthIndex??capture.year))continue;
-      const stage=event.metadata.defeatedIdentityStage,rank=event.metadata.defeatedSovereigntyRank;
-      const kind=event.type==="faction-dissolved"&&stage==="PROVISIONAL"?(Number(event.metadata.defeatedPeakCityCount)>=3?"REGIONAL_UPRISING":"UPRISING"):
-        event.type==="faction-extinct"&&stage==="STATE"&&rank==="EMPEROR"?"EMPIRE":
-        event.type==="faction-extinct"&&stage==="STATE"&&rank==="KING"?"KINGDOM":undefined;
+      const kind=terminalCaptureKind(event,capture);
       if(kind&&!endings.has(event.id))endings.set(event.id,{event,capture,kind});
     }
   }

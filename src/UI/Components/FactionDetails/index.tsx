@@ -1,3 +1,4 @@
+import {formatTerminalConflict} from '../../../History/TerminalConflictReading';
 import {populationRulerRecovery} from '../../../Simulation/PopulationRecoveryRules';
 import {civilOfficeTitle} from '../../../Politics/CivilOffice';
 import {civilCareerReading} from '../../../Politics/CivilHistoriography';
@@ -1208,7 +1209,17 @@ function RulerBiography({
   const parent=rulers.find(p=>p.id===ruler.parentId),predecessor=rulers.find(p=>p.id===ruler.predecessorId);
   const title=hasRecordedRulerDeath(ruler)&&ruler.endYear!==undefined&&(ruler.templeName||ruler.posthumousEpithet)?formatPosthumousRulerName(ruler,team,ruler.endYear):formatRulerName(ruler);
   const posthumousLines=hasRecordedRulerDeath(ruler)?getPosthumousLabelLines(ruler,team,ruler.endYear??worldMonth):[];
-  const textFor=(event:WorldEvent)=>chronicleReadingText(event,(formatRulerMilitaryEvent(event,ruler,team.name,worldMonth,{factions:factionById,people:MilitaryCommandRegistry.getPeople(),events})??formatRulerTerminalEvent(event,ruler,team.name,factionById)??formatRulerDiplomacyEvent(event,factionById,ruler.id)??formatFactionHistoryEvent(event,team.name,factionById)??formatHistoryEventTitle(event,factionById)),events);
+  const textFor=(event:WorldEvent)=>{
+   const conflict=reading.conflicts.get(event.id);
+   if(conflict){
+    const p=conflict.commanderId?MilitaryCommandRegistry.getPerson(conflict.commanderId):undefined;
+    const commandId=conflict.capture.metadata?.commandId,month=conflict.capture.monthIndex??conflict.capture.year;
+    const formation=typeof commandId==='string'?MilitaryCommandRegistry.getFormation(commandId):undefined;
+    const quoted=p?.capturedEventIds.includes(conflict.capture.id)&&formation?.commanderPersonId===p.personId&&formation.captures.some(c=>c.eventId===conflict.capture.id)?p.appointments.find(a=>a.commandId===commandId&&a.factionId===conflict.victor&&a.startMonth<=month&&(a.endMonth??Infinity)>=month):undefined;
+    return formatTerminalConflict(conflict,conflict.victorRulerId===ruler.id?'VICTOR':'DEFEATED',quoted?p?.personalName:undefined);
+   }
+   return chronicleReadingText(event,(formatRulerMilitaryEvent(event,ruler,team.name,worldMonth,{factions:factionById,people:MilitaryCommandRegistry.getPeople(),events})??formatRulerTerminalEvent(event,ruler,team.name,factionById)??formatRulerDiplomacyEvent(event,factionById,ruler.id)??formatFactionHistoryEvent(event,team.name,factionById)??formatHistoryEventTitle(event,factionById)),events);
+  };
   return <Box sx={{border:"1px solid var(--gg-border)",borderRadius:"var(--gg-radius)",p:1,background:"var(--gg-panel)"}}>
     <PersonChronicleLayout title={<><Typography fontWeight="bold">{title}</Typography><Typography fontSize="0.76rem" color="var(--gg-text-muted)">{formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT")}</Typography></>}
       identity={<ChronicleSection title="身份与王统">
