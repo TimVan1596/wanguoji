@@ -64,7 +64,7 @@ export function civilGovernorCandidates(month:number,team:Team,people:readonly M
   if(familyLink&&(!familyMemberPresent(familyLink.member,month)||familyResidenceAt(familyLink.family,familyLink.member,month)!==team.name))continue;
   const nobleRank=higherRank(person?currentNobleGrant(person,team.name,month,epochFounderId)?.rank:undefined,familyLink?familyNobleRankAt(familyLink.family,familyLink.member,month,team.name,epochFounderId):undefined);
   const retired=!!person&&person.status==='RETIRED'&&person.appointments.length>0,royal=!!person?.royalIdentity;
-  const identitySource:CivilGovernorSource=royal?'ROYAL':retired?'RETIRED_MILITARY':nobleRank?'NOBLE':familyLink&&familyExpansionOpen(familyLink.family,month)?'FAMILY':'ORDINARY_RESIDENT';
+  const identitySource:CivilGovernorSource=royal?'ROYAL':retired?'RETIRED_MILITARY':nobleRank?'NOBLE':familyLink&&familyExpansionOpen(familyLink.family,month,team.name,epochFounderId)?'FAMILY':'ORDINARY_RESIDENT';
   const abilities=person?militaryAbilities(person):personAbilities({kind:'RESIDENT',sourceUserId:user.id,bornMonth:user.bornMonth});
   const sourceWeight=identitySource==='ORDINARY_RESIDENT'?1:identitySource==='FAMILY'?1.08:identitySource==='NOBLE'?1.04+Math.max(0,NOBLE_RANKS.indexOf(nobleRank??'NAN'))*.02:identitySource==='ROYAL'?1.12:1.06;
   const personId=history[0]?.personId??person?.personId??civilGovernorPersonId(user,familyLink),prior=history.filter(t=>t.factionId===team.name&&t.epochFounderId===epochFounderId&&t.endReason==='CITY_LOST'&&t.endMonth!==undefined&&t.endMonth<=month).at(-1),returnBonus=prior?.meritEventId?1+Math.min(.15,(prior.loyaltyRecovered+prior.devastationRecovered)/100):1,weight=(.72+abilities.strategy/100*.55)*sourceWeight*returnBonus;

@@ -12,3 +12,13 @@ it('honors actual same-month source order and only a genuine new period reopens 
 it('an already born child survives closure and remains eligible for its one real population slot',()=>{
  const child:any={memberId:'child',bornMonth:200,enteredMonth:200,generation:1,source:'HOUSEHOLD_BIRTH',birth:{naturalDeathMonth:1200}};const family={...f,members:[...f.members,child]};let selected=false;for(let id=1;id<100;id++){const plan=familyChildForPopulationEntry([family],'qin','e',id,500,'existing-child');if(plan){expect(plan.member).toBe(child);selected=true;}}expect(selected).toBe(true);expect(child.deathMonth).toBeUndefined();expect(child.sourceUserId).toBeUndefined();
 });
+
+it('does not restore a closed homeland authority when a foreign chain survives',()=>{
+ const first={kind:'STARTED',month:100,period:1,factionId:'qin',epochFounderId:'e'};
+ const foreign={kind:'STARTED',month:200,period:2,factionId:'han',epochFounderId:'han-king'};
+ const closure={...first,kind:'ENDED',month:300};
+ const family={...f,nobleSuccession:[first,foreign,closure]};
+ expect(familyExpansionOpen(family,300)).toBe(true);
+ expect(familyExpansionOpen(family,300,'qin','e')).toBe(false);
+ expect(familyExpansionOpen(family,300,'han','han-king')).toBe(true);
+});

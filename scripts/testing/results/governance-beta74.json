@@ -1,5 +1,5 @@
 {
-  "status": "development validation; not a release decision",
+  "status": "automated verification completed; manual acceptance pending",
   "capacityCalibration": {
     "scope": "100-year same-seed pilot, one seed per group",
     "groups": {
@@ -12,7 +12,7 @@
         "splits": 0,
         "proclamations": [],
         "administrativeTransfers": 4,
-        "multipleChainFamilies": 0
+        "familiesWithMultipleRecordedPeriods": 0
       },
       "capacity": {
         "seed": "regional-1",
@@ -23,7 +23,7 @@
         "splits": 4,
         "proclamations": [],
         "administrativeTransfers": 4,
-        "multipleChainFamilies": 2
+        "familiesWithMultipleRecordedPeriods": 2
       },
       "governance": {
         "seed": "regional-1",
@@ -55,7 +55,7 @@
           }
         ],
         "administrativeTransfers": 3,
-        "multipleChainFamilies": 1
+        "familiesWithMultipleRecordedPeriods": 1
       },
       "full": {
         "seed": "regional-1",
@@ -87,7 +87,7 @@
           }
         ],
         "administrativeTransfers": 6,
-        "multipleChainFamilies": 0
+        "familiesWithMultipleRecordedPeriods": 0
       }
     }
   },
@@ -124,7 +124,7 @@
           }
         ],
         "administrativeTransfers": 16,
-        "multipleChainFamilies": 0
+        "familiesWithMultipleRecordedPeriods": 0
       },
       {
         "seed": "regional-1",
@@ -156,7 +156,7 @@
           }
         ],
         "administrativeTransfers": 28,
-        "multipleChainFamilies": 1
+        "familiesWithMultipleRecordedPeriods": 1
       }
     ],
     "continuation": {
@@ -170,11 +170,17 @@
     "runs": [
       {
         "seed": "regional-1",
-        "month": 12000,
+        "months": 12000,
+        "completed": true,
         "population": 137,
+        "cities": 21,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
         "unifications": 0,
-        "restorations": 5,
-        "splits": 14,
         "proclamations": [
           {
             "id": "emperor-proclaimed-680-齐-82",
@@ -218,24 +224,231 @@
             "observedDurationMonths": 3886
           }
         ],
-        "administrativeTransfers": 48,
-        "multipleChainFamilies": 5,
-        "completed": true,
-        "continuation": {
-          "months": 12,
-          "deterministic": true,
-          "secondRead": true
+        "restorations": 5,
+        "splits": 14,
+        "transfers": {
+          "total": 48,
+          "high": 38,
+          "medium": 10
+        },
+        "titles": {
+          "families": 81,
+          "historicalChains": 86,
+          "familiesWithOverlappingChains": 1,
+          "successions": 33,
+          "terminalReasons": {
+            "RANK_EXHAUSTED": 58,
+            "FORFEITED": 3,
+            "NO_HEIR": 14,
+            "FOREIGN": 4,
+            "REGIME_ENDED": 1
+          }
         }
       },
       {
         "seed": "regional-2",
         "completed": false,
-        "error": "Error: {\"seed\":\"regional-2\",\"month\":8400,\"error\":\"Error: WorldSaveV1 export failed validation: invalid family title military-family-military-person-111-广平郡义军-ruler-273: Error: period exceeds original finite descent chain; orphan family title military-family-mi"
+        "error": "Error: {\"seed\":\"regional-2\",\"month\":8400,\"error\":\"Error: WorldSaveV1 export failed validation: invalid family title military-family-military-person-111-广平郡义军-ruler-273: Error: period exceeds original finite descent chain; orphan family title military-family-military-person-111-广平郡义军-ruler-273-succession-1; orphan family title mi"
       },
       {
         "seed": "regional-3",
         "completed": false,
-        "error": "Error: {\"seed\":\"regional-3\",\"month\":2400,\"error\":\"Error: WorldSaveV1 export failed validation: invalid military family military-family-military-person-20-韩-ruler-37: Error: invalid family appointment advantage\",\"militaryFailure\":{\"person\":{\"personId\":\"military"
+        "error": "Error: {\"seed\":\"regional-3\",\"month\":2400,\"error\":\"Error: WorldSaveV1 export failed validation: invalid military family military-family-military-person-20-韩-ruler-37: Error: invalid family appointment advantage\",\"militaryFailure\":{\"person\":{\"personId\":\"military-person-20\",\"sourceUserId\":1041602291,\"name\":\"Heaven-韩-471-0031\",\"pers"
+      },
+      {
+        "seed": "regional-4",
+        "months": 12000,
+        "completed": true,
+        "population": 137,
+        "cities": 19,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "unifications": 1,
+        "proclamations": [
+          {
+            "id": "emperor-proclaimed-1978-楚-344",
+            "factionId": "楚",
+            "month": 1978,
+            "conditions": {
+              "oldRank": "KING",
+              "newRank": "EMPEROR",
+              "displayName": "楚",
+              "rulerName": "熊廉",
+              "rulerId": "楚-ruler-134",
+              "territoryShare": 38.021259198691745,
+              "cityShare": 42.10526315789473,
+              "stability": 68,
+              "path": "HEGEMONY",
+              "leadShare": 19.623875715453806,
+              "controlledCityCount": 8,
+              "qualifiedSince": 1942
+            },
+            "endId": "exiled-7183-楚-967",
+            "observedDurationMonths": 5205
+          },
+          {
+            "id": "emperor-proclaimed-4912-秦-777",
+            "factionId": "秦",
+            "month": 4912,
+            "conditions": {
+              "oldRank": "KING",
+              "newRank": "EMPEROR",
+              "displayName": "秦",
+              "rulerName": "杜廷良",
+              "rulerId": "秦-ruler-281",
+              "territoryShare": 39.265306122448976,
+              "cityShare": 56.25,
+              "stability": 78,
+              "path": "HEGEMONY",
+              "leadShare": 14.77551020408163,
+              "controlledCityCount": 9,
+              "qualifiedSince": 4876
+            },
+            "endId": "exiled-7207-秦-974",
+            "observedDurationMonths": 2295
+          },
+          {
+            "id": "emperor-proclaimed-5989-燕-865",
+            "factionId": "燕",
+            "month": 5989,
+            "conditions": {
+              "oldRank": "KING",
+              "newRank": "EMPEROR",
+              "displayName": "燕",
+              "rulerName": "姬元敬",
+              "rulerId": "燕-ruler-320",
+              "territoryShare": 44.163265306122454,
+              "cityShare": 50,
+              "stability": 71,
+              "path": "HEGEMONY",
+              "leadShare": 12.081632653061227,
+              "controlledCityCount": 8,
+              "qualifiedSince": 5953
+            },
+            "observedDurationMonths": 6011
+          }
+        ],
+        "restorations": 12,
+        "splits": 25,
+        "transfers": {
+          "total": 47,
+          "high": 39,
+          "medium": 8
+        },
+        "titles": {
+          "families": 76,
+          "historicalChains": 79,
+          "familiesWithOverlappingChains": 1,
+          "successions": 26,
+          "terminalReasons": {
+            "FORFEITED": 6,
+            "RANK_EXHAUSTED": 51,
+            "NO_HEIR": 13,
+            "REGIME_ENDED": 2,
+            "FOREIGN": 1
+          }
+        }
+      },
+      {
+        "seed": "regional-9",
+        "months": 12000,
+        "completed": true,
+        "population": 141,
+        "cities": 19,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "unifications": 0,
+        "proclamations": [
+          {
+            "id": "emperor-proclaimed-1331-秦-228",
+            "factionId": "秦",
+            "month": 1331,
+            "conditions": {
+              "oldRank": "KING",
+              "newRank": "EMPEROR",
+              "displayName": "秦",
+              "rulerName": "嬴思温",
+              "rulerId": "秦-ruler-37",
+              "territoryShare": 42.10526315789473,
+              "cityShare": 47.368421052631575,
+              "stability": 73,
+              "path": "HEGEMONY",
+              "leadShare": 10.608552631578942,
+              "controlledCityCount": 9,
+              "qualifiedSince": 1295
+            },
+            "endId": "exiled-10415-秦-1111",
+            "observedDurationMonths": 9084
+          },
+          {
+            "id": "emperor-proclaimed-2138-燕-371",
+            "factionId": "燕",
+            "month": 2138,
+            "conditions": {
+              "oldRank": "KING",
+              "newRank": "EMPEROR",
+              "displayName": "燕",
+              "rulerName": "姬逊",
+              "rulerId": "燕-ruler-81",
+              "territoryShare": 40.44481054365733,
+              "cityShare": 44.44444444444444,
+              "stability": 72,
+              "path": "HEGEMONY",
+              "leadShare": 9.308072487644154,
+              "controlledCityCount": 8,
+              "qualifiedSince": 2102
+            },
+            "observedDurationMonths": 9862
+          },
+          {
+            "id": "emperor-proclaimed-8561-临川东义军-952",
+            "factionId": "临川东义军",
+            "month": 8561,
+            "conditions": {
+              "oldRank": "KING",
+              "newRank": "EMPEROR",
+              "displayName": "临",
+              "rulerName": "朱晞",
+              "rulerId": "临川东义军-ruler-359",
+              "territoryShare": 38.69387755102041,
+              "cityShare": 47.368421052631575,
+              "stability": 75,
+              "path": "HEGEMONY",
+              "leadShare": 12.653061224489793,
+              "controlledCityCount": 9,
+              "qualifiedSince": 8525
+            },
+            "observedDurationMonths": 3439
+          }
+        ],
+        "restorations": 1,
+        "splits": 18,
+        "transfers": {
+          "total": 55,
+          "high": 42,
+          "medium": 13
+        },
+        "titles": {
+          "families": 71,
+          "historicalChains": 76,
+          "familiesWithOverlappingChains": 2,
+          "successions": 26,
+          "terminalReasons": {
+            "NO_HEIR": 8,
+            "REGIME_ENDED": 1,
+            "FOREIGN": 4,
+            "FORFEITED": 6,
+            "RANK_EXHAUSTED": 54
+          }
+        }
       }
     ]
   },
@@ -326,5 +539,632 @@
         }
       }
     ]
+  },
+  "closure": {
+    "scope": "Follow-up source; fixed seed runs available at collection",
+    "short": [
+      {
+        "seed": "regional-4",
+        "months": 2400,
+        "completed": true,
+        "population": 123,
+        "cities": 18,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "unifications": 0,
+        "proclamations": [
+          {
+            "id": "emperor-proclaimed-1978-楚-344",
+            "factionId": "楚",
+            "month": 1978,
+            "conditions": {
+              "oldRank": "KING",
+              "newRank": "EMPEROR",
+              "displayName": "楚",
+              "rulerName": "熊廉",
+              "rulerId": "楚-ruler-134",
+              "territoryShare": 38.021259198691745,
+              "cityShare": 42.10526315789473,
+              "stability": 68,
+              "path": "HEGEMONY",
+              "leadShare": 19.623875715453806,
+              "controlledCityCount": 8,
+              "qualifiedSince": 1942
+            },
+            "observedDurationMonths": 422
+          }
+        ],
+        "restorations": 6,
+        "splits": 7,
+        "transfers": {
+          "total": 10,
+          "high": 10,
+          "medium": 0
+        },
+        "titles": {
+          "families": 13,
+          "historicalChains": 13,
+          "familiesWithOverlappingChains": 0,
+          "successions": 4,
+          "terminalReasons": {
+            "FORFEITED": 2,
+            "RANK_EXHAUSTED": 5,
+            "NO_HEIR": 2
+          }
+        }
+      },
+      {
+        "seed": "regional-5",
+        "months": 1200,
+        "completed": true,
+        "population": 133,
+        "cities": 18,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "unifications": 0,
+        "proclamations": [],
+        "restorations": 0,
+        "splits": 0,
+        "transfers": {
+          "total": 3,
+          "high": 3,
+          "medium": 0
+        },
+        "titles": {
+          "families": 11,
+          "historicalChains": 12,
+          "familiesWithOverlappingChains": 1,
+          "successions": 6,
+          "terminalReasons": {
+            "REGIME_ENDED": 1,
+            "NO_HEIR": 2,
+            "RANK_EXHAUSTED": 1,
+            "FORFEITED": 1
+          }
+        }
+      },
+      {
+        "seed": "regional-6",
+        "months": 1200,
+        "completed": true,
+        "population": 131,
+        "cities": 19,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "unifications": 0,
+        "proclamations": [],
+        "restorations": 0,
+        "splits": 1,
+        "transfers": {
+          "total": 7,
+          "high": 5,
+          "medium": 2
+        },
+        "titles": {
+          "families": 4,
+          "historicalChains": 4,
+          "familiesWithOverlappingChains": 0,
+          "successions": 2,
+          "terminalReasons": {
+            "RANK_EXHAUSTED": 1
+          }
+        }
+      },
+      {
+        "seed": "regional-7",
+        "months": 1200,
+        "completed": true,
+        "population": 137,
+        "cities": 16,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "unifications": 0,
+        "proclamations": [],
+        "restorations": 0,
+        "splits": 0,
+        "transfers": {
+          "total": 4,
+          "high": 4,
+          "medium": 0
+        },
+        "titles": {
+          "families": 8,
+          "historicalChains": 8,
+          "familiesWithOverlappingChains": 0,
+          "successions": 2,
+          "terminalReasons": {
+            "RANK_EXHAUSTED": 4,
+            "REGIME_ENDED": 2
+          }
+        }
+      },
+      {
+        "seed": "regional-8",
+        "months": 1200,
+        "completed": true,
+        "population": 140,
+        "cities": 17,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "unifications": 0,
+        "proclamations": [],
+        "restorations": 0,
+        "splits": 0,
+        "transfers": {
+          "total": 5,
+          "high": 4,
+          "medium": 1
+        },
+        "titles": {
+          "families": 5,
+          "historicalChains": 5,
+          "familiesWithOverlappingChains": 0,
+          "successions": 1,
+          "terminalReasons": {
+            "NO_HEIR": 1,
+            "RANK_EXHAUSTED": 2
+          }
+        }
+      }
+    ],
+    "persistence": {
+      "seed": "regional-1",
+      "month": 6000,
+      "saveVersion": 69,
+      "concurrentCpuWork": true,
+      "rows": [
+        {
+          "bytes": 15848341,
+          "validationMs": 3621,
+          "hydrationMs": 4388.599999964237,
+          "exportMs": 4135.199999988079,
+          "canonicalUnchanged": true,
+          "slowestPhases": {
+            "validateFamilyNobility": 670.3999999761581,
+            "validateMilitaryCommandState": 614.6999999880791,
+            "validateMilitaryNobility": 591.5,
+            "validateRoyalHouseholds": 512.9000000357628
+          }
+        },
+        {
+          "bytes": 15848341,
+          "validationMs": 3669.899999976158,
+          "hydrationMs": 4499.400000035763,
+          "exportMs": 3690,
+          "canonicalUnchanged": true,
+          "slowestPhases": {
+            "validateMilitaryNobility": 702.0999999642372,
+            "validateMilitaryCommandState": 631.8999999761581,
+            "validateFamilyNobility": 556.8999999761581,
+            "validateRoyalHouseholds": 539.1999999880791
+          }
+        },
+        {
+          "bytes": 15848341,
+          "validationMs": 3167.899999976158,
+          "hydrationMs": 4073.699999988079,
+          "exportMs": 4681.699999988079,
+          "canonicalUnchanged": true,
+          "slowestPhases": {
+            "validateMilitaryNobility": 564.5,
+            "validateFamilyNobility": 548.5999999642372,
+            "validateMilitaryCommandState": 456.39999997615814,
+            "validateRoyalHouseholds": 447.2999999523163
+          }
+        }
+      ]
+    },
+    "natural500": {
+      "seed": "regional-1",
+      "months": 6000,
+      "completed": true,
+      "population": 138,
+      "cities": 18,
+      "strictSaveValid": true,
+      "continuation": {
+        "months": 12,
+        "deterministic": true,
+        "secondRead": true
+      },
+      "unifications": 0,
+      "proclamations": [
+        {
+          "id": "emperor-proclaimed-680-齐-82",
+          "factionId": "齐",
+          "month": 680,
+          "conditions": {
+            "oldRank": "KING",
+            "newRank": "EMPEROR",
+            "displayName": "齐",
+            "rulerName": "潘义",
+            "rulerId": "齐-ruler-18",
+            "territoryShare": 35.91836734693877,
+            "cityShare": 43.75,
+            "stability": 89,
+            "path": "HEGEMONY",
+            "leadShare": 9.87755102040816,
+            "controlledCityCount": 7,
+            "qualifiedSince": 644
+          },
+          "observedDurationMonths": 5320
+        }
+      ],
+      "restorations": 3,
+      "splits": 3,
+      "transfers": {
+        "total": 28,
+        "high": 19,
+        "medium": 9
+      },
+      "titles": {
+        "families": 34,
+        "historicalChains": 35,
+        "familiesWithOverlappingChains": 0,
+        "successions": 14,
+        "terminalReasons": {
+          "RANK_EXHAUSTED": 18,
+          "FORFEITED": 2,
+          "NO_HEIR": 6,
+          "FOREIGN": 2,
+          "REGIME_ENDED": 1
+        }
+      },
+      "matchesEarlierCandidateAtAllFiveCenturies": {
+        "authority": true,
+        "rng": true,
+        "historyFacts": true
+      }
+    },
+    "navigation": {
+      "checks": 44,
+      "seed": "regional-1",
+      "months": 6000
+    },
+    "profile": {
+      "scope": "Manual authoritative fixed steps with real Arcade physics; render loop stopped. Separate from live Electron frame measurement and human acceptance.",
+      "seed": "regional-1",
+      "startMonth": 6000,
+      "months": 300,
+      "monthlyP50Ms": 4.300000011920929,
+      "clockMismatches": 0,
+      "hydrationMs": 2645.600000023842,
+      "exportMs": 2980.199999988079,
+      "phases": {
+        "MilitaryCommandRegistry.update": {
+          "sampleCount": 300,
+          "averageMs": 2.4109999988476436,
+          "p95Ms": 12.5,
+          "p99Ms": 67.10000002384186,
+          "maxMs": 72.30000001192093
+        },
+        "MilitaryCommandRegistry.update/January": {
+          "sampleCount": 25,
+          "averageMs": 26.86000000476837,
+          "p95Ms": 69.30000001192093,
+          "p99Ms": 72.30000001192093,
+          "maxMs": 72.30000001192093
+        },
+        "MilitaryCommandRegistry.update/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 0.18836363467303188,
+          "p95Ms": 0.30000001192092896,
+          "p99Ms": 0.7000000476837158,
+          "maxMs": 6.399999976158142
+        },
+        "DynastyRegistry.update": {
+          "sampleCount": 300,
+          "averageMs": 6.1336666681369145,
+          "p95Ms": 34.299999952316284,
+          "p99Ms": 71,
+          "maxMs": 92.10000002384186
+        },
+        "DynastyRegistry.update/January": {
+          "sampleCount": 25,
+          "averageMs": 25.260000002384185,
+          "p95Ms": 77.5,
+          "p99Ms": 79.80000001192093,
+          "maxMs": 79.80000001192093
+        },
+        "DynastyRegistry.update/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 4.3949090922962535,
+          "p95Ms": 17.399999976158142,
+          "p99Ms": 57.90000003576279,
+          "maxMs": 92.10000002384186
+        },
+        "Military families": {
+          "sampleCount": 300,
+          "averageMs": 0.5203333328167598,
+          "p95Ms": 3.800000011920929,
+          "p99Ms": 7.899999976158142,
+          "maxMs": 30.600000023841858
+        },
+        "Military families/January": {
+          "sampleCount": 25,
+          "averageMs": 6.227999994754791,
+          "p95Ms": 16.899999976158142,
+          "p99Ms": 30.600000023841858,
+          "maxMs": 30.600000023841858
+        },
+        "Military families/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 0.0014545453678477894,
+          "p95Ms": 0,
+          "p99Ms": 0.09999996423721313,
+          "maxMs": 0.10000002384185791
+        },
+        "Civil administration": {
+          "sampleCount": 300,
+          "averageMs": 3.898666666547457,
+          "p95Ms": 28.900000035762787,
+          "p99Ms": 72.10000002384186,
+          "maxMs": 96.80000001192093
+        },
+        "Civil administration/January": {
+          "sampleCount": 25,
+          "averageMs": 38.215999999046325,
+          "p95Ms": 82.89999997615814,
+          "p99Ms": 96.80000001192093,
+          "maxMs": 96.80000001192093
+        },
+        "Civil administration/ordinary": {
+          "sampleCount": 275,
+          "averageMs": 0.7789090908657421,
+          "p95Ms": 1.100000023841858,
+          "p99Ms": 16.200000047683716,
+          "maxMs": 16.5
+        }
+      }
+    },
+    "focusedAfterValidatorFix": {
+      "typecheck": true,
+      "files": 3,
+      "tests": 80
+    },
+    "pending": [
+      "manual Chrome/Electron acceptance",
+      "final repeat of regional-4 and regional-9 on the scoped follow-up was not measured"
+    ],
+    "automated": {
+      "typecheck": true,
+      "unitFiles": 376,
+      "unitTests": 2765,
+      "web": true,
+      "desktop": true,
+      "rendererDebug": true
+    },
+    "strictMillennium": [
+      {
+        "seed": "regional-1",
+        "observedStartMonth": 6000,
+        "month": 12000,
+        "population": 137,
+        "cities": 21,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "proclamations": [
+          {
+            "id": "emperor-proclaimed-680-齐-82",
+            "factionId": "齐",
+            "month": 680,
+            "conditions": {
+              "oldRank": "KING",
+              "newRank": "EMPEROR",
+              "displayName": "齐",
+              "rulerName": "潘义",
+              "rulerId": "齐-ruler-18",
+              "territoryShare": 35.91836734693877,
+              "cityShare": 43.75,
+              "stability": 89,
+              "path": "HEGEMONY",
+              "leadShare": 9.87755102040816,
+              "controlledCityCount": 7,
+              "qualifiedSince": 644
+            },
+            "endId": "exiled-7956-齐-849",
+            "observedDurationMonths": 7276
+          },
+          {
+            "id": "emperor-proclaimed-8114-秦-870",
+            "factionId": "秦",
+            "month": 8114,
+            "conditions": {
+              "oldRank": "KING",
+              "newRank": "EMPEROR",
+              "displayName": "秦",
+              "rulerName": "嬴弼",
+              "rulerId": "秦-ruler-362",
+              "territoryShare": 44.40816326530612,
+              "cityShare": 44.44444444444444,
+              "stability": 71,
+              "path": "HEGEMONY",
+              "leadShare": 18.53061224489796,
+              "controlledCityCount": 8,
+              "qualifiedSince": 8078
+            },
+            "observedDurationMonths": 3886
+          }
+        ],
+        "unifications": 0
+      },
+      {
+        "seed": "regional-2",
+        "observedStartMonth": 0,
+        "month": 12000,
+        "population": 133,
+        "cities": 20,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "proclamations": [
+          {
+            "id": "emperor-proclaimed-3397-韩-546",
+            "factionId": "韩",
+            "month": 3397,
+            "conditions": {
+              "oldRank": "KING",
+              "newRank": "EMPEROR",
+              "displayName": "韩",
+              "rulerName": "韩致之",
+              "rulerId": "韩-ruler-151",
+              "territoryShare": 40,
+              "cityShare": 41.17647058823529,
+              "stability": 63,
+              "path": "HEGEMONY",
+              "leadShare": 16.89795918367347,
+              "controlledCityCount": 7,
+              "qualifiedSince": 3361
+            },
+            "endId": "exiled-5625-韩-799",
+            "observedDurationMonths": 2228
+          },
+          {
+            "id": "emperor-proclaimed-4960-楚-709",
+            "factionId": "楚",
+            "month": 4960,
+            "conditions": {
+              "oldRank": "KING",
+              "newRank": "EMPEROR",
+              "displayName": "楚",
+              "rulerName": "熊惟甫",
+              "rulerId": "楚-ruler-237",
+              "territoryShare": 40,
+              "cityShare": 43.75,
+              "stability": 86,
+              "path": "HEGEMONY",
+              "leadShare": 13.142857142857142,
+              "controlledCityCount": 7,
+              "qualifiedSince": 4924
+            },
+            "observedDurationMonths": 7040
+          },
+          {
+            "id": "emperor-proclaimed-11460-广平郡义军-1643",
+            "factionId": "广平郡义军",
+            "month": 11460,
+            "conditions": {
+              "oldRank": "KING",
+              "newRank": "EMPEROR",
+              "displayName": "郡",
+              "rulerName": "萧溥",
+              "rulerId": "广平郡义军-ruler-560",
+              "territoryShare": 50.36734693877551,
+              "cityShare": 58.82352941176471,
+              "stability": 69,
+              "path": "HEGEMONY",
+              "leadShare": 16.89795918367347,
+              "controlledCityCount": 10,
+              "qualifiedSince": 11424
+            },
+            "observedDurationMonths": 540
+          }
+        ],
+        "unifications": 0
+      },
+      {
+        "seed": "regional-3",
+        "observedStartMonth": 0,
+        "month": 12000,
+        "population": 127,
+        "cities": 20,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "proclamations": [
+          {
+            "id": "emperor-proclaimed-3177-齐-351",
+            "factionId": "齐",
+            "month": 3177,
+            "conditions": {
+              "oldRank": "KING",
+              "newRank": "EMPEROR",
+              "displayName": "齐",
+              "rulerName": "田守恭",
+              "rulerId": "齐-ruler-123",
+              "territoryShare": 41.95918367346938,
+              "cityShare": 47.368421052631575,
+              "stability": 83,
+              "path": "HEGEMONY",
+              "leadShare": 12.734693877551013,
+              "controlledCityCount": 9,
+              "qualifiedSince": 3141
+            },
+            "observedDurationMonths": 8823
+          },
+          {
+            "id": "emperor-proclaimed-11453-余杭义军-1413",
+            "factionId": "余杭义军",
+            "month": 11453,
+            "conditions": {
+              "oldRank": "KING",
+              "newRank": "EMPEROR",
+              "displayName": "杭",
+              "rulerName": "雷秉远",
+              "rulerId": "余杭义军-ruler-588",
+              "territoryShare": 39.11620294599018,
+              "cityShare": 40,
+              "stability": 65,
+              "path": "HEGEMONY",
+              "leadShare": 16.039279869067105,
+              "controlledCityCount": 8,
+              "qualifiedSince": 11417
+            },
+            "observedDurationMonths": 547
+          }
+        ],
+        "unifications": 0
+      }
+    ],
+    "millenniumSummary": {
+      "worldYears": 5000,
+      "candidateRevisionOnly": [
+        "regional-4",
+        "regional-9"
+      ],
+      "independentSeed": "regional-9",
+      "proclamations": 13,
+      "perThousandYears": 2.6,
+      "worldsWithoutProclamations": 0,
+      "unifications": 1,
+      "paths": {
+        "HEGEMONY": 13
+      },
+      "observedSpanMonths": {
+        "maximum": 9862,
+        "median": 5205,
+        "average": 5095.076923076923,
+        "includesRightCensored": true
+      }
+    }
   }
 }

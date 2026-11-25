@@ -38,8 +38,8 @@ import {currentNobleGrant} from './MilitaryNobility';
 /** Necessary live authority only; the caller still checks age, residence, caps and actual source events. */
 export function familyBirthSource(f:MilitaryFamily,m:MilitaryFamily['members'][number],month:number,p:FamilyNobleContext['people'][number]|undefined){
  const preparatory=f.preparatory&&!f.nobleSuccession?.some(a=>a.month<=month)&&m.militaryPersonId===f.founderPersonId;
- if(!preparatory&&!familyExpansionOpen(f,month))return;
- const authority=familyNobleAuthorityAt(f,month,familyResidenceAt(f,m,month));
+ const residence=familyResidenceAt(f,m,month),authority=familyNobleAuthorityAt(f,month,residence);
+ if(!preparatory&&!familyExpansionOpen(f,month,residence,authority.epochFounderId))return;
  if(p&&(p.factionId!==authority.factionId||p.deathMonth!==undefined||p.politicalRulerId||p.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&['FORFEITURE','EXECUTION'].includes(a.severity)&&a.month<=month)))return;
  const inherited=[...familyNoblePeriods(f.nobleSuccession??[],month).values()].find(act=>act.kind==='SUCCEEDED'&&act.holderMemberId===m.memberId&&(act.factionId??f.factionId)===authority.factionId&&(act.epochFounderId??f.epochFounderId)===authority.epochFounderId),g=p?currentNobleGrant(p,authority.factionId,month,authority.epochFounderId):undefined,a=p?.status==='ACTIVE'?p.appointments.find(a=>a.factionId===authority.factionId&&a.endMonth===undefined&&a.startMonth<=month):undefined;
  const basisEventId=inherited?.eventId??g?.eventId??(a?`military-appointment-${a.commandId}`:undefined);

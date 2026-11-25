@@ -7,17 +7,18 @@ const at=(e:WorldEvent)=>e.monthIndex??e.year;
 export function validateFamilyNobility(save:WorldSaveV1){
  const errors:string[]=[],events=save.worldHistory.events as WorldEvent[],state=save.registries.militaryCommandRegistry,positions=new Map(events.map((e,i)=>[e.id,i])),bound=new Set<string>();
  const dynasties=save.dynasties.map(d=>({factionId:String(d.factionId),houseEpochs:d.houseEpochs as import('../Politics/DynasticRevolution').DynastyHouseEpoch[]|undefined,rulers:(d.rulers as RulerSaveV17[]).map(importRulerSave)}));
+ const grantEventIds=new Set(state.people.flatMap(p=>p.nobilityHistory?.map(g=>g.eventId)??[]));
  for(const f of state.families??[])try{
   if(f.nobleSuccession!==undefined&&!Array.isArray(f.nobleSuccession))throw Error('title chain must be an array');
-  // Each additional period needs its own unused, real grant. Within a period the
-  // original maximum of five death/succession resolutions remains unchanged.
+  // Each opening or upgrade needs an unused real grant. Descent is finite
+  // from the latest grant, including a legitimate upgrade of an inherited title.
   const periodSources=new Set<string>(),periods=new Set<number>(),periodResolutions=new Map<number,number>();
   for(const act of f.nobleSuccession??[]){
    const period=act.period??1;
    if(!Number.isSafeInteger(period)||period<1)throw Error('invalid hereditary period');
    if(act.kind==='STARTED'||act.kind==='UPGRADED'){
-    if(act.version!==2||(act.kind==='STARTED'?period!==periods.size+1:!periods.has(period))||periodSources.has(act.sourceGrantEventId)||!state.people.some(p=>p.nobilityHistory?.some(g=>g.eventId===act.sourceGrantEventId)))throw Error('period requires a unique real grant');
-    periods.add(period);periodSources.add(act.sourceGrantEventId);
+    if(act.version!==2||(act.kind==='STARTED'?period!==periods.size+1:!periods.has(period))||periodSources.has(act.sourceGrantEventId)||!grantEventIds.has(act.sourceGrantEventId))throw Error('period requires a unique real grant');
+    periods.add(period);periodSources.add(act.sourceGrantEventId);periodResolutions.set(period,0);
    }else{
     const count=(periodResolutions.get(period)??0)+1;
     if(count>5)throw Error('period exceeds original finite descent chain');
@@ -38,7 +39,7 @@ export function validateFamilyNobility(save:WorldSaveV1){
    const historical=familyAtEvidenceBoundary({...f,nobleSuccession:prefix},a.month,i,events),prior=events.slice(0,i),c={...createFamilyNobleContext(a.month,[historical],state.people,prior,dynasties),renewable:e.metadata?.familyNoblePolicy==='RENEWAL',independent:true},expected=planFamilyNobleTransition(historical,c);
    if(!expected||JSON.stringify(expected)!==JSON.stringify(a))throw Error('title outcome differs from real prior grant, death, kinship, residence, politics or deterministic heir');
    if(e.type!==(a.kind==='STARTED'||a.kind==='UPGRADED'?'family-title-started':a.kind==='SUCCEEDED'?'family-title-succeeded':'family-title-ended')||e.actorFactionId!==a.factionId||at(e)!==a.month||e.metadata?.familyId!==f.familyId||e.metadata?.familyNobleAct!==JSON.stringify(a)||e.title!==familyNobleText(f,a))throw Error('title history source mismatch');
-   for(const id of a.sourceEventIds)if(!prior.some(e=>e.id===id))throw Error('missing prior title or death evidence');
+   for(const id of a.sourceEventIds)if((positions.get(id)??Infinity)>=i)throw Error('missing prior title or death evidence');
    const m=f.members.find(m=>m.memberId===a.previousMemberId)!;if(a.sourceEventIds.includes(`${f.familyId}-${m.memberId}-death`))bound.add(`${f.familyId}-${m.memberId}-death`);
    prefix.push(a);previousPosition=i;bound.add(a.eventId);
   }
