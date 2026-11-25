@@ -155,6 +155,10 @@ export async function runRoyalMilitaryCore(seed="royal-military-z11") {
    try{for(const city of [...t.cities])city.capture(enemy,month+1);}
    finally{worldRandom.next=originalEscapeDraw;}
    check(r.status as string==="exiled"&&body.role==="NORMAL"&&d.currentRulerId===r.id,"transferred normal body still belongs to the same historical exiled monarch");
+   const exile=History.getEvents().find(e=>e.type==='faction-exiled'&&e.targetFactionId===t.name&&(e.monthIndex??e.year)===month+1);
+   check(exile?.metadata?.defeatedRulerId===r.id&&exile?.metadata?.victorRulerId===Dynasty.getCurrentRuler(enemy.name)?.id&&exile.metadata.terminalCaptureEventId,
+     'last capital capture records both actual rulers and preserves exile rather than assigning final conquest');
+
    (core.simulator as any).clock.importState({worldMonth:month+2,elapsedMs:0,running:false});
    check(body.destroyUser(false,{cause:"SIEGE_LOSS",month:month+2,damageSource:"CITY_SIEGE"}),"foreign normal body suffers a real siege casualty");
    check(r.status as string==="dead"&&r.deathMonth===month+2&&p.deathMonth===r.deathMonth&&p.deathCause==="SIEGE_LOSS","foreign casualty closes both permanent life records on the same month and cause");

@@ -1,6 +1,13 @@
 import {MILITARY_OFFICE_NAMES,type MilitaryOffice} from '../Politics/MilitaryOffice';
 import type {WorldEvent} from './WorldHistory';
 
+export interface TerminalRulersAtCapture {
+ victorRulerId?:string;
+ defeatedRulerId?:string;
+ victorRulerTitle?:string;
+ defeatedRulerTitle?:string;
+}
+
 const captures=new Set(['city-captured','city-recovered','capital-fallen']);
 const monthOf=(event:WorldEvent)=>event.monthIndex??event.year;
 const value=(event:WorldEvent,key:string)=>typeof event.metadata?.[key]==='string'?String(event.metadata[key]):undefined;

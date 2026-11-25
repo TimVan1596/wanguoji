@@ -1,3 +1,4 @@
+import type {TerminalRulersAtCapture} from '../History/TerminalConflictReading';
 import {getRegimeStyleNameAtMonth} from '../Simulation/RegimeStyle';
 import {siegeParticipants} from "../Simulation/SiegeParticipants";
 import {siegeWallPressure,type SiegeBattle} from "../Simulation/SiegeBattle";
@@ -462,10 +463,11 @@ export default class City {
 
     DynastyRegistry.recordCityLost(previousOwnerName);
 
+    const rulersAtCapture:TerminalRulersAtCapture={victorRulerId:victor?.id,victorRulerTitle:victor?.title,defeatedRulerId:defeated?.id,defeatedRulerTitle:defeated?.title};
     if (wasCapital) {
-      this.handleCapitalLoss(oldOwner, year, newOwner, capitalTransitionGroupId);
+      this.handleCapitalLoss(oldOwner, year, newOwner, capitalTransitionGroupId,rulersAtCapture);
     } else if (oldOwner.cities.length === 0) {
-      Game.Core.handleFactionExtinction(oldOwner, newOwner, this, year, collapseGroupId,{victorRulerId:victor?.id,victorRulerTitle:victor?.title,defeatedRulerId:defeated?.id,defeatedRulerTitle:defeated?.title});
+      Game.Core.handleFactionExtinction(oldOwner, newOwner, this, year, collapseGroupId,rulersAtCapture);
     }
   }
 
@@ -729,13 +731,14 @@ export default class City {
     oldOwner: Team,
     year: number,
     conqueror: Team,
-    historyGroupId?: string
+    historyGroupId?: string,
+    rulersAtCapture?:TerminalRulersAtCapture
   ) {
     if (oldOwner.status === "EXTINCT") {
       return;
     }
     if (oldOwner.cities.length === 0) {
-      Game.Core.handleFactionExtinction(oldOwner, conqueror, this, year, historyGroupId);
+      Game.Core.handleFactionExtinction(oldOwner, conqueror, this, year, historyGroupId,rulersAtCapture);
       return;
     }
 

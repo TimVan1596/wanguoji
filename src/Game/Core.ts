@@ -1,3 +1,4 @@
+import type {TerminalRulersAtCapture} from '../History/TerminalConflictReading';
 import {exportCollisionSchedule,type CollisionSchedule} from '../Simulation/CollisionSchedule';
 import {MilitaryCommandOverlay,resolveMilitaryCommandView} from "./MilitaryCommandOverlay";
 import FactionLifetimeRecords from "../Simulation/FactionLifetimeRecord";
@@ -476,7 +477,7 @@ export default class Core {
     finalCity: City,
     year: number,
     historyGroupId?: string,
-    rulersAtCapture?: {victorRulerId?:string;defeatedRulerId?:string;victorRulerTitle?:string;defeatedRulerTitle?:string}
+    rulersAtCapture?: TerminalRulersAtCapture
   ) {
     if(fallenTeam.status!=="ACTIVE")return; // A collapse episode cannot be settled again while already exiled/ended.
     const users = [...fallenTeam.users];

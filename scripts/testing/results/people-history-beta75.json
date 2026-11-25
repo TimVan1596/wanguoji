@@ -699,5 +699,1195 @@
       }
     ],
     "authorityMatches": true
-  }
+  },
+  "natural": {
+    "scope": "Production Core, longest prefix per predetermined seed. Directed tests are separate.",
+    "runs": [
+      {
+        "seed": "regional-1",
+        "years": 500,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 114,
+        "cities": 18,
+        "extinctions": 36,
+        "restorations": 5,
+        "imperialProclamations": 2,
+        "familyCount": 51,
+        "chains": 56,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "abilityAudit": {
+          "civilFirst": {
+            "count": 156,
+            "civil": {
+              "mean": 70.94871794871794,
+              "median": 79,
+              "quintiles": [
+                10,
+                8,
+                26,
+                40,
+                72
+              ]
+            },
+            "military": {
+              "mean": 50.91025641025641,
+              "median": 50,
+              "quintiles": [
+                24,
+                43,
+                25,
+                31,
+                33
+              ]
+            },
+            "health": {
+              "mean": 81.51282051282051,
+              "median": 81,
+              "quintiles": [
+                0,
+                0,
+                1,
+                71,
+                84
+              ]
+            }
+          },
+          "militaryFirst": {
+            "count": 125,
+            "civil": {
+              "mean": 55.568,
+              "median": 62,
+              "quintiles": [
+                22,
+                17,
+                18,
+                35,
+                33
+              ]
+            },
+            "military": {
+              "mean": 50.32,
+              "median": 49,
+              "quintiles": [
+                30,
+                21,
+                20,
+                26,
+                28
+              ]
+            },
+            "health": {
+              "mean": 83.792,
+              "median": 85,
+              "quintiles": [
+                0,
+                0,
+                1,
+                35,
+                89
+              ]
+            }
+          },
+          "civilianRetired": 81,
+          "civilianDiedInOffice": 40,
+          "verifiedLastCityTerminations": {
+            "UPRISING": 22,
+            "KINGDOM": 1,
+            "REGIONAL_UPRISING": 1
+          },
+          "withVictorRuler": 24,
+          "withDefeatedRuler": 24,
+          "withOfficer": 18,
+          "exileAfterLastCity": 17
+        }
+      },
+      {
+        "seed": "regional-2",
+        "years": 200,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 135,
+        "cities": 19,
+        "extinctions": 11,
+        "restorations": 2,
+        "imperialProclamations": 0,
+        "familyCount": 18,
+        "chains": 20,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "abilityAudit": {
+          "civilFirst": {
+            "count": 60,
+            "civil": {
+              "mean": 71.5,
+              "median": 79,
+              "quintiles": [
+                4,
+                3,
+                6,
+                18,
+                29
+              ]
+            },
+            "military": {
+              "mean": 53.4,
+              "median": 51.5,
+              "quintiles": [
+                7,
+                17,
+                9,
+                10,
+                17
+              ]
+            },
+            "health": {
+              "mean": 79.03333333333333,
+              "median": 80,
+              "quintiles": [
+                0,
+                0,
+                3,
+                25,
+                32
+              ]
+            }
+          },
+          "militaryFirst": {
+            "count": 61,
+            "civil": {
+              "mean": 53.73770491803279,
+              "median": 54,
+              "quintiles": [
+                11,
+                12,
+                9,
+                13,
+                16
+              ]
+            },
+            "military": {
+              "mean": 45.295081967213115,
+              "median": 49,
+              "quintiles": [
+                15,
+                12,
+                14,
+                9,
+                11
+              ]
+            },
+            "health": {
+              "mean": 83.27868852459017,
+              "median": 85,
+              "quintiles": [
+                0,
+                0,
+                0,
+                23,
+                38
+              ]
+            }
+          },
+          "civilianRetired": 30,
+          "civilianDiedInOffice": 7,
+          "verifiedLastCityTerminations": {
+            "UPRISING": 7,
+            "REGIONAL_UPRISING": 1
+          },
+          "withVictorRuler": 8,
+          "withDefeatedRuler": 8,
+          "withOfficer": 6,
+          "exileAfterLastCity": 6
+        }
+      },
+      {
+        "seed": "regional-3",
+        "years": 200,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 139,
+        "cities": 17,
+        "extinctions": 18,
+        "restorations": 7,
+        "imperialProclamations": 0,
+        "familyCount": 18,
+        "chains": 18,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "abilityAudit": {
+          "civilFirst": {
+            "count": 57,
+            "civil": {
+              "mean": 69.45614035087719,
+              "median": 76,
+              "quintiles": [
+                3,
+                7,
+                7,
+                14,
+                26
+              ]
+            },
+            "military": {
+              "mean": 45.91228070175438,
+              "median": 41,
+              "quintiles": [
+                13,
+                13,
+                10,
+                10,
+                11
+              ]
+            },
+            "health": {
+              "mean": 81.89473684210526,
+              "median": 80,
+              "quintiles": [
+                0,
+                0,
+                0,
+                24,
+                33
+              ]
+            }
+          },
+          "militaryFirst": {
+            "count": 56,
+            "civil": {
+              "mean": 53.875,
+              "median": 57.5,
+              "quintiles": [
+                7,
+                14,
+                11,
+                13,
+                11
+              ]
+            },
+            "military": {
+              "mean": 53.410714285714285,
+              "median": 54,
+              "quintiles": [
+                10,
+                9,
+                13,
+                10,
+                14
+              ]
+            },
+            "health": {
+              "mean": 83.375,
+              "median": 83.5,
+              "quintiles": [
+                0,
+                0,
+                0,
+                21,
+                35
+              ]
+            }
+          },
+          "civilianRetired": 30,
+          "civilianDiedInOffice": 11,
+          "verifiedLastCityTerminations": {
+            "UPRISING": 11,
+            "KINGDOM": 1
+          },
+          "withVictorRuler": 12,
+          "withDefeatedRuler": 12,
+          "withOfficer": 11,
+          "exileAfterLastCity": 11
+        }
+      },
+      {
+        "seed": "regional-4",
+        "years": 200,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 130,
+        "cities": 16,
+        "extinctions": 2,
+        "restorations": 0,
+        "imperialProclamations": 1,
+        "familyCount": 12,
+        "chains": 12,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "abilityAudit": {
+          "civilFirst": {
+            "count": 56,
+            "civil": {
+              "mean": 73.16071428571429,
+              "median": 79.5,
+              "quintiles": [
+                3,
+                1,
+                7,
+                17,
+                28
+              ]
+            },
+            "military": {
+              "mean": 52.32142857142857,
+              "median": 56.5,
+              "quintiles": [
+                8,
+                12,
+                12,
+                14,
+                10
+              ]
+            },
+            "health": {
+              "mean": 80.94642857142857,
+              "median": 82,
+              "quintiles": [
+                0,
+                0,
+                2,
+                20,
+                34
+              ]
+            }
+          },
+          "militaryFirst": {
+            "count": 40,
+            "civil": {
+              "mean": 45.825,
+              "median": 45,
+              "quintiles": [
+                9,
+                10,
+                6,
+                8,
+                7
+              ]
+            },
+            "military": {
+              "mean": 50.3,
+              "median": 49.5,
+              "quintiles": [
+                7,
+                11,
+                4,
+                10,
+                8
+              ]
+            },
+            "health": {
+              "mean": 84.85,
+              "median": 84.5,
+              "quintiles": [
+                0,
+                0,
+                0,
+                13,
+                27
+              ]
+            }
+          },
+          "civilianRetired": 35,
+          "civilianDiedInOffice": 10,
+          "verifiedLastCityTerminations": {},
+          "withVictorRuler": 0,
+          "withDefeatedRuler": 0,
+          "withOfficer": 0,
+          "exileAfterLastCity": 3
+        }
+      },
+      {
+        "seed": "regional-5",
+        "years": 100,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 135,
+        "cities": 18,
+        "extinctions": 1,
+        "restorations": 0,
+        "imperialProclamations": 0,
+        "familyCount": 6,
+        "chains": 6,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "abilityAudit": {
+          "civilFirst": {
+            "count": 27,
+            "civil": {
+              "mean": 64.07407407407408,
+              "median": 70,
+              "quintiles": [
+                3,
+                3,
+                1,
+                11,
+                9
+              ]
+            },
+            "military": {
+              "mean": 53.925925925925924,
+              "median": 58,
+              "quintiles": [
+                6,
+                3,
+                5,
+                7,
+                6
+              ]
+            },
+            "health": {
+              "mean": 83.4074074074074,
+              "median": 84,
+              "quintiles": [
+                0,
+                0,
+                0,
+                11,
+                16
+              ]
+            }
+          },
+          "militaryFirst": {
+            "count": 29,
+            "civil": {
+              "mean": 45.827586206896555,
+              "median": 42,
+              "quintiles": [
+                8,
+                5,
+                7,
+                2,
+                7
+              ]
+            },
+            "military": {
+              "mean": 52.758620689655174,
+              "median": 60,
+              "quintiles": [
+                6,
+                4,
+                4,
+                8,
+                7
+              ]
+            },
+            "health": {
+              "mean": 82.17241379310344,
+              "median": 78,
+              "quintiles": [
+                0,
+                0,
+                1,
+                14,
+                14
+              ]
+            }
+          },
+          "civilianRetired": 14,
+          "civilianDiedInOffice": 3,
+          "verifiedLastCityTerminations": {},
+          "withVictorRuler": 0,
+          "withDefeatedRuler": 0,
+          "withOfficer": 0,
+          "exileAfterLastCity": 1
+        }
+      },
+      {
+        "seed": "regional-6",
+        "years": 100,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 133,
+        "cities": 20,
+        "extinctions": 8,
+        "restorations": 0,
+        "imperialProclamations": 0,
+        "familyCount": 6,
+        "chains": 6,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "abilityAudit": {
+          "civilFirst": {
+            "count": 33,
+            "civil": {
+              "mean": 72.51515151515152,
+              "median": 78,
+              "quintiles": [
+                2,
+                1,
+                4,
+                12,
+                14
+              ]
+            },
+            "military": {
+              "mean": 52.57575757575758,
+              "median": 49,
+              "quintiles": [
+                7,
+                5,
+                8,
+                2,
+                11
+              ]
+            },
+            "health": {
+              "mean": 80.9090909090909,
+              "median": 80,
+              "quintiles": [
+                0,
+                0,
+                2,
+                14,
+                17
+              ]
+            }
+          },
+          "militaryFirst": {
+            "count": 26,
+            "civil": {
+              "mean": 45.57692307692308,
+              "median": 44.5,
+              "quintiles": [
+                5,
+                6,
+                6,
+                7,
+                2
+              ]
+            },
+            "military": {
+              "mean": 64,
+              "median": 71.5,
+              "quintiles": [
+                2,
+                4,
+                4,
+                6,
+                10
+              ]
+            },
+            "health": {
+              "mean": 82.26923076923077,
+              "median": 82,
+              "quintiles": [
+                0,
+                0,
+                0,
+                10,
+                16
+              ]
+            }
+          },
+          "civilianRetired": 17,
+          "civilianDiedInOffice": 5,
+          "verifiedLastCityTerminations": {
+            "UPRISING": 5
+          },
+          "withVictorRuler": 5,
+          "withDefeatedRuler": 5,
+          "withOfficer": 5,
+          "exileAfterLastCity": 3
+        }
+      },
+      {
+        "seed": "regional-7",
+        "years": 100,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 130,
+        "cities": 20,
+        "extinctions": 2,
+        "restorations": 0,
+        "imperialProclamations": 0,
+        "familyCount": 4,
+        "chains": 4,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "abilityAudit": {
+          "civilFirst": {
+            "count": 38,
+            "civil": {
+              "mean": 72.8157894736842,
+              "median": 77.5,
+              "quintiles": [
+                2,
+                4,
+                2,
+                14,
+                16
+              ]
+            },
+            "military": {
+              "mean": 54.94736842105263,
+              "median": 57,
+              "quintiles": [
+                3,
+                8,
+                9,
+                10,
+                8
+              ]
+            },
+            "health": {
+              "mean": 81,
+              "median": 82.5,
+              "quintiles": [
+                0,
+                0,
+                2,
+                12,
+                24
+              ]
+            }
+          },
+          "militaryFirst": {
+            "count": 30,
+            "civil": {
+              "mean": 55.266666666666666,
+              "median": 51,
+              "quintiles": [
+                3,
+                6,
+                11,
+                2,
+                8
+              ]
+            },
+            "military": {
+              "mean": 52.43333333333333,
+              "median": 54,
+              "quintiles": [
+                5,
+                5,
+                6,
+                9,
+                5
+              ]
+            },
+            "health": {
+              "mean": 84.6,
+              "median": 82,
+              "quintiles": [
+                0,
+                0,
+                0,
+                13,
+                17
+              ]
+            }
+          },
+          "civilianRetired": 22,
+          "civilianDiedInOffice": 7,
+          "verifiedLastCityTerminations": {
+            "UPRISING": 1
+          },
+          "withVictorRuler": 1,
+          "withDefeatedRuler": 1,
+          "withOfficer": 1,
+          "exileAfterLastCity": 2
+        }
+      },
+      {
+        "seed": "regional-8",
+        "years": 100,
+        "strictSaveValid": true,
+        "continuation": {
+          "months": 12,
+          "deterministic": true,
+          "secondRead": true
+        },
+        "population": 130,
+        "cities": 20,
+        "extinctions": 4,
+        "restorations": 1,
+        "imperialProclamations": 1,
+        "familyCount": 4,
+        "chains": 4,
+        "duplicateHistoryIds": 0,
+        "duplicatePopulationIds": 0,
+        "abilityAudit": {
+          "civilFirst": {
+            "count": 22,
+            "civil": {
+              "mean": 70.63636363636364,
+              "median": 77.5,
+              "quintiles": [
+                1,
+                3,
+                0,
+                8,
+                10
+              ]
+            },
+            "military": {
+              "mean": 54.31818181818182,
+              "median": 64,
+              "quintiles": [
+                7,
+                1,
+                2,
+                3,
+                9
+              ]
+            },
+            "health": {
+              "mean": 87.27272727272727,
+              "median": 90,
+              "quintiles": [
+                0,
+                0,
+                0,
+                5,
+                17
+              ]
+            }
+          },
+          "militaryFirst": {
+            "count": 19,
+            "civil": {
+              "mean": 59.26315789473684,
+              "median": 61,
+              "quintiles": [
+                2,
+                3,
+                4,
+                5,
+                5
+              ]
+            },
+            "military": {
+              "mean": 40.8421052631579,
+              "median": 33,
+              "quintiles": [
+                6,
+                4,
+                2,
+                5,
+                2
+              ]
+            },
+            "health": {
+              "mean": 81.36842105263158,
+              "median": 79,
+              "quintiles": [
+                0,
+                0,
+                0,
+                10,
+                9
+              ]
+            }
+          },
+          "civilianRetired": 11,
+          "civilianDiedInOffice": 1,
+          "verifiedLastCityTerminations": {
+            "UPRISING": 1
+          },
+          "withVictorRuler": 1,
+          "withDefeatedRuler": 1,
+          "withOfficer": 1,
+          "exileAfterLastCity": 4
+        }
+      }
+    ],
+    "sameSeedBaseline": {
+      "seed": "regional-1",
+      "version": "beta.74",
+      "years": 500,
+      "population": 138,
+      "firstCivil": {
+        "count": 147,
+        "meanCivil": 78.21768707482993,
+        "meanMilitary": 46.19047619047619
+      },
+      "firstMilitary": {
+        "count": 106,
+        "meanCivil": 45.75471698113208,
+        "meanMilitary": 49.5188679245283
+      },
+      "scope": "Historical different-world comparison. Includes all first appointments, not the same candidate pool."
+    },
+    "matchedMilitaryPools": {
+      "count": 125,
+      "scope": "Frozen actual first appointment pools from regional-1 500y. Counterfactual reweights that same pool without changing eligibility or its draw.",
+      "expectedCommand": {
+        "unweighted": 50.7233,
+        "legacy": 52.6204,
+        "beta75": 53.1074
+      },
+      "observedCommand": 50.32
+    },
+    "lastCapitalProvenanceFix": {
+      "sameRng": true,
+      "sameEventOrder": true
+    }
+  },
+  "directed": {
+    "civilAssertions": 151,
+    "royalAssertions": 247,
+    "navigationAssertions": 54
+  },
+  "releaseChecks": {
+    "typecheck": true,
+    "web": true,
+    "desktop": true,
+    "rendererDebug": true,
+    "unitTestFiles": 378,
+    "unitTests": 2776
+  },
+  "strictV70": {
+    "month": 6000,
+    "rows": [
+      {
+        "bytes": 18118511,
+        "hydrationMs": 5016.700000047684,
+        "exportMs": 4946.799999952316,
+        "validationMs": 4483.199999988079,
+        "canonicalUnchanged": true,
+        "validationHotspots": {
+          "validateMilitaryCommandState": 1096.4000000357628,
+          "validateFamilyNobility": 790.3999999761581,
+          "validateMilitaryNobility": 789,
+          "validateMilitaryFamilies": 438.60000002384186
+        }
+      },
+      {
+        "bytes": 18118511,
+        "hydrationMs": 3672.7999999523163,
+        "exportMs": 3714.600000023842,
+        "validationMs": 3411.600000023842,
+        "canonicalUnchanged": true,
+        "validationHotspots": {
+          "validateMilitaryCommandState": 796.5999999642372,
+          "validateMilitaryNobility": 673.7999999523163,
+          "validateFamilyNobility": 550.5,
+          "validateMilitaryFamilies": 377.0999999642372
+        }
+      },
+      {
+        "bytes": 18118511,
+        "hydrationMs": 3718.5,
+        "exportMs": 4110.699999988079,
+        "validationMs": 3271.899999976158,
+        "canonicalUnchanged": true,
+        "validationHotspots": {
+          "validateMilitaryCommandState": 727.1999999880791,
+          "validateFamilyNobility": 613.8000000119209,
+          "validateMilitaryNobility": 600.5999999642372,
+          "validateMilitaryFamilies": 374.2000000476837
+        }
+      }
+    ]
+  },
+  "offscreenElectron": {
+    "scope": "Actual native 500-year DTO, React controls and offscreen Electron Phaser frame loop; frame residual includes pacing/render/React/GC and does not identify GPU or GC costs. Not human visual acceptance.",
+    "archiveAssertions": 28,
+    "openMs": [
+      {
+        "kind": "CIVIL",
+        "ms": 129.10000002384186
+      },
+      {
+        "kind": "CIVIL",
+        "ms": 135.19999998807907
+      },
+      {
+        "kind": "CIVIL",
+        "ms": 67.39999997615814
+      },
+      {
+        "kind": "CIVIL",
+        "ms": 82.69999998807907
+      },
+      {
+        "kind": "CIVIL",
+        "ms": 54.200000047683716
+      },
+      {
+        "kind": "CIVIL",
+        "ms": 64.79999995231628
+      },
+      {
+        "kind": "CIVIL",
+        "ms": 60.5
+      },
+      {
+        "kind": "MILITARY",
+        "ms": 276.30000001192093
+      }
+    ],
+    "frames": [
+      {
+        "panel": true,
+        "running": true,
+        "wallMs": 5050.699999988079,
+        "startMonth": 6001,
+        "endMonth": 6036,
+        "speed": 4,
+        "effectiveMonthsPerSecond": 6.92973251234138,
+        "frameDelta": {
+          "sampleCount": 205,
+          "averageMs": 24.5609756097561,
+          "p95Ms": 40.90000003576279,
+          "p99Ms": 128.5999999642372,
+          "maxMs": 185.5
+        },
+        "runtime": {
+          "renderFrameCount": 205,
+          "frameDeltaMs": {
+            "current": 29.700000047683716,
+            "average": 24.5609756097561,
+            "p95": 40.90000003576279,
+            "max": 185.5
+          },
+          "longFrames": {
+            "over25ms": 58,
+            "over33ms": 23,
+            "over50ms": 8,
+            "over100ms": 6
+          },
+          "simulationStepsPerFrame": {
+            "average": 5.151219512195122,
+            "max": 13
+          },
+          "fixedStepCpuMs": {
+            "average": 15.81073170638666,
+            "p95": 27.80000001192093
+          },
+          "presentationCpuMs": {
+            "average": 0.15999999947664215,
+            "p95": 0.30000001192092896
+          },
+          "sampleCount": 205,
+          "rollingWindowCapacity": 300,
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "longFrameCounterWindow": "session cumulative since hydration/reset",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+        },
+        "longFrames": {
+          "over25ms": 58,
+          "over33ms": 23,
+          "over50ms": 8,
+          "over100ms": 6
+        },
+        "clockMismatches": 0,
+        "debtWindow": {
+          "stepCapHits": 0,
+          "droppedForegroundDebtMs": 0
+        }
+      },
+      {
+        "panel": false,
+        "running": true,
+        "wallMs": 5007.800000011921,
+        "startMonth": 6002,
+        "endMonth": 6040,
+        "speed": 4,
+        "effectiveMonthsPerSecond": 7.588162466534116,
+        "frameDelta": {
+          "sampleCount": 256,
+          "averageMs": 19.55859375,
+          "p95Ms": 27.700000047683716,
+          "p99Ms": 103.79999995231628,
+          "maxMs": 155.20000004768372
+        },
+        "runtime": {
+          "renderFrameCount": 256,
+          "frameDeltaMs": {
+            "current": 14,
+            "average": 19.55859375,
+            "p95": 27.700000047683716,
+            "max": 155.20000004768372
+          },
+          "longFrames": {
+            "over25ms": 18,
+            "over33ms": 9,
+            "over50ms": 6,
+            "over100ms": 3
+          },
+          "simulationStepsPerFrame": {
+            "average": 4.47265625,
+            "max": 9
+          },
+          "fixedStepCpuMs": {
+            "average": 11.89453125023283,
+            "p95": 19.899999976158142
+          },
+          "presentationCpuMs": {
+            "average": 0.1773437517695129,
+            "p95": 0.30000001192092896
+          },
+          "sampleCount": 256,
+          "rollingWindowCapacity": 300,
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "longFrameCounterWindow": "session cumulative since hydration/reset",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+        },
+        "longFrames": {
+          "over25ms": 18,
+          "over33ms": 9,
+          "over50ms": 6,
+          "over100ms": 3
+        },
+        "clockMismatches": 0,
+        "debtWindow": {
+          "stepCapHits": 0,
+          "droppedForegroundDebtMs": 0
+        }
+      },
+      {
+        "panel": false,
+        "running": false,
+        "wallMs": 5008.600000023842,
+        "startMonth": 6000,
+        "endMonth": 6000,
+        "speed": 4,
+        "effectiveMonthsPerSecond": 0,
+        "frameDelta": {
+          "sampleCount": 292,
+          "averageMs": 17.121575342465754,
+          "p95Ms": 17.599999964237213,
+          "p99Ms": 26.80000001192093,
+          "maxMs": 141.69999998807907
+        },
+        "runtime": {
+          "renderFrameCount": 292,
+          "frameDeltaMs": {
+            "current": 17.19999998807907,
+            "average": 17.121575342465754,
+            "p95": 17.599999964237213,
+            "max": 141.69999998807907
+          },
+          "longFrames": {
+            "over25ms": 3,
+            "over33ms": 2,
+            "over50ms": 1,
+            "over100ms": 1
+          },
+          "simulationStepsPerFrame": {
+            "average": 0,
+            "max": 0
+          },
+          "fixedStepCpuMs": {
+            "average": 0,
+            "p95": 0
+          },
+          "presentationCpuMs": {
+            "average": 0.13458904113671552,
+            "p95": 0.30000001192092896
+          },
+          "sampleCount": 292,
+          "rollingWindowCapacity": 300,
+          "statisticsWindow": "rolling 300 frames (or available samples)",
+          "longFrameCounterWindow": "session cumulative since hydration/reset",
+          "frameDeltaSource": "Phaser TimeStep.rawDelta (unsmoothed wall-clock); Scene delta fallback"
+        },
+        "longFrames": {
+          "over25ms": 3,
+          "over33ms": 2,
+          "over50ms": 1,
+          "over100ms": 1
+        },
+        "clockMismatches": 0,
+        "debtWindow": {
+          "stepCapHits": 0,
+          "droppedForegroundDebtMs": 0
+        }
+      }
+    ]
+  },
+  "v70Phase": {
+    "scope": "Manual authoritative fixed steps with real Arcade physics; render loop stopped. Separate from live Electron frame measurement and human acceptance.",
+    "months": 300,
+    "monthP50": 3.5,
+    "wallMs": 14036.099999964237,
+    "phases": {
+      "total fixed/month step": {
+        "sampleCount": 300,
+        "averageMs": 17.489999999403953,
+        "p95Ms": 93.5,
+        "p99Ms": 134.29999995231628,
+        "maxMs": 267.10000002384186
+      },
+      "total fixed/month step/January": {
+        "sampleCount": 25,
+        "averageMs": 102.62799999475479,
+        "p95Ms": 177,
+        "p99Ms": 267.10000002384186,
+        "maxMs": 267.10000002384186
+      },
+      "total fixed/month step/ordinary": {
+        "sampleCount": 275,
+        "averageMs": 9.750181818008423,
+        "p95Ms": 50.59999996423721,
+        "p99Ms": 93.5,
+        "maxMs": 109.69999998807907
+      },
+      "Civil administration/January": {
+        "sampleCount": 25,
+        "averageMs": 52.32400000810623,
+        "p95Ms": 84.69999998807907,
+        "p99Ms": 85.80000001192093,
+        "maxMs": 85.80000001192093
+      },
+      "DynastyRegistry.update/January": {
+        "sampleCount": 25,
+        "averageMs": 5.4519999933242795,
+        "p95Ms": 14.5,
+        "p99Ms": 16.599999964237213,
+        "maxMs": 16.599999964237213
+      },
+      "MilitaryCommandRegistry.update/January": {
+        "sampleCount": 25,
+        "averageMs": 18.844000000953674,
+        "p95Ms": 59,
+        "p99Ms": 106.09999996423721,
+        "maxMs": 106.09999996423721
+      },
+      "Family noble succession/January": {
+        "sampleCount": 25,
+        "averageMs": 1.5359999918937683,
+        "p95Ms": 0.20000004768371582,
+        "p99Ms": 36.30000001192093,
+        "maxMs": 36.30000001192093
+      }
+    },
+    "hydrationAndExportScope": "Offscreen production run; concurrent jobs on host, single observation."
+  },
+  "limitations": [
+    "Civil offers are not historically sampled as complete candidate lists; selected cohorts and matched military pools only.",
+    "No natural direct empire ending in these seeds; focused reading test covers classification.",
+    "Offscreen Electron is not user acceptance.",
+    "The phase pair held authority fixed. Final samples diverge due to appointment and retirement rules."
+  ]
 }
