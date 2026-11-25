@@ -41,3 +41,56 @@ describe('later entry is never a past heir',()=>{
  it('explains a birthday before death but first resident/kinship registration afterwards',()=>{const {f,events,people,dynasties,context,commit}=fixture();f.members[1].bornMonth=90;f.members[1].enteredMonth=400;events.find(e=>e.id==='son-entered')!.year=400;const a=commit(100);expect(a.reason).toBe('NO_HEIR');const before=JSON.stringify(a),e=explainFamilyTitleEnd(f,a,{month:401,events,people,dynasties});expect(e.children).toHaveLength(0);expect(e.laterChildren).toMatchObject([{bornMonth:90,enteredMonth:400,parentDeathMonth:100}]);expect(planFamilyNobleTransition(f,context(100))).toBeUndefined();expect(JSON.stringify(a)).toBe(before);});
  it('uses append order for first entry and death in the same month, not just month numbers',()=>{const {f,events,people,dynasties}=fixture();f.members[1].enteredMonth=100;const e=events.filter(e=>e.id!=='son-entered');e.push({id:'son-entered',year:100});for(const offset of [e.length-1,e.length]){const historical=familyAtEvidenceBoundary(f,100,offset,e),c=createFamilyNobleContext(100,[historical],people,e.slice(0,offset),dynasties);expect(planFamilyNobleTransition(historical,c)?.kind).toBe('ENDED');}});
 });
+
+it('opens two independent chains, upgrades in place and leaves the other title standing',()=>{
+ const {f,people,events,context}=fixture();
+ delete f.members[0].deathMonth;
+ const settle=(month:number)=>{
+  const ctx={...context(month),independent:true};
+  const act=planFamilyNobleTransition(f,ctx)!;
+  (f.nobleSuccession??=[]).push(act);events.push({id:act.eventId,year:month});
+  return act;
+ };
+ expect(settle(0)).toMatchObject({period:1,kind:'STARTED',holderMemberId:'father'});
+ expect(settle(110)).toMatchObject({period:2,kind:'STARTED',holderMemberId:'son'});
+ people[1].nobilityHistory.push({...people[1].nobilityHistory[0],eventId:'higher',rank:'GONG',month:120});
+ events.push({id:'higher',year:120});
+ expect(settle(120)).toMatchObject({period:2,kind:'UPGRADED',rank:'GONG'});
+ f.members[1].deathMonth=130;
+ events.push({id:'son-died',year:130,type:'military-person-died',metadata:{personId:'s'}});
+ expect(settle(130)).toMatchObject({period:2,kind:'ENDED'});
+ expect(familyNobleTitle(f,f.members[0],130)).toBe('伯爵');
+ expect(familyNoblePeriods(f,130).map(p=>p.endMonth)).toEqual([undefined,130]);
+});
+
+it('reserves the first legitimate award when two same-month settlements compete',()=>{
+ const {f,people,events,context}=fixture();
+ delete f.members[0].deathMonth;
+ const settle=(month:number)=>{
+  const act=planFamilyNobleTransition(f,{...context(month),independent:true})!;
+  (f.nobleSuccession??=[]).push(act);events.push({id:act.eventId,year:month});
+  return act;
+ };
+ people[0].nobilityHistory[0].rank='GONG';
+ people[1].nobilityHistory[0].rank='HOU';
+ settle(0);settle(110);
+ const grandchild={...f.members[1],memberId:'grand',sourceUserId:3,militaryPersonId:undefined,parentMemberId:'son',generation:2,bornMonth:-30,enteredMonth:115};
+ f.members.push(grandchild);events.push({id:'grand-entered',year:115});
+ for(const member of f.members.slice(0,2)){member.deathMonth=120;events.push({id:member.memberId+'-death',year:120,type:'military-person-died',metadata:{personId:member.militaryPersonId}});}
+ expect(settle(120)).toMatchObject({period:1,kind:'SUCCEEDED',holderMemberId:'grand',rank:'HOU'});
+ expect(settle(120)).toMatchObject({period:2,kind:'ENDED',kinship:{rejected:[{memberId:'grand',reason:'OTHER_TITLE'}]}});
+});
+
+it('does not read later death or resident departure backwards into the appointment month',()=>{
+ const {f}=fixture();
+ const candidate=f.members[1];
+ candidate.deathMonth=130;candidate.exitMonth=130;
+ const before=familyAtEvidenceBoundary(f,120,8);
+ expect(before.members[1]).not.toHaveProperty('deathMonth');
+ expect(before.members[1]).not.toHaveProperty('exitMonth');
+ candidate.deathMonth=120;candidate.exitMonth=120;candidate.deathHistoryIndex=9;candidate.exitHistoryIndex=9;
+ const sameMonth=familyAtEvidenceBoundary(f,120,8);
+ expect(sameMonth.members[1]).not.toHaveProperty('deathMonth');
+ expect(sameMonth.members[1]).not.toHaveProperty('exitMonth');
+ expect(familyAtEvidenceBoundary(f,120,10).members[1]).toMatchObject({deathMonth:120,exitMonth:120});
+});

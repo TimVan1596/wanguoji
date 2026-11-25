@@ -3,7 +3,7 @@ import type {WorldEvent} from '../History/WorldHistory';
 import type {Dynasty} from '../Politics/Dynasty';
 import type {MilitaryPerson} from '../Politics/MilitaryCommandRegistry';
 import {importRulerSave} from './RulerSaveProjection';
-import {familyAtEvidenceBoundary,createFamilyNobleContext,familyResidenceAt,familyNobleAuthorityAt} from '../Politics/FamilyNobleSuccession';
+import {familyAtEvidenceBoundary,createFamilyNobleContext,familyResidenceAt} from '../Politics/FamilyNobleSuccession';
 import {familyBirthParents,planFamilyChildBirth,isFamilyBirthPolicy,familyChildForPopulationEntry,FAMILY_ANNUAL_BIRTH_LIMIT,COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT} from '../Politics/FamilyChildBirth';
 /** A child death event is a separate historical fact, not inferred from a missing field. */
 export function familyChildDeathEventError(f:import('../Politics/MilitaryFamily').MilitaryFamily,m:import('../Politics/MilitaryFamily').MilitaryFamilyMember,event:WorldEvent|undefined,eventPosition:number|undefined,birthPosition:number,entryPosition:number|undefined,worldMonth:number){
@@ -34,7 +34,7 @@ export function validateFamilyChildren(save:WorldSaveV1){
    });
    const annual=f.members.filter(ch=>ch.birth?.opportunityMonth===b.opportunityMonth&&before(ch.birth.eventId)).length,countryAnnual=families.reduce((n,x)=>n+x.members.filter(ch=>ch.birth?.factionId===b.factionId&&ch.birth?.opportunityMonth===b.opportunityMonth&&before(ch.birth.eventId)).length,0);
    if(annual>=FAMILY_ANNUAL_BIRTH_LIMIT||countryAnnual>=COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT)throw Error('annual birth cap exceeded');
-   const c=createFamilyNobleContext(b.month,[historical],historicalPeople,events.slice(0,boundary),dynasties),expected=familyBirthParents(historical,c).map(({member,basisEventId})=>planFamilyChildBirth({...f,...familyNobleAuthorityAt(historical,b.month)},{...member,basisEventId},b.month,String(save.worldRandom.seed),policy)).find(Boolean);
+   const c=createFamilyNobleContext(b.month,[historical],historicalPeople,events.slice(0,boundary),dynasties),expected=familyBirthParents(historical,c).filter(({authority})=>families.reduce((n,x)=>n+x.members.filter(ch=>ch.birth?.factionId===authority.factionId&&ch.birth?.opportunityMonth===b.opportunityMonth&&before(ch.birth.eventId)).length,0)<COUNTRY_ANNUAL_FAMILY_BIRTH_LIMIT).map(({member,basisEventId,authority})=>planFamilyChildBirth({...f,...authority},{...member,basisEventId},b.month,String(save.worldRandom.seed),policy)).find(Boolean);
    if(e.title!==`${historical.members.find(p=>p.memberId===m.parentMemberId)?.name}之子${m.name}出生。`)throw Error('birth narrative identity mismatch');
    if(m.deathCause==='NATURAL_DEATH'&&(m.deathMonth??Infinity)<b.naturalDeathMonth)throw Error('natural death precedes fixed birth life');
    if(!expected||expected.memberId!==m.memberId||expected.name!==m.name||JSON.stringify(expected.birth)!==JSON.stringify(b))throw Error('deterministic birth/lifespan/parent replay mismatch');

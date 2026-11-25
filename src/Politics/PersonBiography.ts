@@ -1,3 +1,6 @@
+import {MILITARY_OFFICE_NAMES} from './MilitaryOffice';
+import {NOBLE_NAMES,NOBLE_RANKS} from './MilitaryNobility';
+import {militaryServiceMonths} from './MilitaryCareerEvidence';
 import {militaryDeathWording} from './MilitaryLifePresentation';
 import type {RulerHistoricalEvidence} from "./RulerHistoriography";
 import {summarizeRulerPoliticalFacts} from "./RulerPoliticalFacts";
@@ -16,6 +19,7 @@ export function composeRulerBiography(e:RulerHistoricalEvidence,name:string,acce
   if(e.hasRecordedDeath&&e.deathMonth!==undefined)life.push(`${formatWorldDate(e.deathMonth)}${e.deathReason??"去世"}${e.finalAge!==undefined?`，享年${e.finalAge}岁`:""}。`);
   else if(e.endReason)life.push(`君主任期以${e.endReason}告终；生命结局另依死亡记录。`);
   const assessment:string[]=[];
+  if(e.proclaimedEmperor)assessment.push("任内正式称帝，建立帝统。");
   if(e.tenure.activeRuleMonths===0&&e.tenure.exileMonths>0)assessment.push("其世以流亡承统为主，未有在国施政之实。");
   else if(e.trajectory.expandedThenRetreated)assessment.push(`任内疆域曾经扩张，随后回落；论其世，当兼察前后兴衰与${e.isFinalized?"任期终局":"目前国势"}。`);
   else if(e.trajectory.inheritedDecline)assessment.push("承统时疆域已居高位，任内国势回落，前代积累与后来的变化应分别看待。");
@@ -35,7 +39,7 @@ export function composeRulerBiography(e:RulerHistoricalEvidence,name:string,acce
 }
 
 export function composeMilitaryBiography(person:MilitaryPerson,entries:MilitaryChronicleEntry[],factionId:string,worldMonth=Infinity){
-  const name=getMilitaryPersonDisplayName(person),appointments=person.appointments.filter(a=>a.factionId===factionId);
+  const name=getMilitaryPersonDisplayName(person),appointments=person.appointments.filter(a=>a.factionId===factionId&&a.startMonth<=worldMonth);
   const life:string[]=[];
   if(appointments.length)life.push(`${name}于${formatWorldDate(appointments[0].startMonth)}始任本国军职。`);
   const factions=[...new Set(person.appointments.map(a=>a.factionId))];
@@ -44,6 +48,14 @@ export function composeMilitaryBiography(person:MilitaryPerson,entries:MilitaryC
   const ending=person.status==="DEAD"&&person.deathMonth!==undefined
     ? `${formatWorldDate(person.deathMonth)}${militaryDeathWording(person.deathCause)}。`
     : person.status!=="ACTIVE"&&person.appointments.at(-1)?.endReason==="AGE_RETIREMENT"?"年老退职。":undefined;
+  const through=Number.isFinite(worldMonth)?worldMonth:Math.max(0,...appointments.map(a=>a.endMonth??a.startMonth),...entries.map(e=>e.worldMonth));
+  const offices=[...new Set(appointments.flatMap(a=>(a.officeHistory??[]).filter(o=>o.month<=worldMonth).map(o=>MILITARY_OFFICE_NAMES[o.office])))];
+  const grants=(person.nobilityHistory??[]).filter(g=>g.factionId===factionId&&g.month<=worldMonth).sort((a,b)=>NOBLE_RANKS.indexOf(b.rank)-NOBLE_RANKS.indexOf(a.rank));
+  if(appointments.length)life.push(`本国从军${formatWorldDuration(militaryServiceMonths({...person,appointments},through))}${offices.length?`，历任${offices.join('、')}`:''}。`);
+  if(victories.length||grants.length)life.push(`${victories.length?`所部参与取城${victories.length}次。`:''}${grants.length?`最高曾封${NOBLE_NAMES[grants[0].rank]}。`:''}`);
+  if(ending&&person.deathMonth!==undefined&&person.deathMonth<=worldMonth)life.push(ending);
+  const epithet=person.honorHistory?.filter(h=>h.kind==='POSTHUMOUS'&&h.factionId===factionId&&h.month<=worldMonth&&h.epithet).at(-1);
+  if(epithet)life.push(`${formatWorldDate(epithet.month)}追谥${epithet.epithet}。`);
   const sieges=entries.filter(e=>e.source.startsWith('siege-started')||e.activityKind==='SIEGE');
   const defense=entries.filter(e=>e.source.startsWith("siege-defended"));
   const assessment=defense.length?`${defense.at(-1)!.text.replace(/。$/,"")}；${victories.length?"亦有参与取城之绩。":"虽未有取城之绩，亦有守土之功。"}`:victories.length?"其所部曾参与攻克城邑，军旅功业见于任内战事。"

@@ -31,7 +31,7 @@ export async function checkFamilyNobleCore(core:any,factionId:string,childId:num
  const clock=(m:number)=>core.simulator.clock.importState({worldMonth:m,elapsedMs:0,running:false});
  const update=()=>Military.updateFamilyTitles(240,core.teams,Dynasty.getAll());
  try{
-  update();check(!family().nobleSuccession?.length,'living founder neither retires his title nor gives an adult civilian child an early inheritance');
+  update();check(!family().nobleSuccession?.some(act=>act.kind==='SUCCEEDED'),'living founder neither retires his title nor gives an adult civilian child an early inheritance');
   {const before=exportWorldSave(core),f=family(),member=f.members.find(m=>m.sourceUserId===childId)!,host=document.createElement('div'),root=createRoot(host);document.body.append(host);
    try{flushSync(()=>root.render(React.createElement(Provider,{store,children:React.createElement(MilitaryFamilyBrowser,{families:[f],worldMonth:240,onClose:()=>{}})})));
     const dialog=document.querySelector('[role="dialog"]')!,open=Array.from(dialog.querySelectorAll('button')).find(b=>b.textContent?.includes('始祖'))!;flushSync(()=>open.click());

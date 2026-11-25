@@ -19,10 +19,13 @@ export const civilTransferStewardship = (term:CivilGovernorTerm,month:number) =>
 export const hasCivilTransferMerit = (term:CivilGovernorTerm,month:number) =>
  (term.meritMonth!==undefined&&term.meritMonth<=month&&!!term.meritEventId) ||
  civilTransferStewardship(term,month).length>=2;
+export function civilTransferDemand(loyalty:number,devastation:number):"HIGH"|"MEDIUM"|undefined {
+ return loyalty<50||devastation>=40?'HIGH':loyalty<65||devastation>=20?'MEDIUM':undefined;
+}
 export interface CivilGovernorTerm {
  promotionReview?:CivilPromotionReview;
  stewardshipWindow?:CivilStewardshipWindow;stewardshipAssessments?:CivilStewardshipAssessment[];retirement?:CivilRetirementEvidence;
- transfer?:{fromAssignmentId:string;meritEventIds:string[];stewardshipEventIds:string[];sourceLoyalty:number;sourceDevastation:number;targetLoyalty:number;targetDevastation:number};
+ transfer?:{demand?:ReturnType<typeof civilTransferDemand>;fromAssignmentId:string;meritEventIds:string[];stewardshipEventIds:string[];sourceLoyalty:number;sourceDevastation:number;targetLoyalty:number;targetDevastation:number};
  office?:CivilOffice;promotion?:CivilPromotionEvidence;receipts?:CivilGovernanceReceipt[];
  nameEvidence:{seed:string;culture:import('./NameCulture').NameCulture;originalName:string;source:'GENERATED'|'ESTABLISHED'};
  version:1;assignmentId:string;personId:string;sourceUserId:number;bornMonth:number;personalName:string;

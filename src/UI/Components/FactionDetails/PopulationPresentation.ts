@@ -14,10 +14,11 @@ export function populationCauseLabel(cause: string) {
 }
 
 export function buildPopulationRecoveryLines(team: Team, month: number, summary: ReturnType<PopulationTransitionAudit["getSummary"]> | undefined,
-  last?: PopulationTransitionRecord, climateMultiplier = 1, recentEvents: readonly WorldEvent[] = []) {
+  last?: PopulationTransitionRecord, climateMultiplier = 1, recentEvents: readonly WorldEvent[] = [], administration=1) {
   const c = getPopulationRecoveryContext(team, month, recentEvents), lines = [c.state,
+    `人口${team.users?.size??0} / ${c.capacity} · 基础${c.base} · 土地${c.land} · 城市${c.urban}`,
     `有效领土${c.territory}格 · 城市${c.cityCount}座 · 受围${c.siegeCount}座 · 近期战乱城市${c.recentWarCities}座${c.recentConflict ? " · 有近期战事记录" : ""}`,
-    `城市条件恢复修正${c.multiplier.toFixed(2)}× · 丰收/灾害修正${climateMultiplier.toFixed(2)}×`];
+    `城市条件恢复修正${c.multiplier.toFixed(2)}× · 君主治理${administration.toFixed(2)}× · 丰收/灾害修正${climateMultiplier.toFixed(2)}×`];
   if (summary) {
     const r = summary.recent;
     lines.push(`最近12个月净变化${r.net >= 0 ? "+" : ""}${r.net}（本次会话已观察${summary.observedMonths}个月，读档重置）`,

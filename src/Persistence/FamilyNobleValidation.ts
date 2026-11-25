@@ -11,13 +11,13 @@ export function validateFamilyNobility(save:WorldSaveV1){
   if(f.nobleSuccession!==undefined&&!Array.isArray(f.nobleSuccession))throw Error('title chain must be an array');
   // Each additional period needs its own unused, real grant. Within a period the
   // original maximum of five death/succession resolutions remains unchanged.
-  const periodSources=new Set<string>(),periodResolutions=new Map<number,number>();
+  const periodSources=new Set<string>(),periods=new Set<number>(),periodResolutions=new Map<number,number>();
   for(const act of f.nobleSuccession??[]){
    const period=act.period??1;
    if(!Number.isSafeInteger(period)||period<1)throw Error('invalid hereditary period');
-   if(act.kind==='STARTED'){
-    if(act.version!==2||period!==periodSources.size+(f.preparatory?1:2)||periodSources.has(act.sourceGrantEventId)||!state.people.some(p=>p.nobilityHistory?.some(g=>g.eventId===act.sourceGrantEventId)))throw Error('period requires a unique real grant');
-    periodSources.add(act.sourceGrantEventId);
+   if(act.kind==='STARTED'||act.kind==='UPGRADED'){
+    if(act.version!==2||(act.kind==='STARTED'?period!==periods.size+1:!periods.has(period))||periodSources.has(act.sourceGrantEventId)||!state.people.some(p=>p.nobilityHistory?.some(g=>g.eventId===act.sourceGrantEventId)))throw Error('period requires a unique real grant');
+    periods.add(period);periodSources.add(act.sourceGrantEventId);
    }else{
     const count=(periodResolutions.get(period)??0)+1;
     if(count>5)throw Error('period exceeds original finite descent chain');
@@ -35,9 +35,9 @@ export function validateFamilyNobility(save:WorldSaveV1){
   const prefix:NonNullable<typeof f.nobleSuccession>=[];let previousPosition=-1;
   for(const a of f.nobleSuccession??[]){const i=positions.get(a.eventId),e=i===undefined?undefined:events[i];if(i===undefined||i<=previousPosition||!e||a.month>save.world.worldMonth||a.month<f.foundedMonth||![1,2].includes(a.version)||a.step!==prefix.length+1||a.eventId!==`${f.familyId}-succession-${a.step}`)throw Error('invalid title sequence');
    if(e.metadata?.familyNoblePolicy!==undefined&&!['SINGLE','RENEWAL'].includes(String(e.metadata.familyNoblePolicy))||e.metadata?.familyNoblePolicy==='RENEWAL'&&state.familyNoblePolicy!=='RENEWAL')throw Error('invalid title policy source');
-   const historical=familyAtEvidenceBoundary({...f,nobleSuccession:prefix},a.month,i,events),prior=events.slice(0,i),c={...createFamilyNobleContext(a.month,[historical],state.people,prior,dynasties),renewable:e.metadata?.familyNoblePolicy==='RENEWAL'},expected=planFamilyNobleTransition(historical,c);
+   const historical=familyAtEvidenceBoundary({...f,nobleSuccession:prefix},a.month,i,events),prior=events.slice(0,i),c={...createFamilyNobleContext(a.month,[historical],state.people,prior,dynasties),renewable:e.metadata?.familyNoblePolicy==='RENEWAL',independent:true},expected=planFamilyNobleTransition(historical,c);
    if(!expected||JSON.stringify(expected)!==JSON.stringify(a))throw Error('title outcome differs from real prior grant, death, kinship, residence, politics or deterministic heir');
-   if(e.type!==(a.kind==='STARTED'?'family-title-started':a.kind==='SUCCEEDED'?'family-title-succeeded':'family-title-ended')||e.actorFactionId!==a.factionId||at(e)!==a.month||e.metadata?.familyId!==f.familyId||e.metadata?.familyNobleAct!==JSON.stringify(a)||e.title!==familyNobleText(f,a))throw Error('title history source mismatch');
+   if(e.type!==(a.kind==='STARTED'||a.kind==='UPGRADED'?'family-title-started':a.kind==='SUCCEEDED'?'family-title-succeeded':'family-title-ended')||e.actorFactionId!==a.factionId||at(e)!==a.month||e.metadata?.familyId!==f.familyId||e.metadata?.familyNobleAct!==JSON.stringify(a)||e.title!==familyNobleText(f,a))throw Error('title history source mismatch');
    for(const id of a.sourceEventIds)if(!prior.some(e=>e.id===id))throw Error('missing prior title or death evidence');
    const m=f.members.find(m=>m.memberId===a.previousMemberId)!;if(a.sourceEventIds.includes(`${f.familyId}-${m.memberId}-death`))bound.add(`${f.familyId}-${m.memberId}-death`);
    prefix.push(a);previousPosition=i;bound.add(a.eventId);

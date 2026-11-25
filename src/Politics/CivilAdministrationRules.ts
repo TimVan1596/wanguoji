@@ -62,7 +62,7 @@ export function civilGovernorCandidates(month:number,team:Team,people:readonly M
   if(person&&unresolvedCourtBans(person,team.name,month,epochFounderId).length)continue;
   const familyLink=familyLinkAt(user,person,lookup);
   if(familyLink&&(!familyMemberPresent(familyLink.member,month)||familyResidenceAt(familyLink.family,familyLink.member,month)!==team.name))continue;
-  const nobleRank=higherRank(person?currentNobleGrant(person,team.name,month,epochFounderId)?.rank:undefined,familyLink?familyNobleRankAt(familyLink.family,familyLink.member,month):undefined);
+  const nobleRank=higherRank(person?currentNobleGrant(person,team.name,month,epochFounderId)?.rank:undefined,familyLink?familyNobleRankAt(familyLink.family,familyLink.member,month,team.name,epochFounderId):undefined);
   const retired=!!person&&person.status==='RETIRED'&&person.appointments.length>0,royal=!!person?.royalIdentity;
   const identitySource:CivilGovernorSource=royal?'ROYAL':retired?'RETIRED_MILITARY':nobleRank?'NOBLE':familyLink&&familyExpansionOpen(familyLink.family,month)?'FAMILY':'ORDINARY_RESIDENT';
   const abilities=person?militaryAbilities(person):personAbilities({kind:'RESIDENT',sourceUserId:user.id,bornMonth:user.bornMonth});

@@ -33,35 +33,35 @@ export function planFamilyChildBirth(f:{familyId:string;surname:string;factionId
 
 import {familyExpansionOpen,type MilitaryFamily} from './MilitaryFamily';
 import type {FamilyNobleContext} from './FamilyNobleSuccession';
-import {familyMemberPresent,familyResidenceAt,familyNobleAuthorityAt} from './FamilyNobleSuccession';
+import {familyMemberPresent,familyResidenceAt,familyNobleAuthorityAt,familyNoblePeriods} from './FamilyNobleSuccession';
 import {currentNobleGrant} from './MilitaryNobility';
 /** Necessary live authority only; the caller still checks age, residence, caps and actual source events. */
 export function familyBirthSource(f:MilitaryFamily,m:MilitaryFamily['members'][number],month:number,p:FamilyNobleContext['people'][number]|undefined){
  const preparatory=f.preparatory&&!f.nobleSuccession?.some(a=>a.month<=month)&&m.militaryPersonId===f.founderPersonId;
  if(!preparatory&&!familyExpansionOpen(f,month))return;
- const authority=familyNobleAuthorityAt(f,month);
+ const authority=familyNobleAuthorityAt(f,month,familyResidenceAt(f,m,month));
  if(p&&(p.factionId!==authority.factionId||p.deathMonth!==undefined||p.politicalRulerId||p.politicalHistory?.some(a=>a.kind==='COURT_BAN'&&['FORFEITURE','EXECUTION'].includes(a.severity)&&a.month<=month)))return;
- const last=f.nobleSuccession?.filter(a=>a.month<=month).at(-1),inherited=last?.kind==='SUCCEEDED'&&last.holderMemberId===m.memberId?last:undefined,g=p?currentNobleGrant(p,authority.factionId,month,authority.epochFounderId):undefined,a=p?.status==='ACTIVE'?p.appointments.find(a=>a.factionId===authority.factionId&&a.endMonth===undefined&&a.startMonth<=month):undefined;
+ const inherited=[...familyNoblePeriods(f.nobleSuccession??[],month).values()].find(act=>act.kind==='SUCCEEDED'&&act.holderMemberId===m.memberId&&(act.factionId??f.factionId)===authority.factionId&&(act.epochFounderId??f.epochFounderId)===authority.epochFounderId),g=p?currentNobleGrant(p,authority.factionId,month,authority.epochFounderId):undefined,a=p?.status==='ACTIVE'?p.appointments.find(a=>a.factionId===authority.factionId&&a.endMonth===undefined&&a.startMonth<=month):undefined;
  const basisEventId=inherited?.eventId??g?.eventId??(a?`military-appointment-${a.commandId}`:undefined);
  return basisEventId?{basisEventId,holder:!!inherited||!!g}:undefined;
 }
 /** Current lawful title or actual military service, never surname matching or a future claimant. */
 export function familyBirthParents(f:MilitaryFamily,c:FamilyNobleContext,eventIds?:ReadonlySet<string>){
- const authority=familyNobleAuthorityAt(f,c.month);
- if(f.foundedMonth>c.month||!c.activeEpochs.has(`${authority.factionId}/${authority.epochFounderId}`))return [];
+ if(f.foundedMonth>c.month)return [];
  const children=new Map<string,typeof f.members>();let living=0;
  for(const m of f.members){if(familyMemberPresent(m,c.month))living++;if(m.parentMemberId){const rows=children.get(m.parentMemberId)??[];rows.push(m);children.set(m.parentMemberId,rows);}}
  if(living>=FAMILY_LIVING_CHILD_LIMIT)return [];
  let ids=eventIds;
  return f.members.flatMap(m=>{
-  if(!familyMemberPresent(m,c.month)||familyResidenceAt(f,m,c.month)!==authority.factionId||m.bornMonth+240>c.month||m.bornMonth+FAMILY_PARENT_MAX_AGE_MONTHS<c.month||(children.get(m.memberId)?.length??0)>=FAMILY_CHILD_LIMIT||(children.get(m.memberId)??[]).some(ch=>c.month-ch.enteredMonth<48)||(c.politicalAccessions.get(m.memberId)??Infinity)<=c.month)return [];
+  const residence=familyResidenceAt(f,m,c.month),authority=familyNobleAuthorityAt(f,c.month,residence);
+  if(!c.activeEpochs.has(`${authority.factionId}/${authority.epochFounderId}`)||!familyMemberPresent(m,c.month)||residence!==authority.factionId||m.bornMonth+240>c.month||m.bornMonth+FAMILY_PARENT_MAX_AGE_MONTHS<c.month||(children.get(m.memberId)?.length??0)>=FAMILY_CHILD_LIMIT||(children.get(m.memberId)??[]).some(ch=>c.month-ch.enteredMonth<48)||(c.politicalAccessions.get(m.memberId)??Infinity)<=c.month)return [];
   const source=familyBirthSource(f,m,c.month,c.people.find(p=>p.personId===m.militaryPersonId));if(!source)return [];
   ids??=new Set(c.events.map(e=>e.id));if(!ids.has(source.basisEventId))return [];
-  return [{member:m,...source}];
+  return [{member:m,authority,...source}];
  }).sort((a,b)=>Number(b.holder)-Number(a.holder)||a.member.bornMonth-b.member.bornMonth||a.member.memberId.localeCompare(b.member.memberId));
 }
 /** An existing natural-growth slot may materialize one already-born adult; it never adds a slot. */
 export function familyChildForPopulationEntry(families:readonly MilitaryFamily[],factionId:string,epoch:string|undefined,userId:number,month:number,seed:string){
  const rng=new WorldRandom();rng.initialize(`family-child-entry-v1:${seed}:${userId}:${month}`);if(rng.next()>=.25)return;
- return families.filter(f=>familyNobleAuthorityAt(f,month).factionId===factionId&&familyNobleAuthorityAt(f,month).epochFounderId===epoch).flatMap(f=>f.members.filter(m=>m.birth&&m.sourceUserId===undefined&&m.bornMonth+216<=month&&m.birth.naturalDeathMonth>month&&familyMemberPresent(m,month)&&familyResidenceAt(f,m,month)===factionId).map(m=>({family:f,member:m}))).sort((a,b)=>a.member.bornMonth-b.member.bornMonth||a.member.memberId.localeCompare(b.member.memberId))[0];
+ return families.filter(f=>familyNobleAuthorityAt(f,month,factionId,epoch).factionId===factionId&&familyNobleAuthorityAt(f,month,factionId,epoch).epochFounderId===epoch).flatMap(f=>f.members.filter(m=>m.birth&&m.sourceUserId===undefined&&m.bornMonth+216<=month&&m.birth.naturalDeathMonth>month&&familyMemberPresent(m,month)&&familyResidenceAt(f,m,month)===factionId).map(m=>({family:f,member:m}))).sort((a,b)=>a.member.bornMonth-b.member.bornMonth||a.member.memberId.localeCompare(b.member.memberId))[0];
 }

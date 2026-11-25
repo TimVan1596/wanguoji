@@ -1,3 +1,4 @@
+import {familyNoblePeriods} from './FamilyNobleSuccession';
 import type {Ruler} from './Dynasty';
 import type {MilitaryFamily} from './MilitaryFamily';
 import type {MilitaryPerson} from './MilitaryCommandRegistry';
@@ -14,6 +15,6 @@ export function rulerFamilyBackground(r:Ruler,families:readonly MilitaryFamily[]
  while(current.parentMemberId){const parent=byId.get(current.parentMemberId);if(!parent||seen.has(parent.memberId)||parent.enteredMonth>month||parent.source!=='FOUNDER'&&!past(`${parent.memberId}-entered`))return;seen.add(parent.memberId);current=parent;distance++;ancestor=parent;}
  if(!ancestor||ancestor.memberId!==family.members[0].memberId)return;
  const founder=people.find(p=>p.personId===ancestor!.militaryPersonId&&p.sourceUserId===ancestor!.sourceUserId&&p.bornMonth===ancestor!.bornMonth),grant=founder?.nobilityHistory?.filter(g=>g.month<=month&&past(g.eventId)&&events.some(e=>e.id===g.eventId&&e.metadata?.nobility===JSON.stringify(g))).sort((a,b)=>NOBLE_RANKS.indexOf(b.rank)-NOBLE_RANKS.indexOf(a.rank))[0];
- if(!grant)return;const relation=['','父亲','祖父','曾祖','高祖'][distance]??`上溯${distance}代的先人`,oldEnded=family.nobleSuccession?.filter(a=>a.month<=month&&past(a.eventId)).at(-1)?.kind==='ENDED';
+ if(!grant)return;const relation=['','父亲','祖父','曾祖','高祖'][distance]??`上溯${distance}代的先人`,periods=familyNoblePeriods(family.nobleSuccession?.filter(a=>a.month<=month&&past(a.eventId))??[]),oldEnded=periods.size>0&&[...periods.values()].every(a=>a.kind==='ENDED');
  return `${member.name}出自${family.surname}氏，其${relation}${ancestor.name}曾受${grant.countryName}${NOBLE_NAMES[grant.rank]}${oldEnded?'，该期旧爵在起事前已断袭':''}。`;
 }

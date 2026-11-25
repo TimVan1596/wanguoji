@@ -4,11 +4,12 @@ import {successionTransaction} from '../Politics/SuccessionTransaction';
 import {politicalEffect} from './PoliticalMutationScope';
 import Military,{deriveUserBornMonth} from '../Politics/MilitaryCommandRegistry';
 import Dynasty from '../Politics/Dynasty';
+import {rulerAbilities} from '../Politics/PersonAbilities';
 import {nobleEpoch} from '../Politics/MilitaryNobility';
 import {planFamilyPopulationEntry} from '../Politics/MilitaryFamily';
 import {residentNaturalDeathMonth,ordinaryLifeEligible,worldRecoveryMultiplier} from "./ResidentLife";
 import WorldHistory from "../History/WorldHistory";
-import { getEffectivePopulationCapacity, getPopulationRecoveryContext, wartimePopulationLossInterval } from "./PopulationRecoveryRules";
+import { getEffectivePopulationCapacity, getPopulationRecoveryContext, populationRulerRecovery, wartimePopulationLossInterval } from "./PopulationRecoveryRules";
 import { measurePhase, type MonthlyPhaseProfiler } from "./MonthlyPhaseProfiler";
 import Team from "../Components/Team";
 import Danmu from "../Live/Danmu";
@@ -87,6 +88,7 @@ export default class PopulationSystem {
     }
     const recentEvents = WorldHistory.getEventsBetween?.(Math.max(0, worldMonth - 24), worldMonth) ?? [];
     const aliveTeams = measurePhase(profile, "Population.active faction scan", () => teams.filter((team) => team.status === "ACTIVE" && !team.isDie));
+    let worldPopulation=teams.reduce((total,team)=>total+team.users.size,0);
     aliveTeams.forEach((team) => {
       const { population, capacity } = measurePhase(profile, "Population.capacity", () => ({ population: this.getPopulation(team), capacity: this.getCapacity(team) }));
       if (population >= capacity) {
@@ -106,9 +108,15 @@ export default class PopulationSystem {
         const current = this.getPopulation(team);
         if (current >= capacity) return;
         const roomRatio = (capacity - current) / capacity;
-        const chance = Math.min(.85, BASE_GROWTH_CHANCE * roomRatio * (current <= 0 ? .65 : 1) * context.multiplier * effect * worldRecoveryMultiplier(teams.reduce((n,t)=>n+t.users.size,0)));
+        const ruler=Dynasty.getCurrentRuler(team.name);
+        const administration=populationRulerRecovery(ruler,worldMonth,()=>rulerAbilities(ruler!,Military.getPeople()).strategy);
+        const chance = Math.min(.85, BASE_GROWTH_CHANCE * roomRatio * (current <= 0 ? .65 : 1) * context.multiplier * administration * effect * worldRecoveryMultiplier(worldPopulation));
+        const beforeDraw=worldRandom.exportState();
         if (worldRandom.next() < chance) {
-          measurePhase(profile, "Population.spawn/runtime creation", () => this.spawn(team, undefined, false, { cause: "NATURAL_GROWTH", month: worldMonth, context: context.state }, profile));
+          const before=team.users.size;
+          const created=measurePhase(profile, "Population.spawn/runtime creation", () => this.spawn(team, undefined, false, { cause: "NATURAL_GROWTH", month: worldMonth, context: context.state }, profile));
+          if(!created&&before===team.users.size)worldRandom.restore(beforeDraw);
+          worldPopulation+=team.users.size-before;
         }
       }
     });
@@ -207,7 +215,9 @@ export default class PopulationSystem {
     }
     const user=create();if(user)return user;
     // Legacy join-command routing remains the fallback for natural population.
-    return Danmu.Apply(createLocalDanmu(name, team.name,
+    const fallback=Danmu.Apply(createLocalDanmu(name, team.name,
       worldRandom.int(USER_NATURAL_LOYALTY_MIN, USER_NATURAL_LOYALTY_MAX)), populationMutation);
+    if(!fallback){this.counters=previousCounters;worldRandom.restore(previousRng);}
+    return fallback;
   }
 }

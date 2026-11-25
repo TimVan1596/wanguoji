@@ -1,4 +1,4 @@
-import {familyNobleAuthorityAt} from './FamilyNobleSuccession';
+import {familyNobleAuthorityAt,familyNoblePeriods} from './FamilyNobleSuccession';
 import type {FamilyChildBirth} from './FamilyChildBirth';
 import type {FamilyFoundationPolicy} from './FamilyFoundationPolicy';
 import type {FamilyNobleAct} from './FamilyNobleSuccession';
@@ -46,8 +46,8 @@ export function makeMilitaryFamily(p:MilitaryPerson,factionId:string,epoch:strin
 /** A closed period cannot sponsor new special kin or inherited recruitment.
  * Existing people and already-born children remain canonical and can earn a new period. */
 export function familyExpansionOpen(f:MilitaryFamily,month:number){
- const act=f.nobleSuccession?.filter(a=>a.month<=month).at(-1);
- return (!f.preparatory||!!act)&&act?.kind!=='ENDED';
+ const periods=familyNoblePeriods(f.nobleSuccession??[],month);
+ return periods.size?[...periods.values()].some(act=>act.kind!=='ENDED'):!f.preparatory;
 }
 function hash(s:string){let n=2166136261;for(const c of s)n=Math.imul(n^c.charCodeAt(0),16777619);return n>>>0;}
 /** Called only before first population entry. Birth is derived from the original population label, never re-aged. */

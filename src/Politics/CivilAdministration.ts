@@ -1,9 +1,9 @@
-import {civilTransferStewardship,hasCivilTransferMerit} from './CivilAdministrationSchema';
+import {civilTransferDemand,civilTransferStewardship,hasCivilTransferMerit} from './CivilAdministrationSchema';
 import {CIVIL_CAREER_POLICY,civilRetirementEvidence,civilPromotionChance,validStewardshipWindow,stewardshipContribution,stewardshipInterval,type CivilCareerPolicy,type CivilStewardshipWindow} from './CivilCareerRules';
 import {civilCrossCareerEvidence,civilPromotionCompetitionWeight} from './CrossCareerCompetition';
 import {civilNobleMerit,civilPeerageDraw} from './CivilNobility';
 import {currentNobleGrant,NOBLE_RANKS} from './MilitaryNobility';
-import {familyNobleRankAt,familyNobleAuthorityAt} from './FamilyNobleSuccession';
+import {familyNobleRankAt} from './FamilyNobleSuccession';
 import {civilPromotionEvidence,civilPromotionFacts} from './CivilPromotion';
 import {CIVIL_OFFICES,civilOfficeLevel,civilOfficeTitle,isLocalCivilOffice,civilOfficeCap} from './CivilOffice';
 import {politicalMutationActive} from '../Simulation/PoliticalMutationScope';
@@ -103,8 +103,7 @@ class CivilAdministrationStore {
   if(!p||!user||user.bornMonth!==term.bornMonth||user.isDestroyed||unresolvedCourtBans(p,team.name,month,term.epochFounderId).length||
    (p.nobilityHistory??[]).some(g=>g.month===month)||(p.honorHistory??[]).some(h=>h.kind==='REVOKED'&&h.factionId===team.name&&h.epochFounderId===term.epochFounderId))return;
   const personal=currentNobleGrant(p,team.name,month,term.epochFounderId)?.rank,link=Military.getFamilyMember(p.sourceUserId,p.bornMonth);
-  const authority=link&&familyNobleAuthorityAt(link.family,month);
-  const inherited=link&&authority?.factionId===team.name&&authority.epochFounderId===term.epochFounderId?familyNobleRankAt(link.family,link.member,month):undefined;
+  const inherited=link?familyNobleRankAt(link.family,link.member,month,team.name,term.epochFounderId):undefined;
   const previous=personal&&inherited?(NOBLE_RANKS.indexOf(personal)>NOBLE_RANKS.indexOf(inherited)?personal:inherited):personal??inherited;
   const endEventId=retiring?`${term.assignmentId}-ended-${month}`:undefined;
   const local=this.state.terms.filter(t=>t.personId===p.personId&&t.factionId===team.name&&t.epochFounderId===term.epochFounderId)
@@ -153,23 +152,23 @@ class CivilAdministrationStore {
   }));
  }
  private transferCandidates(month:number,team:Team,dynasty:Dynasty){
-  const targets=eligibleCivilCities(month,team,this.state.terms).filter(c=>c.loyalty<50||c.devastation>=40).sort((a,b)=>a.loyalty-b.loyalty||b.devastation-a.devastation||a.id.localeCompare(b.id));
+  const targets=eligibleCivilCities(month,team,this.state.terms).filter(c=>civilTransferDemand(c.loyalty,c.devastation)).sort((a,b)=>Number(civilTransferDemand(b.loyalty,b.devastation)==='HIGH')-Number(civilTransferDemand(a.loyalty,a.devastation)==='HIGH')||(a.loyalty-a.devastation)-(b.loyalty-b.devastation)||a.id.localeCompare(b.id));
   if(!targets.length)return;
   const rows=this.state.terms.filter(t=>t.factionId===team.name&&active(t,month)&&isLocalCivilOffice(t.office)&&month-t.startMonth>=60&&hasCivilTransferMerit(t,month)).filter(t=>{const c=team.cities.find(c=>c.id===t.cityId);return c&&!c.underSiege&&c.ownerFactionId===team.name&&c.loyalty>=75&&c.devastation<=10;}).sort((a,b)=>(b.loyaltyRecovered+b.devastationRecovered)-(a.loyaltyRecovered+a.devastationRecovered)||a.personId.localeCompare(b.personId));
   if(!rows.length)return;
   const rng=new WorldRandom();rng.initialize(`civil-transfer-v1:${worldRandom.exportState().seed}:${team.name}:${month}`);
-  if(rng.next()>=.2)return;
+  if(rng.next()>=(civilTransferDemand(targets[0].loyalty,targets[0].devastation)==='HIGH'?.2:.12))return;
   this.transfer(month,rows[rng.pickIndex(Math.min(3,rows.length))],team,targets[0],dynasty);
  }
  transfer(month:number,term:CivilGovernorTerm,team:Team,target:City,dynasty:Dynasty){
   const current=this.state.terms.find(t=>t.assignmentId===term.assignmentId),source=team.cities.find(c=>c.id===current?.cityId),user=[...team.users].find(u=>u.id===term.sourceUserId&&u.bornMonth===term.bornMonth),person=Military.getPerson(term.personId),ruler=dynasty.rulers.find(r=>r.id===dynasty.currentRulerId);
-  if(month%12!==0||!current||!active(current,month)||!isLocalCivilOffice(current.office)||month-current.startMonth<60||!hasCivilTransferMerit(current,month)||!source||source===target||source.ownerFactionId!==team.name||source.underSiege||source.loyalty<75||source.devastation>10||!eligibleCivilCities(month,team,this.state.terms).some(c=>c===target)||target.loyalty>=50&&target.devastation<40||!user||user.isDestroyed||user.role!=='NORMAL'||user.rulerId||user.player.rulerId||user.nativeRoyalRulerId||user.team!==team||!person||person.deathMonth!==undefined||person.politicalRulerId||person.appointments.some(a=>a.endMonth===undefined)||unresolvedCourtBans(person,team.name,month,current.epochFounderId).length||!ruler||ruler.status!=='ruling'||ruler.deathMonth!==undefined||dynasty.factionId!==team.name||!dynasty.houseEpochs?.some(e=>e.foundingRulerId===current.epochFounderId&&e.startMonth<=month&&(e.endMonth??Infinity)>month))throw Error('Invalid civil transfer');
+  if(month%12!==0||!current||!active(current,month)||!isLocalCivilOffice(current.office)||month-current.startMonth<60||!hasCivilTransferMerit(current,month)||!source||source===target||source.ownerFactionId!==team.name||source.underSiege||source.loyalty<75||source.devastation>10||!eligibleCivilCities(month,team,this.state.terms).some(c=>c===target)||!civilTransferDemand(target.loyalty,target.devastation)||!user||user.isDestroyed||user.role!=='NORMAL'||user.rulerId||user.player.rulerId||user.nativeRoyalRulerId||user.team!==team||!person||person.deathMonth!==undefined||person.politicalRulerId||person.appointments.some(a=>a.endMonth===undefined)||unresolvedCourtBans(person,team.name,month,current.epochFounderId).length||!ruler||ruler.status!=='ruling'||ruler.deathMonth!==undefined||dynasty.factionId!==team.name||!dynasty.houseEpochs?.some(e=>e.foundingRulerId===current.epochFounderId&&e.startMonth<=month&&(e.endMonth??Infinity)>month))throw Error('Invalid civil transfer');
   return Military.civilTransaction(team,()=>transaction(()=>{
-   const evidence={fromAssignmentId:current.assignmentId,stewardshipEventIds:civilTransferStewardship(current,month),meritEventIds:(current.receipts??[]).map(r=>r.eventId),sourceLoyalty:source.loyalty,sourceDevastation:source.devastation,targetLoyalty:target.loyalty,targetDevastation:target.devastation};
+   const evidence={fromAssignmentId:current.assignmentId,demand:civilTransferDemand(target.loyalty,target.devastation),stewardshipEventIds:civilTransferStewardship(current,month),meritEventIds:(current.receipts??[]).map(r=>r.eventId),sourceLoyalty:source.loyalty,sourceDevastation:source.devastation,targetLoyalty:target.loyalty,targetDevastation:target.devastation};
    this.end(month,current,'TRANSFERRED');
    const sequence=this.state.sequence+1,assignmentId=`civil-governor-${team.name}-${sequence}`,eventId=`${assignmentId}-appointed`,next:CivilGovernorTerm={...current,transfer:evidence,assignmentId,cityId:target.id,cityName:target.name,startMonth:month,appointEventId:eventId,receipts:[],stewardshipAssessments:[],loyaltyRecovered:0,devastationRecovered:0,rulerId:ruler.id,rulerTitle:DynastyRegistry.getRulerHistoricalTitle(ruler.id,team.name,month)??ruler.givenName,countryName:team.displayName??team.name};
    for(const key of ['promotionReview','stewardshipWindow','retirement','promotion','endMonth','endReason','endEventId','lastEffectMonth','meritMonth','meritEventId','meritLoyaltyRecovered','meritDevastationRecovered'] as const)delete next[key];
-   if(WorldHistory.addEvent({id:eventId,year:month,monthIndex:month,type:'civil-governor-appointed',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:ruler.id,cityId:target.id,cityName:target.name,title:`${next.rulerTitle}以${next.personalName}治理有绩，由${civilOfficeTitle(current)}调任${civilOfficeTitle(next)}。`,metadata:{personId:next.personId,sourceUserId:next.sourceUserId,bornMonth:next.bornMonth,assignmentId,term:JSON.stringify(next)}})!==eventId)throw Error('Civil transfer history rejected');
+   if(WorldHistory.addEvent({id:eventId,year:month,monthIndex:month,type:'civil-governor-appointed',category:'politics',importance:'major',actorFactionId:team.name,factionIds:[team.name],rulerId:ruler.id,cityId:target.id,cityName:target.name,title:`${next.rulerTitle}以${target.name}有${evidence.demand==='HIGH'?'较重':'持续'}治理需求，调有治绩的${next.personalName}由${civilOfficeTitle(current)}任${civilOfficeTitle(next)}。`,metadata:{personId:next.personId,sourceUserId:next.sourceUserId,bornMonth:next.bornMonth,assignmentId,term:JSON.stringify(next)}})!==eventId)throw Error('Civil transfer history rejected');
    this.state.sequence=sequence;this.state.terms.push(next);return {...next};
   }));
  }

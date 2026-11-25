@@ -28,7 +28,7 @@ export function checkPoliticalPeerageInheritance(core:any,factionId:string,perso
   const beforePopulation=core.teams.reduce((n:number,t:any)=>n+t.users.size,0),child=population.spawn(t,undefined,false,{cause:'NATURAL_GROWTH',month:worldMonth});
   check(child?.familyMemberId&&core.teams.reduce((n:number,t:any)=>n+t.users.size,0)===beforePopulation+1&&!child.militaryPersonId,'one normal population entry supplies the real child, not an additional noble or soldier');
   const naturalEntry=exportWorldSave(core),naturalChildId=child.id;
-  strict();Military.updateFamilyTitles(worldMonth,core.teams,Dynasty.getAll());check(!family().nobleSuccession?.length,'living formally granted BO founder gives no premature inheritance');
+  strict();Military.updateFamilyTitles(worldMonth,core.teams,Dynasty.getAll());check(!family().nobleSuccession?.some(act=>act.kind==='SUCCEEDED'),'living formally granted BO founder gives no premature inheritance');
   const father=t.getUserById(Military.getPerson(personId)!.sourceUserId);check(father.destroyUser(false,{cause:'BATTLE_DEATH',month:worldMonth}),'formal peerage founder dies through the existing User death transaction');
   const death=strict(),writer=History.addEvent;
   History.addEvent=function(e){const id=writer.call(this,e);if(e.type==='family-title-succeeded')throw Error('injected political inheritance write');return id;};try{Military.updateFamilyTitles(worldMonth,core.teams,Dynasty.getAll());}finally{History.addEvent=writer;}

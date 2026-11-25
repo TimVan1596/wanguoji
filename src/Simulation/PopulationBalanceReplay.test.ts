@@ -128,7 +128,7 @@ it("growth follows actual control and bounded city conditions, not political tit
   const {getPopulationCapacity}=await import("./PopulationSystem");
   const {getPopulationRecoveryContext}=await import("./PopulationRecoveryRules");
   const f=fixture(1,4,1), count=f.team.users.size;
-  expect(getPopulationCapacity(f.team)).toBe(24);
+  expect(getPopulationCapacity(f.team)).toBe(22);
   const peace=getPopulationRecoveryContext(f.team,3).multiplier;
   const next=vi.spyOn(worldRandom,"next").mockReturnValue(.3);
   f.populationSystem.update(3,[f.team]);expect(f.team.users.size).toBe(count+1);
@@ -421,11 +421,11 @@ it("12-seed actual large-territory recovery cadence and siege comparison",()=>{
   }
   for(const r of rows)expect(r.maxNatural).toBeLessThanOrEqual(1);
   for(const scenario of ["large-peace","large-siege"] as const){const rs=rows.filter(r=>r.scenario===scenario);
-    expect(rs.reduce((n,r)=>n+r.checkpoints[20],0)/12).toBeGreaterThanOrEqual(yBaseline.cadence[scenario].populationAt20Years*.95);
+    expect(rs.reduce((n,r)=>n+r.checkpoints[20]/r.capacity,0)/12).toBeGreaterThanOrEqual(yBaseline.cadence[scenario].populationAt20Years/104*.95);
     // The old 200-year benchmark assumed immortal ordinary residents. Verify finite turnover and continued recovery instead.
     for(const r of rs){expect(r.naturalDeaths).toBeGreaterThan(0);expect(r.checkpoints[200]).toBeGreaterThan(10);expect(r.checkpoints[200]).toBeLessThanOrEqual(r.capacity);expect(r.natural).toBeGreaterThan(r.naturalDeaths);}}
   if(process.env.WANGUOJI_CADENCE_REPLAY_OUTPUT)writeFileSync(process.env.WANGUOJI_CADENCE_REPLAY_OUTPUT,JSON.stringify(rows,null,2));
-  console.log("LARGE_RECOVERY_PRODUCTION_REPLAY",rows.length,"controlled runs / capacity104 / 200 years");
+  console.log("LARGE_RECOVERY_PRODUCTION_REPLAY",rows.length,"controlled runs / land and city capacity / 200 years");
 },30000);
 
 it("reading regional debug observations never changes a production political decision or its RNG",()=>{

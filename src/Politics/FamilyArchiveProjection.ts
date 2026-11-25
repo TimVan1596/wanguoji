@@ -1,3 +1,4 @@
+import {familyNoblePeriods} from './FamilyNobleSuccession';
 import {familyResidenceEvidence} from './FamilyResidenceEvidence';
 import type {CivilGovernorTerm} from './CivilAdministrationSchema';
 import type {MilitaryFamily,MilitaryFamilyMember} from './MilitaryFamily';
@@ -21,7 +22,7 @@ export function createFamilyArchiveIndex(s:FamilyArchiveSource){
 }
 export type FamilyArchiveIndex=ReturnType<typeof createFamilyArchiveIndex>;
 function familyRow(f:MilitaryFamily,m:MilitaryFamilyMember,s:FamilyArchiveSource,index:FamilyArchiveIndex,acts:NonNullable<MilitaryFamily['nobleSuccession']>){
- const {c,byPerson,eventsById}=index,last=acts.at(-1);
+ const {c,byPerson,eventsById}=index,last=[...familyNoblePeriods(acts).values()].find(a=>a.kind!=='ENDED'&&a.holderMemberId===m.memberId);
 
   const p=m.militaryPersonId?byPerson.get(m.militaryPersonId):undefined,political=index.byResident.get(`${m.sourceUserId}/${m.bornMonth}`)??(m.militaryPersonId?index.byMilitary.get(`${m.militaryPersonId}/${m.bornMonth}`):undefined);
   const civilTerms=index.civilByResident.get(`${m.sourceUserId}/${m.bornMonth}`)??[],activeCivil=civilTerms.find(t=>(t.endMonth??Infinity)>s.month);
@@ -51,20 +52,29 @@ function indexedFamilyRows(f:MilitaryFamily,s:FamilyArchiveSource,index:FamilyAr
 /** No tree, full archive or event formatting is built for a list row. */
 export function summarizeFamilyArchive(f:MilitaryFamily,s:FamilyArchiveSource,index=createFamilyArchiveIndex(s)){
  const acts=f.nobleSuccession?.filter(a=>a.month<=s.month)??[],rows=indexedFamilyRows(f,s,index,acts);
- return {...classifyFamily(rows,s.month),last:acts.at(-1),actualSuccessions:acts.filter(a=>a.kind==='SUCCEEDED').length,holder:rows.find(r=>r.inherited),members:rows.length,generations:Math.max(0,...rows.map(r=>r.member.generation))+1,served:rows.filter(r=>r.appointments.length||r.civilTerms.length).length};
+ const periods=[...familyNoblePeriods(acts).values()];
+ return {...classifyFamily(rows,s.month),activePeriods:periods.filter(a=>a.kind!=='ENDED').length,periodCount:periods.length,last:acts.at(-1),actualSuccessions:acts.filter(a=>a.kind==='SUCCEEDED').length,holder:rows.find(r=>r.inherited),members:rows.length,generations:Math.max(0,...rows.map(r=>r.member.generation))+1,served:rows.filter(r=>r.appointments.length||r.civilTerms.length).length};
 }
 function classifyFamily(rows:ReturnType<typeof familyRow>[],month:number){const active=rows.filter(r=>r.life==='ALIVE'&&(r.inherited||r.effectivePersonal||r.activeOffice||r.activeCivil||r.political&&(r.political.r.endYear??Infinity)>month));return {activeMembers:active.length,living:rows.filter(r=>r.life==='ALIVE').length,livingDescendants:rows.filter(r=>r.life==='ALIVE'&&r.member.generation>0).length,unknown:rows.filter(r=>r.life==='UNKNOWN').length,classification:(active.length?'ACTIVE':rows.length&&rows.every(r=>r.life==='DEAD')?'EXTINCT':'HISTORICAL') as FamilyArchiveClass};}
 export function projectFamilyArchive(f:MilitaryFamily,s:FamilyArchiveSource,index=createFamilyArchiveIndex(s)){
  const acts=f.nobleSuccession?.filter(a=>a.month<=s.month)??[],last=acts.at(-1),rows=new Map(indexedFamilyRows(f,s,index,acts).map(row=>[row.member.memberId,row]));
  const {classification,activeMembers,living,livingDescendants,unknown}=classifyFamily([...rows.values()],s.month);
  const inheritedHolder=[...rows.values()].find(r=>r.inherited),personalHolder=[...rows.values()].filter(r=>r.effectivePersonal).sort((a,b)=>FAMILY_NOBLE_RANKS.indexOf(b.effectivePersonal!.rank)-FAMILY_NOBLE_RANKS.indexOf(a.effectivePersonal!.rank)||a.member.bornMonth-b.member.bornMonth||a.member.memberId.localeCompare(b.member.memberId))[0];
- const root=last?.kind==='ENDED'?undefined:inheritedHolder?.member??(last?.kind==='STARTED'?(rows.get(last.holderMemberId!)?.effectivePersonal?.eventId===last.sourceGrantEventId?rows.get(last.holderMemberId!)?.member:undefined):rows.get(f.members[0].memberId)?.effectivePersonal?f.members[0]:undefined);
- const accessions=new Map([...rows.values()].filter(r=>r.political).map(r=>[r.member.memberId,r.political!.r.accessionYear!])),heirs=root?new Set(eligibleFamilyNobleHeirs(f,root.memberId,{...index.c,politicalAccessions:accessions}).map(m=>m.memberId)):new Set<string>();
+ const heads=[...familyNoblePeriods(acts).values()].filter(act=>{
+  const row=act.holderMemberId?rows.get(act.holderMemberId):undefined;
+  return act.kind==='SUCCEEDED'?row?.inherited?.eventId===act.eventId:act.kind!=='ENDED'&&row?.effectivePersonal?.eventId===act.sourceGrantEventId;
+ });
+ const accessions=new Map([...rows.values()].filter(r=>r.political).map(r=>[r.member.memberId,r.political!.r.accessionYear!]));
+ const held=new Set(heads.map(act=>act.holderMemberId));
+ const heirs=new Set(heads.flatMap(act=>eligibleFamilyNobleHeirs({...f,nobleSuccession:[act]},act.holderMemberId!,{...index.c,politicalAccessions:accessions})
+  .filter(member=>!held.has(member.memberId)).map(member=>member.memberId)));
+ if(!heads.length&&!last&&rows.get(f.members[0].memberId)?.effectivePersonal)
+  for(const member of eligibleFamilyNobleHeirs(f,f.members[0].memberId,{...index.c,politicalAccessions:accessions}))heirs.add(member.memberId);
  const childrenByParent=new Map<string,string[]>();for(const [id,row]of rows){const parent=row.member.parentMemberId;if(!parent)continue;const ids=childrenByParent.get(parent)??[];ids.push(id);childrenByParent.set(parent,ids);}for(const ids of childrenByParent.values())ids.sort((a,b)=>rows.get(a)!.member.bornMonth-rows.get(b)!.member.bornMonth||a.localeCompare(b));
- return {family:f,month:s.month,rows,childrenByParent,acts,last,classification,activeMembers,living,livingDescendants,unknown,currentInheritedHolderId:inheritedHolder?.member.memberId,locatableTitleHolderId:inheritedHolder?.member.memberId??personalHolder?.member.memberId,actualSuccessions:acts.filter(a=>a.kind==='SUCCEEDED').length,heirCandidateIds:heirs,importantIds:new Set([...heirs,...[...rows.values()].filter(r=>r.important).map(r=>r.member.memberId)]),newMeritMembers:[...rows.values()].filter(r=>r.member.generation>0&&r.effectivePersonal&&['HOU','GONG'].includes(r.effectivePersonal.rank)).length};
+ return {family:f,month:s.month,rows,childrenByParent,acts,last,activePeriods:[...familyNoblePeriods(acts).values()].filter(a=>a.kind!=='ENDED').length,classification,activeMembers,living,livingDescendants,unknown,currentInheritedHolderId:inheritedHolder?.member.memberId,locatableTitleHolderId:inheritedHolder?.member.memberId??personalHolder?.member.memberId,actualSuccessions:acts.filter(a=>a.kind==='SUCCEEDED').length,heirCandidateIds:heirs,importantIds:new Set([...heirs,...[...rows.values()].filter(r=>r.important).map(r=>r.member.memberId)]),newMeritMembers:[...rows.values()].filter(r=>r.member.generation>0&&r.effectivePersonal&&['HOU','GONG'].includes(r.effectivePersonal.rank)).length};
 }
-export function familyPoliticalState(p:{classification:FamilyArchiveClass;last?:FamilyNobleAct;living:number;livingDescendants?:number;unknown:number}){
- if(p.classification==='ACTIVE'){const base=p.last?.kind==='ENDED'?'旧爵已终 · 仍有显贵':'当前有效政治世家';return !p.livingDescendants&&p.living?`${base} · 始祖在世，暂无已登记后代`:base;}
+export function familyPoliticalState(p:{classification:FamilyArchiveClass;last?:FamilyNobleAct;living:number;livingDescendants?:number;unknown:number;activePeriods?:number}){
+ if(p.classification==='ACTIVE'){const base=p.last?.kind==='ENDED'&&!p.activePeriods?'旧爵已终 · 仍有显贵':'当前有效政治世家';return !p.livingDescendants&&p.living?`${base} · 始祖在世，暂无已登记后代`:base;}
  return p.classification==='EXTINCT'?'已无登记在世成员':p.livingDescendants?'历史故家 · 仍有登记在世后代':p.living?'始祖在世，暂无已登记后代':'历史故家 · 登记成员生死未载';
 }
 export type FamilyArchiveProjection=ReturnType<typeof projectFamilyArchive>;
@@ -88,7 +98,7 @@ export function explainFamilyTitleEnd(f:MilitaryFamily,a:FamilyNobleAct,s:Family
  else if(a.kinship?.relation&&a.kinship.relation!=='CHILD')text=familyNobleText(f,a);
  else text=`${previous?.name??'原持爵者'}实际死亡后，按出生顺序从符合资格的直接子嗣中择一，完成一次世降。`;
  if(a.reason==='NO_HEIR'&&eligible.size)return {text:'史料资格与断袭结果存在不一致，需核验原始事务；不据此推断家族无后。',children,grandchildren,laterChildren,sourceEventIds:a.sourceEventIds};
- if(a.reason==='NO_HEIR'&&a.kinship)text+=a.kinship.rejected.length?`当时近亲阻断：${a.kinship.rejected.map(r=>`${f.members.find(m=>m.memberId===r.memberId)?.name??r.memberId}（${{DEAD:'已故',EXITED:'已出籍',FOREIGN:'已属外国',FORFEITED:'政治处分',ACCEDED:'已经登位',UNREGISTERED:'尚未登记'}[r.reason]}）`).join('、')}。不据此判定家族绝嗣。`:'当时无符合范围的已登记近亲，不据此判定家族绝嗣。';
+ if(a.reason==='NO_HEIR'&&a.kinship)text+=a.kinship.rejected.length?`当时近亲阻断：${a.kinship.rejected.map(r=>`${f.members.find(m=>m.memberId===r.memberId)?.name??r.memberId}（${{DEAD:'已故',EXITED:'已出籍',FOREIGN:'已属外国',FORFEITED:'政治处分',ACCEDED:'已经登位',UNREGISTERED:'尚未登记',OTHER_TITLE:'已持同王统另一条爵脉'}[r.reason]}）`).join('、')}。不据此判定家族绝嗣。`:'当时无符合范围的已登记近亲，不据此判定家族绝嗣。';
  else if(a.reason==='NO_HEIR')text+=grandchildren?`另有${grandchildren}名在世在籍的孙辈或更远后代；现行制度不允许代袭，故爵位终止，血脉仍可延续。`:'没有可接续的合格直接子嗣，承袭链终止；不据此判定家族绝嗣。';
  return {text,children,grandchildren,laterChildren,sourceEventIds:a.sourceEventIds};
 }

@@ -1,3 +1,4 @@
+import {populationRulerRecovery} from '../../../Simulation/PopulationRecoveryRules';
 import {civilOfficeTitle} from '../../../Politics/CivilOffice';
 import {civilCareerReading} from '../../../Politics/CivilHistoriography';
 import PersonCareerSources from './PersonCareerSources';
@@ -40,7 +41,7 @@ import {getFactionDisplayNameAtMonth} from "../../../Simulation/FactionIdentity"
 import PortraitSummary from "./PortraitSummary";
 import {familyMemberArchiveTarget,resolvePersonArchiveTarget} from "./PersonArchiveTarget";
 import {PersonArchiveNavigation,usePersonArchiveNavigation,type PersonArchiveTarget} from "./PersonArchiveNavigation";
-import {RulerServicePanel,MilitaryServicePanel,PersonRulersPanel} from "./PersonServicePanel";
+import {RulerServiceSources,RulerServicePanel,MilitaryServicePanel,PersonRulersPanel} from "./PersonServicePanel";
 import {GovernorDetail,governorProfile,CivilServicePanel,PersonPoliticalCareer} from '../CivilAdministration/CivilGovernancePanel';
 import {royalPortraitContext,militaryPortraitContext} from "./PortraitPresentation";
 import DepositionSelectionDetails from "../DepositionSelectionDetails";
@@ -377,7 +378,9 @@ function FactionProfile({
     [dynasty?.rulers]
   );
   const populationSummary = Game.Core?.getPopulationSummary(team.name);
-  const populationLines = buildPopulationRecoveryLines(team, worldMonth, populationSummary, populationSummary?.latest, Game.Core?.simulator?.getPopulationClimateMultiplier(team), WorldHistory.getEventsBetween(Math.max(0, worldMonth - 24), worldMonth));
+  const populationRuler=DynastyRegistry.getCurrentRuler(team.name);
+  const populationAdministration=team.status==="ACTIVE"?populationRulerRecovery(populationRuler,worldMonth,()=>rulerAbilities(populationRuler!,MilitaryCommandRegistry.getPeople()).strategy):1;
+  const populationLines = buildPopulationRecoveryLines(team, worldMonth, populationSummary, populationSummary?.latest, Game.Core?.simulator?.getPopulationClimateMultiplier(team), WorldHistory.getEventsBetween(Math.max(0, worldMonth - 24), worldMonth), populationAdministration);
   const overviewSections = buildFactionOverviewSections({
     team,
     teams,
@@ -1230,7 +1233,7 @@ function RulerBiography({
         <Typography fontSize="0.82rem">本人参战取城{bio.stats.personalCityCaptures}次；治下军队取城{bio.stats.nationalCityCaptures}次、攻取敌都{bio.stats.nationalCapitalCaptures}次。</Typography>
       </ChronicleSection>}
       assessment={bio.assessment} voice={bio.voice}
-      evidence={()=> <Box data-royal-evidence><PersonAbilityEvidence abilities={rulerAbilities(ruler,MilitaryCommandRegistry.getPeople())}/>
+      evidence={()=> <Box data-royal-evidence><RulerServiceSources rows={reading.service}/><PersonAbilityEvidence abilities={rulerAbilities(ruler,MilitaryCommandRegistry.getPeople())}/>
         {fullMilestoneEvents.filter(e=>["ruler-deposed","dynasty-usurped"].includes(e.type)).map(e=><div key={e.id}><PoliticalCrisisDetails event={e}/><DepositionSelectionDetails event={e}/></div>)}
         <Typography fontSize="0.78rem">即位年龄{Math.floor(monthsToYears(ruler.accessionYear-ruler.bornYear))}岁；{formatRulerLifeAge(ruler,worldMonth,false,team.status!=="EXTINCT")}</Typography>
         {posthumousLines.map(line=><Typography key={line} fontSize="0.78rem">{line}</Typography>)}
